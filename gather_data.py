@@ -16,7 +16,7 @@ def find_materials_by_elements_and_bandgap(elements: list[str], band_gap: tuple[
     """Takes a list of elements in formula form as strings, band gap range as tuple of two floats (lowest and highest band gap values in eV)
     and a list of proporties as strings. Returns a dictionary with material ids as keys and a doc with the corresponding material properties 
     as values.
-    
+
     Searches the database for materials containing all the specified elements of parameter elemnts while having a bandgap in the range
     specified by parameter bandgap. Gathers information about only the properties specified by fields."""
 
