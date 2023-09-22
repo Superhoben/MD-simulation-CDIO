@@ -16,5 +16,6 @@ def config_file():
   # Write to our config file
   with open('config.ini','w') as config_file:
     config.write(config_file)
-
-config_file()
+    
+if __name__ == "__main__":
+  config_file()
