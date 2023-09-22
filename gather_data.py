@@ -33,6 +33,8 @@ def find_materials_by_elements_and_bandgap(elements: list[str], band_gap: tuple[
 
 
 # Example to show how it works
-materials_dict = find_materials_by_elements_and_bandgap(["Ni", "Sb", "Zr"], (0, 1), ["band_gap"])
-print(materials_dict.keys())
-print(materials_dict.values())
+if __name__ == "__main__":
+    materials_dict = find_materials_by_elements_and_bandgap(["Ni", "Sb", "Zr"], (0, 1), ["band_gap"])
+    print(materials_dict.keys())
+    print(materials_dict.values())
+    print(__name__)
