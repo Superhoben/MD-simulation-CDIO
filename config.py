@@ -1,7 +1,6 @@
 from configparser import ConfigParser
 
 def config_file():
-    
   """ Create the configuration file
 
   Args:
@@ -10,7 +9,6 @@ def config_file():
   Returns:
       None
   """
-
   config = ConfigParser()
   config['User inputs - Material ID'] = {'Structure':'Structure'}
   config['User inputs - Simulation parameter'] = {'Temperature (K)':'Temperature K','StepsNumber':'StepsNumber','Potential':'Potential'}
