@@ -2,7 +2,7 @@
 
 
 def test1():
-    """Write the fucntion def."""
+    """Returns 1."""
     return 1
 
 
