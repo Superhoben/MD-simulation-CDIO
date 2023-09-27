@@ -10,11 +10,11 @@ from pymatgen.io.ase import AseAtomsAdaptor
 
 def get_ASE_atoms_from_material_id(material_id: str):
     """Take a material id and return the primitive unitcell of
-    the material in a format that can be used be ASE simulations.
+    the material in a format that can be used in ASE simulations.
 
     Args:
         material_id (str): The material id must exist in the next-gen material
-            projects databaseand should be in the form 'mp-1234' but with
+            projects database and should be in the form 'mp-1234' but with
             another number.
 
     Returns:
