@@ -1,5 +1,9 @@
 import sys, unittest
 from firstunittest import *
+from calc_properties import calc_temp
+from ase.lattice.cubic import FaceCenteredCubic
+from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
+
 
 class UnitTests(unittest.TestCase):
     """Definitions of unittests.
@@ -22,6 +26,14 @@ class UnitTests(unittest.TestCase):
                         fib_num_5 == calculate_fibonacci_number(5) and
                         fib_num_12 == calculate_fibonacci_number(12))
         
+    def test_calc_temp(self):
+        atoms = FaceCenteredCubic(directions=[[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+                          symbol="Cu",
+                          size=(5, 5, 5),
+                          pbc=True)
+        MaxwellBoltzmannDistribution(atoms, temperature_K=300)
+        self.assertTrue(290 < calc_temp(atoms) < 310)
+
 
 if __name__ == "__main__":
     tests = [unittest.TestLoader().loadTestsFromTestCase(UnitTests)]
