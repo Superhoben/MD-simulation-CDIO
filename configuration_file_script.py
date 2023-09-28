@@ -16,7 +16,7 @@ def config_file():
     print("Welcome to MD simulation Software \nPlease provide the program with the parameters needed \n")
     config['User inputs - Ensembles'] = {'Ensemble': choose_ensemble()}
     config['User inputs - Material ID'] = {'Structure': material_id()}
-    config['User inputs - Simulation parameter'] = {'Temperature(K)': temperature_parameter(),
+    config['User inputs - Simulation parameter'] = {'Temperature': temperature_parameter(),
                                                     'StepsNumber': Steps_number(), 'Potential': potential()}
     # Write to our config file
     with open('config.ini', 'w') as config_file:
