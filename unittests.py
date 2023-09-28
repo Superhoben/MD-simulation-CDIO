@@ -1,8 +1,10 @@
 import sys, unittest
 from firstunittest import *
-from calc_properties import calc_temp
+from calc_properties import calc_temp, calc_pressure
 from ase.lattice.cubic import FaceCenteredCubic
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
+from gather_data import get_ASE_atoms_from_material_id
+from asap3 import EMT
 
 
 class UnitTests(unittest.TestCase):
@@ -22,7 +24,7 @@ class UnitTests(unittest.TestCase):
         fib_num_1 = 1
         fib_num_5 = 5
         fib_num_12 = 144
-        self.assertTrue(fib_num_1 == calculate_fibonacci_number(1) and 
+        self.assertTrue(fib_num_1 == calculate_fibonacci_number(1) and
                         fib_num_5 == calculate_fibonacci_number(5) and
                         fib_num_12 == calculate_fibonacci_number(12))
         
@@ -33,6 +35,14 @@ class UnitTests(unittest.TestCase):
                           pbc=True)
         MaxwellBoltzmannDistribution(atoms, temperature_K=300)
         self.assertTrue(290 < calc_temp(atoms) < 310)
+
+    # More test are needed for this function
+    def test_calc_pressure_no_field(self):
+        atoms = get_ASE_atoms_from_material_id('mp-30') # Get atoms object with atoms in optimal positions
+        atoms.calc = EMT() # If atoms are only, Ni, Cu, Pd, Ag, Pt or Au no input parameters are nessecary
+        # When atoms are still at optimal positions no pressure should occur, +-0.1 GPa tolerance is given
+        self.assertTrue(-0.1 < calc_pressure(atoms) < 0.1)
+        print(calc_pressure(atoms))
 
 
 if __name__ == "__main__":
