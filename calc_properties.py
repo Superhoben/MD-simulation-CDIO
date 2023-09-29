@@ -39,7 +39,8 @@ def calc_pressure(atoms: Atoms, external_field=None):
     ekin = atoms.get_kinetic_energy()  # in eV
 
     if external_field == None:
-        return (2*ekin+np.sum(np.multiply(forces, positions)))/(3*volume)
+        pressure_in_eV_per_Å3 = (2*ekin+np.sum(np.multiply(forces, positions)))/(3*volume)
+        return pressure_in_eV_per_Å3*160.21766208
     else:
         forces += external_field(atoms)
         # When having an external field point of origin needs to be centered
