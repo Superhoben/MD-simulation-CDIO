@@ -33,7 +33,7 @@ def temperature_parameter():
         (float): the input temperature
     """
     while True:
-        temperature = input("Choose the Simulation temperature?  (hint: interval between [0k - 10000k]) \n")
+        temperature = input("Choose the Simulation temperature in Kelvin?  (hint: interval between [0k - 10000k]) \n")
         try:
             temperature = float(temperature)
             if 0 <= temperature <= 10000:
