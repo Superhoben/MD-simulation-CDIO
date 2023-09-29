@@ -137,3 +137,6 @@ def load_data(gui):
     """
     gui.filename = filedialog.askopenfilename()
     print(gui.filename)
+
+if __name__ == "__main__":
+    initiate_gui()
