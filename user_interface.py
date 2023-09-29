@@ -2,6 +2,7 @@
 
 At the time of writing, all functionality is not implemented
 """
+
 from plot_in_gui import *
 from tkinter import *
 from tkinter import filedialog
@@ -136,7 +137,3 @@ def load_data(gui):
     """
     gui.filename = filedialog.askopenfilename()
     print(gui.filename)
-
-
-if __name__ == "__main__":
-    initiate_gui()
