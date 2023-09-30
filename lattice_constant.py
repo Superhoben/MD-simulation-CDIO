@@ -41,6 +41,59 @@ def optimize_lattice_const(atoms):
     return best_lattice_const_scaling
 
 
+def example_simulation_function(atoms):
+    """An example of a function which evolves an atoms object which can
+    be used by the optimize_lattice_const_gradient_descent function.
+
+    Args:
+        atoms(ASE atoms object): The intial configuraion to evolve
+
+    Returns:
+        atoms(ASE atoms object): The final evolved version
+    """
+    atoms.calc = EMT()
+    dyn = VelocityVerlet(atoms, 5 * units.fs)
+    dyn.run(100)
+    return atoms
+
+
+def optimize_lattice_const_gradient_descent(atoms, learning_rate, simulation_function):
+    """Finds the optimal sclang of the lattice constant using the gradient descent method
+    such that a new scaling s_(k+1) is calculated with using the change in energy e as 
+    s_(k+1) = s_(k) - lambda*(e_(k) - e_(k-1))/(s_(k) - s_(k-1)) where lambda is the
+    learning rate. We currently don't know which learning rate is optimal.
+    The energy at a certian scaling is calculated by using the simulation_function.
+
+    Args:
+        atoms(ASE atoms object): The configuration to find an optimal lattice constant for
+        learning_rate (_type_): The scaling converges quicker for larger values but if
+             it's too large the scaling will oscillate and not converge at all
+        simulation_function(function[atoms_object]->atoms_object): A function which take an
+            atoms obejct, evolves this object throughout time and return the atoms object
+
+
+    Returns:
+        scaling(float): Return the scaling factor which would give the inputed atoms object
+            the lowest possible energy 
+        energy(float): Also return the energy for the scaled atoms object
+        number_of_iterations(int): Shows how many iterations it took for the energy to converge
+    """
+    old_energy = simulation_function(atoms)
+    old_scaling = 1
+    scaling = 1.1
+    e_scaling_gradient = 0
+    number_of_iterations = 0
+    while (e_scaling_gradient < 0.01) or (number_of_iterations < 3):
+        atoms_scaled = atoms.copy()
+        atoms_scaled.cell = atoms.cell*scaling
+        energy = simulation_function(atoms_scaled).get_energy()
+        e_scaling_gradient = (energy-old_energy)/(scaling-old_scaling)
+        scaling = scaling - learning_rate*e_scaling_gradient
+        old_energy = energy
+        number_of_iterations += 1
+    return scaling, old_energy, number_of_iterations
+
+
 if __name__ == "__main__":
     optimize_lattice_const(FaceCenteredCubic(directions=[[1, 0, 0], [0, 1, 0], [1, 1, 1]],
                                              size=(2, 2, 3), symbol='Cu', pbc=(1, 1, 0)))
