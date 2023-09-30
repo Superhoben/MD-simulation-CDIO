@@ -5,7 +5,7 @@ from ase.lattice.cubic import FaceCenteredCubic
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from gather_data import get_ASE_atoms_from_material_id
 from asap3 import EMT
-from lattice_constant import optimize_lattice_const
+from lattice_constant import optimize_lattice_const, example_simulation_function, optimize_lattice_const_gradient_descent
 
 
 class UnitTests(unittest.TestCase):
@@ -48,8 +48,14 @@ class UnitTests(unittest.TestCase):
             )
         self.assertTrue(0.95<lattice_const<1.05)
     
-    def test_lattice_constant_gradient_descent():
-        """To be implemented"""
+    def test_lattice_constant_gradient_descent(self):
+        """Uses a material with known lattice constant, disorts it and see if the lattice method is able
+        to find the original lattice constant which also should be the optimal one."""
+        atoms = get_ASE_atoms_from_material_id('mp-30')  # Get atoms object with atoms in optimal positions
+        atoms.cell = atoms.cell*0.9  # Rescale unit cell so atoms are now in suboptimal positions
+        scaling, _, _ = optimize_lattice_const_gradient_descent(atoms, 0.1, example_simulation_function)
+        self.assertTrue(0.99 < scaling*0.9 < 1.01)
+        print(calc_pressure(atoms))
         pass
 
     # More test are needed for this function

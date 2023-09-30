@@ -2,6 +2,7 @@ from ase.lattice.cubic import FaceCenteredCubic
 from ase.md.verlet import VelocityVerlet
 from ase import units
 from asap3 import EMT
+from ase import Atoms
 
 
 def optimize_lattice_const(atoms):
@@ -59,10 +60,14 @@ def example_simulation_function(atoms):
 
 def optimize_lattice_const_gradient_descent(atoms, learning_rate, simulation_function):
     """Finds the optimal sclang of the lattice constant using the gradient descent method
-    such that a new scaling s_(k+1) is calculated with using the change in energy e as 
-    s_(k+1) = s_(k) - lambda*(e_(k) - e_(k-1))/(s_(k) - s_(k-1)) where lambda is the
-    learning rate. We currently don't know which learning rate is optimal.
-    The energy at a certian scaling is calculated by using the simulation_function.
+    modified by a sigmoid function since energy changes can become very extrem as some
+    potential depend on the -12th power of the distance so starting with half the correct
+    distance can result in approximately 4000 times the energy which would make a normal
+    gradient search go crazy even with a reasonable learning rate. The new scaling s_(k+1) 
+    is calculated with using the change in energy, e, as:
+    e_gradient = (e_(k) - e_(k-1)) / (s_(k) - s_(k-1))
+    s_(k+1) = s_(k) - learning_rate*sigmoid(e_gradient) 
+    The energy at a certain scaling is calculated by using the simulation_function.
 
     Args:
         atoms(ASE atoms object): The configuration to find an optimal lattice constant for
@@ -78,7 +83,7 @@ def optimize_lattice_const_gradient_descent(atoms, learning_rate, simulation_fun
         energy(float): Also return the energy for the scaled atoms object
         number_of_iterations(int): Shows how many iterations it took for the energy to converge
     """
-    old_energy = simulation_function(atoms)
+    old_energy_per_atom = simulation_function(atoms)
     old_scaling = 1
     scaling = 1.1
     e_scaling_gradient = 0
@@ -86,12 +91,12 @@ def optimize_lattice_const_gradient_descent(atoms, learning_rate, simulation_fun
     while (e_scaling_gradient < 0.01) or (number_of_iterations < 3):
         atoms_scaled = atoms.copy()
         atoms_scaled.cell = atoms.cell*scaling
-        energy = simulation_function(atoms_scaled).get_energy()
-        e_scaling_gradient = (energy-old_energy)/(scaling-old_scaling)
-        scaling = scaling - learning_rate*e_scaling_gradient
-        old_energy = energy
+        energy_per_atom = simulation_function(atoms_scaled).get_total_energy()/len(atoms)
+        e_scaling_gradient = (energy_per_atom-old_energy_per_atom)/(scaling-old_scaling)
+        scaling = scaling - learning_rate*e_scaling_gradient/(1+abs(e_scaling_gradient))
+        old_energy_per_atom = energy_per_atom
         number_of_iterations += 1
-    return scaling, old_energy, number_of_iterations
+    return scaling, energy_per_atom, number_of_iterations
 
 
 if __name__ == "__main__":
