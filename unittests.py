@@ -44,9 +44,13 @@ class UnitTests(unittest.TestCase):
                size=(2, 2, 3),
                symbol="Cu",
                pbc=(1, 1, 0),
-                 )
+                )
             )
         self.assertTrue(0.95<lattice_const<1.05)
+    
+    def test_lattice_constant_gradient_descent():
+        """To be implemented"""
+        pass
 
     # More test are needed for this function
     def test_calc_pressure_no_field(self):
