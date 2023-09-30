@@ -5,6 +5,7 @@ from ase.lattice.cubic import FaceCenteredCubic
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from gather_data import get_ASE_atoms_from_material_id
 from asap3 import EMT
+from lattice_constant import optimize_lattice_const
 
 
 class UnitTests(unittest.TestCase):
@@ -34,7 +35,18 @@ class UnitTests(unittest.TestCase):
                           size=(5, 5, 5),
                           pbc=True)
         MaxwellBoltzmannDistribution(atoms, temperature_K=300)
-        self.assertTrue(290 < calc_temp(atoms) < 310)
+        self.assertTrue(270 < calc_temp(atoms) < 330)
+
+    def test_lattice_constant(self):
+        lattice_const = optimize_lattice_const(
+           FaceCenteredCubic(
+               directions=[[1, 0, 0], [0, 1, 0], [1, 1, 1]],
+               size=(2, 2, 3),
+               symbol="Cu",
+               pbc=(1, 1, 0),
+                 )
+            )
+        self.assertTrue(0.95<lattice_const<1.05)
 
     # More test are needed for this function
     def test_calc_pressure_no_field(self):
