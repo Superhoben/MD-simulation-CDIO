@@ -34,7 +34,7 @@ def create_traj_file(atoms: Atoms, lattice_constant: float):
 def calc_bulk_modulus(traj_file):
     """Calculate the equilibrium bulk modulus B for solids using the equation of state.
 
-    it is directly connnected to the second derivative given by the equation
+    It is directly connnected to the second derivative given by the equation
     B = V * (d^2E/dV^2), bulk modulus (incompressibility constant) is a measure of
     substance's resistance to changes in volume when subject to compressive force from
     all directions.
