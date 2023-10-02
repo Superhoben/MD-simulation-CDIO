@@ -55,8 +55,6 @@ class UnitTests(unittest.TestCase):
         atoms.cell = atoms.cell*0.9  # Rescale unit cell so atoms are now in suboptimal positions
         scaling, _, _ = optimize_lattice_const_gradient_descent(atoms, 0.1, example_simulation_function)
         self.assertTrue(0.99 < scaling*0.9 < 1.01)
-        print(calc_pressure(atoms))
-        pass
 
     # More test are needed for this function
     def test_calc_pressure_no_field(self):

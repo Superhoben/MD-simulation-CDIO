@@ -42,7 +42,7 @@ def optimize_lattice_const(atoms):
     return best_lattice_const_scaling
 
 
-def example_simulation_function(atoms):
+def example_simulation_function(atoms: Atoms):
     """An example of a function which evolves an atoms object which can
     be used by the optimize_lattice_const_gradient_descent function.
 
@@ -71,7 +71,7 @@ def optimize_lattice_const_gradient_descent(atoms, learning_rate, simulation_fun
 
     Args:
         atoms(ASE atoms object): The configuration to find an optimal lattice constant for
-        learning_rate (_type_): The scaling converges quicker for larger values but if
+        learning_rate(float): The scaling converges quicker for larger values but if
              it's too large the scaling will oscillate and not converge at all
         simulation_function(function[atoms_object]->atoms_object): A function which take an
             atoms obejct, evolves this object throughout time and return the atoms object
@@ -83,11 +83,14 @@ def optimize_lattice_const_gradient_descent(atoms, learning_rate, simulation_fun
         energy(float): Also return the energy for the scaled atoms object
         number_of_iterations(int): Shows how many iterations it took for the energy to converge
     """
-    old_energy_per_atom = simulation_function(atoms)
+    old_energy_per_atom = simulation_function(atoms).get_total_energy()/len(atoms)
     old_scaling = 1
-    scaling = 1.1
+    scaling = 1.01
     e_scaling_gradient = 0
     number_of_iterations = 0
+    # Improve the lattice constant performing gradient descent until the gradient becomes
+    # sufficiently small. At least 3 iteration will be performed even if the gradient 
+    # start small.
     while (e_scaling_gradient < 0.01) or (number_of_iterations < 3):
         atoms_scaled = atoms.copy()
         atoms_scaled.cell = atoms.cell*scaling
