@@ -8,13 +8,14 @@ from tkinter import *
 from tkinter import filedialog
 from ase.build import molecule
 from ase.visualize import view
+import sys
 
 
 def initiate_gui():
     """Create a GUI and defines funtcionality.
 
     The gui consists of two main windows. The left one is data inputs aswell
-    as starting simulation while the right one is graphic visulisations.
+    as starting the simulation while the right one is graphic visualisations.
     """
     # Define Tkinter window
     gui = Tk()
@@ -22,14 +23,14 @@ def initiate_gui():
     gui.geometry("1200x800")
 
     # Define the 2 different main sections of the gui.
-    data_frame = Frame(gui, background="red")
+    data_frame = Frame(gui, background="medium aquamarine")
     data_frame.pack_propagate(False)
     data_frame.grid_propagate(False)
     data_frame.pack(padx=10, pady=10, side=LEFT, expand=True, fill=BOTH)
     data_frame.columnconfigure(0, weight=2)
     data_frame.columnconfigure(1, weight=1)
 
-    plot_frame = Frame(gui, background="green")
+    plot_frame = Frame(gui, background="light blue")
     plot_frame.pack_propagate(False)
     plot_frame.grid_propagate(False)
     plot_frame.pack(padx=10, pady=10, side=RIGHT, expand=True, fill=BOTH)
@@ -61,7 +62,7 @@ def initiate_gui():
     ensamble_label.grid(row=1, column=0)
 
     ensamble_list = ["NVE (Microcanonical)", "NVT (Canonical)",
-                     "mjuVT (Grand canonical), List goes on"]
+                     "muVT (Grand canonical)", "NpT (Isothermal-Isobaric)"]
 
     value_inside_ensemble_list = StringVar(gui)
     value_inside_ensemble_list.set("Select an Option")
