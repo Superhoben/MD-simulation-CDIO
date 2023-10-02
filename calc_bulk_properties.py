@@ -31,7 +31,7 @@ def create_traj_file(atoms: Atoms, lattice_constant: float):
         traj.write(atoms)
 
 
-def calc_bulk_modulus(configs):
+def calc_bulk_modulus(traj_file):
     """Calculate the equilibrium bulk modulus B for solids using the equation of state.
 
     it is directly connnected to the second derivative given by the equation
@@ -41,16 +41,16 @@ def calc_bulk_modulus(configs):
 
     Args:
         atoms(ase atom object): the system to calculate the bulk modulus for
-        configs: list of configuration files which provide us with volumes and potential energies
+        traj_file: list of configuration files which provide us with volumes and potential energies
 
     Returns:
         (float): the optimal bulk modulus in eV/Ångstrom^3
     """
-    configs = read(configs)
+    traj_file = read(traj_file)
     # Extract volumes and energies
     volumes = []
     energies = []
-    for element in configs:
+    for element in traj_file:
         volume = element.get_volume()   # in Å^3
         volumes.append(volume)
         energy = element.get_potential_energy()  # in eV
