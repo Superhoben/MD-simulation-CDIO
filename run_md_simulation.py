@@ -33,7 +33,9 @@ def run_md_simulation(config):
     elif config_data.potential == 'LennardJones':
         atoms.calc = LennardJones()
     elif config_data.potential == 'other_potential':
-        atoms.calc = OtherPotential()
+        # TODO: implement running with other potentials, e.g.,:
+        # atoms.calc = OtherPotential()
+        raise Exception("Running calculations with 'other_potential' is not implemented yet.")
 
     # Call appropriate function depending on simulation type
     if config_data.simulation_type == 'NVE':
