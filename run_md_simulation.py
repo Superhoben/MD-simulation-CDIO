@@ -80,7 +80,9 @@ def show_properties(atoms, config_data):
         atoms(ase atoms object): The ase atoms object to simulate.
         config_data(dict): Dictionary of parameters for simulation.
     """
-    print_in_gui(calc_temp())
+    # TODO: implement print_in_gui and calc_temp:
+    # print_in_gui(calc_temp())
+    raise Exception("run_md_simulation.py: print_in_gui and calc_temp not implemented yet.")
     return
 
 
@@ -96,8 +98,9 @@ def parse_config(config):
     Returns:
         config_data(dict): Dictionary of parameters for simulation.
     """
-    return config_data
-
+    # TODO: implement parse_config to actually parse config data
+    # return config_data
+    raise Exception("run_md_simulation.py: parse_config not implemented yet.")
 
 def create_atoms_object(config_data):
     """Create atoms object from the config data.
@@ -110,4 +113,6 @@ def create_atoms_object(config_data):
     Returns:
         atoms(ase atoms object): The ase atoms object to simulate.
     """
-    return atoms
+    # TODO: implement parse_config to actually parse config data
+    # return atoms    
+    raise Exception("run_md_simulation.py: create_atoms_object not implemented yet.")
