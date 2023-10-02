@@ -1,4 +1,7 @@
-"""Import the needed libraries."""
+"""The file will create the trajectory file with different configuration.
+
+It also will read from the created trajectory file and calculate the wishes properties.
+"""
 from ase import Atoms
 from ase.io.trajectory import Trajectory
 from ase.calculators.emt import EMT
