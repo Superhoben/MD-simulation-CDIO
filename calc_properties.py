@@ -17,10 +17,11 @@ def calc_temp(atoms):
 
 
 def calc_pressure(atoms: Atoms, external_field=None):
-    """Calculate pressure of atoms object based according to the formula
-    P=1/3V*(2*E_kin(t)+sum_over_all_atoms{r_i*f_i}) where r_i and f_i is
-    the position of and force on atom i and V referes to the volume of the
-    unitcell.
+    """Calculate pressure of atoms object with or without an external field.
+
+    The formula used is P=1/3V*(2*E_kin(t)+sum_over_all_atoms{r_i*f_i}) where
+    r_i and f_i is the position of and force on atom i and V referes to the
+    volume of the unitcell.
 
     Args:
         atoms(ase atom object): the system to calculate the pressure for

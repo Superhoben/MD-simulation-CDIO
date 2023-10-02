@@ -9,7 +9,7 @@ def optimize_lattice_const(atoms):
     """ Finds optimal scaling factor for the lattice constant given in the atoms object,
         only searches through +-5% range with a 0.002% resolution.
 
-        Args: 
+        Args:
             atoms(ase atoms object): The configuration to find an optimal lattice constant for
 
         Returns: 
@@ -59,14 +59,15 @@ def example_simulation_function(atoms: Atoms):
 
 
 def optimize_lattice_const_gradient_descent(atoms, learning_rate, simulation_function):
-    """Finds the optimal sclang of the lattice constant using the gradient descent method
-    modified by a sigmoid function since energy changes can become very extrem as some
-    potential depend on the -12th power of the distance so starting with half the correct
-    distance can result in approximately 4000 times the energy which would make a normal
-    gradient search go crazy even with a reasonable learning rate. The new scaling s_(k+1) 
-    is calculated with using the change in energy, e, as:
+    """Find the optimal scaling of the lattice constant using a gradient descent method.
+
+    The gradient descent method is modified by a sigmoid function since energy changes
+    can become very extreme as some potential depend on the -12th power of the distance
+    so starting with half the correct distance can result in approximately 4000 times the
+    energy which would make a normal gradient search go crazy even with a reasonable
+    learning rate. The new scaling s_(k+1) is calculated as:
     e_gradient = (e_(k) - e_(k-1)) / (s_(k) - s_(k-1))
-    s_(k+1) = s_(k) - learning_rate*sigmoid(e_gradient) 
+    s_(k+1) = s_(k) - learning_rate*sigmoid(e_gradient)
     The energy at a certain scaling is calculated by using the simulation_function.
 
     Args:
@@ -79,7 +80,7 @@ def optimize_lattice_const_gradient_descent(atoms, learning_rate, simulation_fun
 
     Returns:
         scaling(float): Return the scaling factor which would give the inputed atoms object
-            the lowest possible energy 
+            the lowest possible energy
         energy(float): Also return the energy for the scaled atoms object
         number_of_iterations(int): Shows how many iterations it took for the energy to converge
     """
@@ -89,7 +90,7 @@ def optimize_lattice_const_gradient_descent(atoms, learning_rate, simulation_fun
     e_scaling_gradient = 0
     number_of_iterations = 0
     # Improve the lattice constant performing gradient descent until the gradient becomes
-    # sufficiently small. At least 3 iteration will be performed even if the gradient 
+    # sufficiently small. At least 3 iteration will be performed even if the gradient
     # start small.
     while (e_scaling_gradient < 0.01) or (number_of_iterations < 3):
         atoms_scaled = atoms.copy()
