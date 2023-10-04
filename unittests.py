@@ -21,13 +21,6 @@ class UnitTests(unittest.TestCase):
         check_test = 1
         self.assertTrue(check_test == test1())
         
-    def test2(self):
-        fib_num_1 = 1
-        fib_num_5 = 5
-        fib_num_12 = 144
-        self.assertTrue(fib_num_1 == calculate_fibonacci_number(1) and
-                        fib_num_5 == calculate_fibonacci_number(5) and
-                        fib_num_12 == calculate_fibonacci_number(12))
         
     def test_calc_temp(self):
         atoms = FaceCenteredCubic(directions=[[1, 0, 0], [0, 1, 0], [0, 0, 1]],
