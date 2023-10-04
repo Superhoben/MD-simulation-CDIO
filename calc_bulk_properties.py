@@ -25,7 +25,7 @@ def create_traj_file(atoms: Atoms, lattice_constant: float):
     cell = atoms.get_cell()
     traj = Trajectory("atoms.traj", "w")   # Creating the traj. file
     # Create for example only 10 differnet configuration for different lattice constant
-    for element in np.linspace(0.95, 1.05, 10):
+    for element in np.linspace(0.999, 1.001, 10):
         atoms.set_cell(cell * element, scale_atoms=True)
         atoms.get_potential_energy()
         traj.write(atoms)
