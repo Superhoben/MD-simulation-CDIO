@@ -59,5 +59,5 @@ def calc_bulk_modulus(traj_file):
     eos = EquationOfState(volumes, energies)
     v0, e0, B = eos.fit()
     B = B / kJ * 1.0e24
-    #print(B, "GPa")
+    # print(B, "GPa")
     return B
