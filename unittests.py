@@ -6,6 +6,8 @@ from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from gather_data import get_ASE_atoms_from_material_id
 from asap3 import EMT
 from lattice_constant import optimize_lattice_const, example_simulation_function, optimize_lattice_const_gradient_descent
+from calc_bulk_properties import create_traj_file, calc_bulk_modulus
+from ase import Atoms
 
 
 class UnitTests(unittest.TestCase):
@@ -56,6 +58,22 @@ class UnitTests(unittest.TestCase):
         atoms.calc = EMT()  # If atoms are only, Ni, Cu, Pd, Ag, Pt or Au no input parameters are nessecary
         # When atoms are still at optimal positions no pressure should occur, +-0.1 GPa tolerance is given
         self.assertTrue((-0.1 < calc_pressure(atoms)) and (calc_pressure(atoms) < 0.1))
+
+
+    def test_bulk_modulus(self):
+        #lattice_constant = 4
+        atoms = Atoms('Ag',
+                    cell=[(0, 2, 2),
+                          (2, 0, 2),
+                          (2, 2, 0)],
+                    pbc=1,
+                    calculator=EMT())
+        create_traj_file(atoms,lattice_constant = 4)
+        # Read the traj file from the first atom to the 10th atom
+        calc_bulk_modulus("atoms.traj@0:9")
+        # From an online website https://www.azom.com/properties.aspx?ArticleID=600
+        # we have the bulk modulus for Ag to be between (Minimum Value,Maximum Value)= (84,118)GPa
+        self.assertTrue((84 < calc_bulk_modulus("atoms.traj@0:9")) and (calc_bulk_modulus("atoms.traj@0:9") < 118))
 
 
 if __name__ == "__main__":
