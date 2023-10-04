@@ -97,9 +97,9 @@ def optimize_lattice_const_gradient_descent(atoms, simulation_function, learning
         e_scaling_gradient = (energy_per_atom-old_energy_per_atom)/(scaling-old_scaling)
         old_scaling = scaling
         scaling = old_scaling - learning_rate*e_scaling_gradient/(2+abs(e_scaling_gradient))
-        print("Scaling gradient: ", e_scaling_gradient)
-        print("Energy per atom: ", energy_per_atom)
-        print("New scaling: ", scaling)
+#        print("Scaling gradient: ", e_scaling_gradient)
+#        print("Energy per atom: ", energy_per_atom)
+#        print("New scaling: ", scaling)
         old_energy_per_atom = energy_per_atom
         number_of_iterations += 1
     return scaling, energy_per_atom, number_of_iterations
