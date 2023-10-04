@@ -61,18 +61,3 @@ def calc_bulk_modulus(traj_file):
     B = B / kJ * 1.0e24
     #print(B, "GPa")
     return B
-
-
-if __name__ == "__main__":
-    # Testing the code
-    lattice_constant = 4
-    approximate_pos = lattice_constant/2
-    atoms = Atoms('Ni',
-                  cell=[(0, approximate_pos, approximate_pos),
-                        (approximate_pos, 0, approximate_pos),
-                        (approximate_pos, approximate_pos, 0)],
-                  pbc=1,
-                  calculator=EMT())
-    create_traj_file(atoms, lattice_constant)
-    # Read the traj file from the first atom to the 10th atom
-    calc_bulk_modulus("atoms.traj@0:9")
