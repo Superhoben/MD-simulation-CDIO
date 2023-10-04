@@ -5,7 +5,7 @@ from ase.lattice.cubic import FaceCenteredCubic
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from gather_data import get_ASE_atoms_from_material_id
 from asap3 import EMT
-from lattice_constant import optimize_lattice_const
+from lattice_constant import optimize_lattice_const, example_simulation_function, optimize_lattice_const_gradient_descent
 
 
 class UnitTests(unittest.TestCase):
@@ -37,17 +37,25 @@ class UnitTests(unittest.TestCase):
                size=(2, 2, 3),
                symbol="Cu",
                pbc=(1, 1, 0),
-                 )
+                )
             )
-        self.assertTrue(0.95<lattice_const<1.05)
+        self.assertTrue((0.95 < lattice_const) and (lattice_const < 1.05))
+    
+    def test_lattice_constant_gradient_descent(self):
+        """Uses a material with known lattice constant, disorts it and see if the lattice method is able
+        to find the original lattice constant which also should be the optimal one."""
+        atoms = get_ASE_atoms_from_material_id('mp-30')  # Get atoms object with atoms in optimal positions
+        atoms.set_cell(atoms.cell*0.5, scale_atoms=True)  # Rescale unit cell so atoms are now in suboptimal positions
+        scaling, _, _ = optimize_lattice_const_gradient_descent(atoms, example_simulation_function)
+        print(scaling)
+        self.assertTrue((0.98 < scaling*0.5) and (scaling*0.5 < 1.02))
 
     # More test are needed for this function
     def test_calc_pressure_no_field(self):
-        atoms = get_ASE_atoms_from_material_id('mp-30') # Get atoms object with atoms in optimal positions
-        atoms.calc = EMT() # If atoms are only, Ni, Cu, Pd, Ag, Pt or Au no input parameters are nessecary
+        atoms = get_ASE_atoms_from_material_id('mp-30')  # Get atoms object with atoms in optimal positions
+        atoms.calc = EMT()  # If atoms are only, Ni, Cu, Pd, Ag, Pt or Au no input parameters are nessecary
         # When atoms are still at optimal positions no pressure should occur, +-0.1 GPa tolerance is given
-        self.assertTrue(-0.1 < calc_pressure(atoms) < 0.1)
-        print(calc_pressure(atoms))
+        self.assertTrue((-0.1 < calc_pressure(atoms)) and (calc_pressure(atoms) < 0.1))
 
 
 if __name__ == "__main__":
