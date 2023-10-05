@@ -7,7 +7,6 @@ from gather_data import get_ASE_atoms_from_material_id
 from asap3 import EMT
 from lattice_constant import optimize_lattice_const, example_simulation_function, optimize_lattice_const_gradient_descent
 from calc_bulk_properties import create_traj_file, calc_bulk_modulus
-from ase import Atoms
 
 
 class UnitTests(unittest.TestCase):
