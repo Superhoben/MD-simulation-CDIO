@@ -67,9 +67,9 @@ class UnitTests(unittest.TestCase):
         create_traj_file(atoms,lattice_constant = 4)
         # Read the traj file from the first atom to the 10th atom
         calc_bulk_modulus("atoms.traj@0:9")
-        # From an online website https://www.azom.com/properties.aspx?ArticleID=600
-        # we have the bulk modulus for Ag to be between (Minimum Value,Maximum Value)= (84,118)GPa
-        self.assertTrue((84 < calc_bulk_modulus("atoms.traj@0:9")) and (calc_bulk_modulus("atoms.traj@0:9") < 118))
+        # From material website https://next-gen.materialsproject.org/materials/mp-124?chemsys=Ag#elastic_constants
+        # we have the bulk modulus for Ag to be 88 GPa
+        self.assertTrue((86 < calc_bulk_modulus("atoms.traj@0:9")) and (calc_bulk_modulus("atoms.traj@0:9") < 90))
 
 
 if __name__ == "__main__":
