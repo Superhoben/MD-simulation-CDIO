@@ -62,12 +62,9 @@ class UnitTests(unittest.TestCase):
 
     def test_bulk_modulus(self):
         #lattice_constant = 4
-        atoms = Atoms('Ag',
-                    cell=[(0, 2, 2),
-                          (2, 0, 2),
-                          (2, 2, 0)],
-                    pbc=1,
-                    calculator=EMT())
+        # choosing more specific silver to test the bulk modulus
+        atoms = get_ASE_atoms_from_material_id('mp-124')
+        atoms.calc = EMT()
         create_traj_file(atoms,lattice_constant = 4)
         # Read the traj file from the first atom to the 10th atom
         calc_bulk_modulus("atoms.traj@0:9")
