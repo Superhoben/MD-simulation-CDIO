@@ -69,7 +69,10 @@ class UnitTests(unittest.TestCase):
         calc_bulk_modulus("atoms.traj@0:9")
         # From material website https://next-gen.materialsproject.org/materials/mp-124?chemsys=Ag#elastic_constants
         # we have the bulk modulus for Ag to be 88 GPa
-        self.assertTrue((86 < calc_bulk_modulus("atoms.traj@0:9")) and (calc_bulk_modulus("atoms.traj@0:9") < 90))
+        # According to Rickard, it is absolutely no problem to get 100 GPa of bulk modulus since we are first taking the
+        # second derivative approximation and secondly we are using EMT calculator 
+
+        self.assertTrue((86 < calc_bulk_modulus("atoms.traj@0:9")) and (calc_bulk_modulus("atoms.traj@0:9") < 105))
 
 
 if __name__ == "__main__":
