@@ -4,9 +4,12 @@ from calc_properties import calc_temp, calc_pressure
 from ase.lattice.cubic import FaceCenteredCubic
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from gather_data import get_ASE_atoms_from_material_id
-from asap3 import EMT
+#from asap3 import EMT
+from ase.calculators.emt import EMT
 from lattice_constant import optimize_lattice_const, example_simulation_function, optimize_lattice_const_gradient_descent
-from calc_bulk_properties import create_traj_file, calc_bulk_modulus
+from calc_bulk_properties import create_traj_file, calc_bulk_modulus, calculate_cohesive_energy
+from ase.build import bulk
+from ase import Atoms
 
 
 class UnitTests(unittest.TestCase):
@@ -48,7 +51,7 @@ class UnitTests(unittest.TestCase):
         atoms = get_ASE_atoms_from_material_id('mp-30')  # Get atoms object with atoms in optimal positions
         atoms.set_cell(atoms.cell*0.5, scale_atoms=True)  # Rescale unit cell so atoms are now in suboptimal positions
         scaling, _, _ = optimize_lattice_const_gradient_descent(atoms, example_simulation_function)
-        print(scaling)
+        #print(scaling)
         self.assertTrue((0.98 < scaling*0.5) and (scaling*0.5 < 1.02))
 
     # More test are needed for this function
@@ -64,6 +67,11 @@ class UnitTests(unittest.TestCase):
         # choosing more specific silver to test the bulk modulus
         atoms = get_ASE_atoms_from_material_id('mp-124')
         atoms.calc = EMT()
+
+        # Another way to create our object "bulk" this time
+        #ag_bulk = bulk(name= "Ag",crystalstructure= "fcc", a=4.09)
+        #ag_bulk.calc = EMT
+
         create_traj_file(atoms,lattice_constant = 4)
         # Read the traj file from the first atom to the 10th atom
         calc_bulk_modulus("atoms.traj@0:9")
@@ -73,6 +81,22 @@ class UnitTests(unittest.TestCase):
         # second derivative approximation and secondly we are using EMT calculator 
 
         self.assertTrue((86 < calc_bulk_modulus("atoms.traj@0:9")) and (calc_bulk_modulus("atoms.traj@0:9") < 105))
+
+
+    def test_cohesive_energy(self):
+        # Create an isolated Ag atom object
+        atom_structure = Atoms("Ag", positions=[(0, 0, 0)])
+        atom_structure.calc = EMT()
+        # Create Ag bulk crystal structure
+        bulk_structure = bulk(name="Ag", crystalstructure="fcc", a = 4.09)
+        bulk_structure.calc = EMT()
+        # From Charles Kittle book "Introduction to Solid State Physics" page 50
+        # you can find every single cohesive energy per atom for each elements in eV/atom
+        expected_cohesive_energy_range = (-3.0, -2.8)
+        cohesive_energy = calculate_cohesive_energy(atom_structure, bulk_structure)
+        self.assertTrue(expected_cohesive_energy_range[0] <= cohesive_energy <= expected_cohesive_energy_range[1])
+        # Another way to test stuff (1 line of code)
+        #self.assertTrue((-3 < calculate_cohesive_energy(atom_structure,bulk_structure)) and (calculate_cohesive_energy(atom_structure,bulk_structure) < -2.8))
 
 
 if __name__ == "__main__":
