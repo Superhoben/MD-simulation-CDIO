@@ -10,12 +10,6 @@ from ase.build import molecule
 from ase.visualize import view
 from run_md_simulation import run_md_simulation
 from pathlib import Path
-import os
-
-if ('DISPLAY' in os.environ) or (os.environ['DISPLAY']==''):
-    gui=False
-else:
-    gui=True
 
 
 def initiate_gui():
