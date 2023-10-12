@@ -4,22 +4,26 @@ from configparser import ConfigParser
 config = ConfigParser()
 
 
-def config_file():
+def config_file(ensemble, materialID, temperature, stepsnumber, potential):
     """Create the configuration file.
 
     Args:
-        None
+        ensemble(string): the ensemble used in the simulation
+        materialID(string): specifies which structure is used
+        temperature(string): the temperature of the simulation
+        stepsnumber(string): the number of steps used in the simulation
+        potential(string): the type of potential that is used
 
     Returns:
         None
     """
-    print("Welcome to MD simulation Software \nPlease provide the program with the parameters needed \n")
-    config['User inputs - Ensembles'] = {'Ensemble': choose_ensemble()}
-    config['User inputs - Material ID'] = {'Structure': material_id()}
-    config['User inputs - Simulation parameter'] = {'Temperature': temperature_parameter(),
-                                                    'StepsNumber': Steps_number(), 'Potential': potential()}
+
+    config['User inputs - Ensembles'] = {'Ensemble': ensemble}
+    config['User inputs - Material ID'] = {'Structure': materialID}
+    config['User inputs - Simulation parameter'] = {'Temperature': temperature,
+                                                    'StepsNumber': stepsnumber, 'Potential': potential}
     # Write to our config file
-    with open('config.ini', 'w') as config_file:
+    with open('config1.ini', 'w') as config_file:
         config.write(config_file)
 
 
