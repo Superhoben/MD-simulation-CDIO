@@ -1,5 +1,6 @@
 import sys, unittest
 from firstunittest import *
+from tkinter import Tk
 from calc_properties import calc_temp, calc_pressure
 from ase.lattice.cubic import FaceCenteredCubic
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
@@ -7,7 +8,7 @@ from gather_data import get_ASE_atoms_from_material_id
 from asap3 import EMT
 from lattice_constant import optimize_lattice_const, example_simulation_function, optimize_lattice_const_gradient_descent
 from calc_bulk_properties import create_traj_file, calc_bulk_modulus
-
+from user_interface import initiate_gui
 
 class UnitTests(unittest.TestCase):
     """Definitions of unittests.
@@ -74,7 +75,14 @@ class UnitTests(unittest.TestCase):
 
         self.assertTrue((86 < calc_bulk_modulus("atoms.traj@0:9")) and (calc_bulk_modulus("atoms.traj@0:9") < 105))
 
+    def test_GUI(self):
+        #There will be further testing when other methods connected to the gui has been developed.
+        gui = initiate_gui()
 
+        self.assertTrue(type(gui) == Tk)
+
+
+    
 if __name__ == "__main__":
     tests = [unittest.TestLoader().loadTestsFromTestCase(UnitTests)]
     testsuite = unittest.TestSuite(tests)

@@ -8,7 +8,10 @@ from tkinter import *
 from tkinter import filedialog
 from ase.build import molecule
 from ase.visualize import view
+from run_md_simulation import run_md_simulation
+from pathlib import Path
 import sys
+
 
 
 def initiate_gui():
@@ -94,12 +97,17 @@ def initiate_gui():
                            temperature_entry, steps_entry))
     config_button.grid(row=5, column=0, pady=10)
 
+
+    md_sim_button = Button(data_frame, text='Start Simulation',
+                            command=lambda: run_md_simulation("filepath to config ini"))
+    md_sim_button.grid(row=5, column=1)
+
     quit_button = Button(data_frame, text="Exit Program", command=gui.quit)
     quit_button.grid(pady=500)
 
-    # Runs gui window
-    gui.mainloop()
+    return gui
 
+    
 
 def write_to_config(potential, ensamble, materialID, temperature, steps):
     """Write user input data to config file.
@@ -139,5 +147,8 @@ def load_data(gui):
     gui.filename = filedialog.askopenfilename()
     print(gui.filename)
 
+
 if __name__ == "__main__":
-    initiate_gui()
+    main_program = initiate_gui()
+    main_program.mainloop()
+    
