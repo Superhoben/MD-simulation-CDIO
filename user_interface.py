@@ -12,7 +12,10 @@ from run_md_simulation import run_md_simulation
 from pathlib import Path
 import os
 
-os.environ.__setitem__('DISPLAY', ':0.0')
+if ('DISPLAY' in os.environ) or (os.environ['DISPLAY']==''):
+    gui=False
+else:
+    gui=True
 
 
 def initiate_gui():
