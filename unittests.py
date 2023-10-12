@@ -9,6 +9,8 @@ from asap3 import EMT
 from lattice_constant import optimize_lattice_const, example_simulation_function, optimize_lattice_const_gradient_descent
 from calc_bulk_properties import create_traj_file, calc_bulk_modulus
 from user_interface import initiate_gui
+import matplotlib
+matplotlib.use('Agg')
 
 class UnitTests(unittest.TestCase):
     """Definitions of unittests.
