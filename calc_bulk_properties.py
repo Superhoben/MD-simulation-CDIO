@@ -63,27 +63,24 @@ def calc_bulk_modulus(traj_file):
     return B
 
 
-def calculate_cohesive_energy(atoms, bulk):
-    """Calculate the cohesive energy of an object, Atoms,cluster or Bulk.
+def calculate_cohesive_energy(isolated_atoms, bulk_atoms):
+    """Calculate the cohesive energy of an object, Atoms, cluster or Bulk.
 
     To calculate the cohesive energy of a crystal(cluster/Bulk), we need to find the energy required
-    to separate its components into neutral free atoms at rest and at infinite separation, the formula is
-    Cohesive energy = (energy of free atoms - crystal atoms energy) / nr of crystal (cluster/bulk) atoms
+    to separate its components into neutral free atoms at rest and at infinite separation,
+    the formula: Cohesive energy = (energy of free atoms - crystal atoms energy) / nr of crystal (cluster/bulk) atoms
 
     Args:
-        atoms(ase atom object): the isolated atom object
-        bulk:  cluster or bulk object
+        isolated_atoms (ase atoms object): the isolated atoms object
+        bulk_atoms (ase atoms object): cluster or bulk atoms object
 
     Returns:
         (float): the optimal Cohesive energy in eV
     """
-    # Assigning better names for the isolated atom object and the bulk object
-    isolated_atom = atoms
-    isolated_atom_energy = isolated_atom.get_potential_energy()
-    bulk_atoms = bulk
+    isolated_atoms_energy = isolated_atoms.get_potential_energy()
     bulk_atoms_energy = bulk_atoms.get_potential_energy()
     num_atoms = len(bulk_atoms)
-    cohesive_energy = (bulk_atoms_energy - isolated_atom_energy)/num_atoms
+    cohesive_energy = (bulk_atoms_energy - isolated_atoms_energy)/num_atoms
     return cohesive_energy
 
     # This will be used later probably so i am keeping this comment
