@@ -7,7 +7,7 @@ from gather_data import get_ASE_atoms_from_material_id
 from asap3 import EMT
 from lattice_constant import optimize_lattice_const, example_simulation_function, optimize_lattice_const_gradient_descent
 from calc_bulk_properties import create_traj_file, calc_bulk_modulus
-#from run_md_simulation import run_NVE_NVT
+from run_md_simulation import run_NVE_NVT
 
 
 class UnitTests(unittest.TestCase):
@@ -76,11 +76,11 @@ class UnitTests(unittest.TestCase):
         self.assertTrue((86 < calc_bulk_modulus("atoms.traj@0:9")) and (calc_bulk_modulus("atoms.traj@0:9") < 105))
     
     # Cannot test this yet because run_md_simulation raises exceptions
-    #def test_run_NVE_NVT(self):
-    #    atoms = get_ASE_atoms_from_material_id('mp-124')
-    #    config_data = {"temperature": 300, "time_step": 5*10^(-15), "interval": 1000, "iterations": 100, "potential": 'EMT'}
-     #   new_atoms = run_NVE_NVT(atoms, config_data, 'NVT')
-     #   self.assertTrue(280<calc_temperature(new_atoms)<320)
+    def test_run_NVE_NVT(self):
+        atoms = FaceCenteredCubic(size=(7, 7, 7), symbol='Cu', pbc=False)
+        config_data = {"show_properties": False, "calc_properties": False, "temperature": 300, "time_step": 5, "interval": 1000, "iterations": 500, "potential": 'EMT', "friction": None}
+        new_atoms = run_NVE_NVT(atoms, config_data, 'NVT')
+        self.assertTrue(280<calc_temp(new_atoms)<320)
 
 
 if __name__ == "__main__":
