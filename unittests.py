@@ -75,7 +75,6 @@ class UnitTests(unittest.TestCase):
 
         self.assertTrue((86 < calc_bulk_modulus("atoms.traj@0:9")) and (calc_bulk_modulus("atoms.traj@0:9") < 105))
     
-    # Cannot test this yet because run_md_simulation raises exceptions
     def test_run_NVE_NVT(self):
         atoms = FaceCenteredCubic(size=(7, 7, 7), symbol='Cu', pbc=False)
         config_data = {"show_properties": False, "calc_properties": False, "temperature": 300, "time_step": 5, "interval": 1000, "iterations": 500, "potential": 'EMT', "friction": None}

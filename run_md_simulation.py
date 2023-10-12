@@ -7,7 +7,6 @@ from ase import units
 from asap3 import EMT
 from ase.calculators.lj import LennardJones
 from ase.md.langevin import Langevin
-from calc_properties import calc_temp
 
 
 def run_md_simulation(config):
