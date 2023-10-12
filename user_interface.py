@@ -11,8 +11,7 @@ from ase.visualize import view
 from run_md_simulation import run_md_simulation
 from pathlib import Path
 import sys
-import matplotlib
-matplotlib.use('Agg')
+
 
 
 
