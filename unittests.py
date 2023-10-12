@@ -92,11 +92,11 @@ class UnitTests(unittest.TestCase):
         bulk_structure.calc = EMT()
         # From Charles Kittle book "Introduction to Solid State Physics" page 50
         # you can find every single cohesive energy per atom for each elements in eV/atom
-        expected_cohesive_energy_range = (-3.0, -2.8)
-        cohesive_energy = calculate_cohesive_energy(atom_structure, bulk_structure)
-        self.assertTrue(expected_cohesive_energy_range[0] <= cohesive_energy <= expected_cohesive_energy_range[1])
+        #expected_cohesive_energy_range = (-3.0, -2.8)
+        #cohesive_energy = calculate_cohesive_energy(atom_structure, bulk_structure)
+        #self.assertTrue(expected_cohesive_energy_range[0] <= cohesive_energy <= expected_cohesive_energy_range[1])
         # Another way to test stuff (1 line of code)
-        #self.assertTrue((-3 < calculate_cohesive_energy(atom_structure,bulk_structure)) and (calculate_cohesive_energy(atom_structure,bulk_structure) < -2.8))
+        self.assertTrue((-3 < calculate_cohesive_energy(atom_structure,bulk_structure)) and (calculate_cohesive_energy(atom_structure,bulk_structure) < -2.8))
 
 
 if __name__ == "__main__":
