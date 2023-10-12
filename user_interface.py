@@ -10,9 +10,9 @@ from ase.build import molecule
 from ase.visualize import view
 from run_md_simulation import run_md_simulation
 from pathlib import Path
-import sys
+import os
 
-
+os.environ.__setitem__('DISPLAY', ':0.0')
 
 
 def initiate_gui():
