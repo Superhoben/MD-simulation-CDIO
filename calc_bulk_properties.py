@@ -77,10 +77,18 @@ def calculate_cohesive_energy(isolated_atoms, bulk_atoms):
     Returns:
         (float): the optimal Cohesive energy in eV
     """
-    isolated_atoms_energy = isolated_atoms.get_potential_energy()
-    bulk_atoms_energy = bulk_atoms.get_potential_energy()
+    # Get all potential energy in a list for each atom exist in our object, molecule, soild etc.
+    # Bear in mind, here the atoms are static so total energy = potentail energy only
+    isolated_atoms_potential_energies = isolated_atoms.get_potential_energies()
+    # Get the total potential energy for all our atoms
+    total_isolated_atoms_potential_energy = 0
+    for atom_potential_energy in isolated_atoms_potential_energies:
+        total_isolated_atoms_potential_energy += atom_potential_energy
+    bulk_atoms_potential_energy = bulk_atoms.get_potential_energy()
+    bulk_atoms_kinetic_energy = bulk_atoms.get_kinetic_energy()
+    bulk_total_energy = bulk_atoms_potential_energy + bulk_atoms_kinetic_energy
     num_atoms = len(bulk_atoms)
-    cohesive_energy = (bulk_atoms_energy - isolated_atoms_energy)/num_atoms
+    cohesive_energy = (num_atoms*total_isolated_atoms_potential_energy - bulk_total_energy)
     return cohesive_energy
 
     # This will be used later probably so i am keeping this comment

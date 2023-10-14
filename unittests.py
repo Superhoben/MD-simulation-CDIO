@@ -8,7 +8,7 @@ from gather_data import get_ASE_atoms_from_material_id
 from ase.calculators.emt import EMT
 from lattice_constant import optimize_lattice_const, example_simulation_function, optimize_lattice_const_gradient_descent
 from calc_bulk_properties import create_traj_file, calc_bulk_modulus, calculate_cohesive_energy
-from ase.build import bulk
+from ase.build import bulk, molecule
 from ase import Atoms
 
 
@@ -92,11 +92,22 @@ class UnitTests(unittest.TestCase):
         bulk_structure.calc = EMT()
         # From Charles Kittle book "Introduction to Solid State Physics" page 50
         # you can find every single cohesive energy per atom for each elements in eV/atom
-        #expected_cohesive_energy_range = (-3.0, -2.8)
+        #expected_cohesive_energy_range = (2.8, 3)
         #cohesive_energy = calculate_cohesive_energy(atom_structure, bulk_structure)
         #self.assertTrue(expected_cohesive_energy_range[0] <= cohesive_energy <= expected_cohesive_energy_range[1])
         # Another way to test stuff (1 line of code)
-        self.assertTrue((-3 < calculate_cohesive_energy(atom_structure,bulk_structure)) and (calculate_cohesive_energy(atom_structure,bulk_structure) < -2.8))
+        self.assertTrue((2.8 < calculate_cohesive_energy(atom_structure,bulk_structure)) and (calculate_cohesive_energy(atom_structure,bulk_structure) < 3))
+
+
+    def test_cohesive_energy(self):
+        atom_structure = Atoms("N")
+        atom_structure.calc = EMT()
+        # Create 2N molecule structure
+        #molecule_structure = molecule('N2')
+        molecule_structure = Atoms('2N', [(0., 0., 0.), (0., 0., 1.1)])
+        molecule_structure.calc = EMT()
+        # From ase example:https://wiki.fysik.dtu.dk/ase/tutorials/atomization.html
+        self.assertTrue((9.5 < calculate_cohesive_energy(atom_structure,molecule_structure)) and (calculate_cohesive_energy(atom_structure,molecule_structure) < 9.8))
 
 
 if __name__ == "__main__":
