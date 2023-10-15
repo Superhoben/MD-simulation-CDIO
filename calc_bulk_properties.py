@@ -75,7 +75,7 @@ def calculate_cohesive_energy(isolated_atoms, bulk_atoms):
         bulk_atoms (ase atoms object): cluster or bulk atoms object
 
     Returns:
-        (float): the optimal Cohesive energy in eV
+        (float): the Cohesive energy in eV
     """
     # Get all potential energy in a list for each atom exist in our object, molecule, soild etc.
     # Bear in mind, here the atoms are static so total energy = potentail energy only
