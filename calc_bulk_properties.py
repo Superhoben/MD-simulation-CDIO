@@ -88,7 +88,7 @@ def calculate_cohesive_energy(isolated_atoms, bulk_atoms):
     bulk_atoms_kinetic_energy = bulk_atoms.get_kinetic_energy()
     bulk_total_energy = bulk_atoms_potential_energy + bulk_atoms_kinetic_energy
     num_atoms = len(bulk_atoms)
-    cohesive_energy = (num_atoms*total_isolated_atoms_potential_energy - bulk_total_energy)
+    cohesive_energy = (num_atoms*total_isolated_atoms_potential_energy - bulk_total_energy)/num_atoms
     return cohesive_energy
 
     # This will be used later probably so i am keeping this comment

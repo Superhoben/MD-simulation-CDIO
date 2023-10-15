@@ -107,7 +107,7 @@ class UnitTests(unittest.TestCase):
         molecule_structure = Atoms('2N', [(0., 0., 0.), (0., 0., 1.1)])
         molecule_structure.calc = EMT()
         # From ase example:https://wiki.fysik.dtu.dk/ase/tutorials/atomization.html
-        self.assertTrue((9.5 < calculate_cohesive_energy(atom_structure,molecule_structure)) and (calculate_cohesive_energy(atom_structure,molecule_structure) < 9.8))
+        self.assertTrue((4.7 < calculate_cohesive_energy(atom_structure,molecule_structure)) and (calculate_cohesive_energy(atom_structure,molecule_structure) < 5))
 
 
 if __name__ == "__main__":
