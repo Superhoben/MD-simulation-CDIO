@@ -51,7 +51,6 @@ class UnitTests(unittest.TestCase):
         atoms = get_ASE_atoms_from_material_id('mp-30')  # Get atoms object with atoms in optimal positions
         atoms.set_cell(atoms.cell*0.5, scale_atoms=True)  # Rescale unit cell so atoms are now in suboptimal positions
         scaling, _, _ = optimize_lattice_const_gradient_descent(atoms, example_simulation_function)
-        #print(scaling)
         self.assertTrue((0.98 < scaling*0.5) and (scaling*0.5 < 1.02))
 
     # More test are needed for this function
