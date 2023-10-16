@@ -44,7 +44,7 @@ def run_md_simulation(config):
         # TODO: implement run_other_simulation, e.g.,:
         #atoms = run_other_simulation(atoms, config_data)
         raise Exception("Running calculations with 'run_other_simulation' is not implemented yet.")
-        
+ 
     # Return atoms object after simulation
     return atoms
 
