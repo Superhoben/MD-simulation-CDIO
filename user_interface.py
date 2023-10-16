@@ -9,6 +9,7 @@ from tkinter import filedialog
 from ase.build import molecule
 from ase.visualize import view
 import sys
+import configuration_file_script as cfs
 
 
 def initiate_gui():
@@ -37,7 +38,8 @@ def initiate_gui():
 
     # inits different visualization buttons aswell as calling the 2D-fig.
     three_dim_vis_button = Button(plot_frame, text="Visualize 3D Atom "
-                                  "(Basic water at the moment)", command=visualise_3D)
+                                  "(Basic water at the moment)",
+                                  command=visualise_3D)
     three_dim_vis_button.pack(padx=20, pady=20)
 
     import_data_button = Button(plot_frame, text="Import Data",
@@ -55,7 +57,8 @@ def initiate_gui():
     value_inside_potential_list = StringVar(gui)
     value_inside_potential_list.set("Select an Option")
 
-    potential_menu = OptionMenu(data_frame, value_inside_potential_list, *potential_list)
+    potential_menu = OptionMenu(data_frame, value_inside_potential_list,
+                                *potential_list)
     potential_menu.grid(row=0, column=1)
 
     ensamble_label = Label(data_frame, text="Ensamble", width=20)
@@ -67,7 +70,8 @@ def initiate_gui():
     value_inside_ensemble_list = StringVar(gui)
     value_inside_ensemble_list.set("Select an Option")
 
-    ensemble_menu = OptionMenu(data_frame, value_inside_ensemble_list, *ensamble_list)
+    ensemble_menu = OptionMenu(data_frame, value_inside_ensemble_list,
+                               *ensamble_list)
     ensemble_menu.grid(row=1, column=1)
 
     materialID_label = Label(data_frame, text="Material ID", width=20)
@@ -89,9 +93,12 @@ def initiate_gui():
     steps_entry.grid(row=4, column=1)
 
     config_button = Button(data_frame, text='Write to config file',
-                           command=lambda: write_to_config(value_inside_potential_list.get(),
-                           value_inside_ensemble_list.get(), materialID_entry,
-                           temperature_entry, steps_entry))
+                           command=lambda: write_to_config(
+                               value_inside_ensemble_list.get(),
+                               materialID_entry.get(),
+                               temperature_entry.get(),
+                               steps_entry.get(),
+                               value_inside_potential_list.get()))
     config_button.grid(row=5, column=0, pady=10)
 
     quit_button = Button(data_frame, text="Exit Program", command=gui.quit)
@@ -101,17 +108,20 @@ def initiate_gui():
     gui.mainloop()
 
 
-def write_to_config(potential, ensamble, materialID, temperature, steps):
+def write_to_config(ensemble, materialID, temperature, stepsnumber, potential):
     """Write user input data to config file.
 
     Args:
-        At the time of writing not fully clear.
+        ensemble(string): the ensemble used in the simulation
+        materialID(string): specifies which structure is used
+        temperature(string): the temperature of the simulation
+        stepsnumber(string): the number of steps used in the simulation
+        potential(string): the type of potential that is used
 
     Returns:
         None
     """
-    print("Selected Option: {} and {} and {} and {} and {}".format(potential, ensamble, materialID.get(),
-                                                     temperature.get(), steps.get()))
+    cfs.config_file(ensemble, materialID, temperature, stepsnumber, potential)
 
 
 def visualise_3D():
@@ -138,6 +148,7 @@ def load_data(gui):
     """
     gui.filename = filedialog.askopenfilename()
     print(gui.filename)
+
 
 if __name__ == "__main__":
     initiate_gui()
