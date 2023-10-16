@@ -1,5 +1,6 @@
 import sys, unittest
 from firstunittest import *
+from tkinter import Tk
 from calc_properties import calc_temp, calc_pressure
 from ase.lattice.cubic import FaceCenteredCubic
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
@@ -11,7 +12,9 @@ from calc_bulk_properties import create_traj_file, calc_bulk_modulus, calculate_
 from ase.build import bulk, molecule
 from ase import Atoms
 from calc_bulk_properties import create_traj_file, calc_bulk_modulus
+from user_interface import initiate_gui
 from run_md_simulation import run_NVE_NVT
+
 
 
 class UnitTests(unittest.TestCase):
@@ -116,7 +119,14 @@ class UnitTests(unittest.TestCase):
         # From ase example:https://wiki.fysik.dtu.dk/ase/tutorials/atomization.html
         self.assertTrue((4.7 < calculate_cohesive_energy(atom_structure,molecule_structure)) and (calculate_cohesive_energy(atom_structure,molecule_structure) < 5))
 
+    def test_GUI(self):
+        #There will be further testing when other methods connected to the gui has been developed.
+        gui = initiate_gui()
 
+        self.assertTrue(type(gui) == Tk)
+
+
+    
 if __name__ == "__main__":
     tests = [unittest.TestLoader().loadTestsFromTestCase(UnitTests)]
     testsuite = unittest.TestSuite(tests)
