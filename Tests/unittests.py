@@ -26,7 +26,7 @@ class UnitTests(unittest.TestCase):
         self.assertTrue(270 < calc_properties.calc_temp(atoms) < 330)
 
     def test_lattice_constant(self):
-        lattice_const = calc_properties.optimize_lattice_const(
+        lattice_const = lattice_constant.optimize_lattice_const(
            FaceCenteredCubic(
                directions=[[1, 0, 0], [0, 1, 0], [1, 1, 1]],
                size=(2, 2, 3),
@@ -55,11 +55,11 @@ class UnitTests(unittest.TestCase):
     def test_bulk_modulus(self):
         # lattice_constant = 4
         # choosing more specific silver to test the bulk modulus
-        atoms = get_ASE_atoms_from_material_id('mp-124')
+        atoms = gather_data.get_ASE_atoms_from_material_id('mp-124')
         atoms.calc = EMT()
-        create_traj_file(atoms,lattice_constant = 4)
+        calc_bulk_properties.create_traj_file(atoms,lattice_constant = 4)
         # Read the traj file from the first atom to the 10th atom
-        calc_bulk_modulus("atoms.traj@0:9")
+        calc_bulk_properties.calc_bulk_modulus("atoms.traj@0:9")
         # From material website https://next-gen.materialsproject.org/materials/mp-124?chemsys=Ag#elastic_constants
         # we have the bulk modulus for Ag to be 88 GPa
         # According to Rickard, it is absolutely no problem to get 100 GPa of bulk modulus since we are first taking the
