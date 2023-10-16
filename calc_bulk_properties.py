@@ -61,3 +61,38 @@ def calc_bulk_modulus(traj_file):
     B = B / kJ * 1.0e24
     # print(B, "GPa")
     return B
+
+
+def calculate_cohesive_energy(isolated_atoms, bulk_atoms):
+    """Calculate the cohesive energy of an object, Atoms, cluster or Bulk.
+
+    To calculate the cohesive energy of a crystal(cluster/Bulk), we need to find the energy required
+    to separate its components into neutral free atoms at rest and at infinite separation,
+    the formula: Cohesive energy = (energy of free atoms - crystal atoms energy) / nr of crystal (cluster/bulk) atoms
+
+    Args:
+        isolated_atoms (ase atoms object): the isolated atoms object
+        bulk_atoms (ase atoms object): cluster or bulk atoms object
+
+    Returns:
+        (float): the Cohesive energy in eV
+    """
+    # Get all potential energy in a list for each atom exist in our object, molecule, soild etc.
+    # Bear in mind, here the atoms are static so total energy = potentail energy only
+    isolated_atoms_potential_energies = isolated_atoms.get_potential_energies()
+    # Get the total potential energy for all our atoms
+    total_isolated_atoms_potential_energy = 0
+    for atom_potential_energy in isolated_atoms_potential_energies:
+        total_isolated_atoms_potential_energy += atom_potential_energy
+    bulk_atoms_potential_energy = bulk_atoms.get_potential_energy()
+    bulk_atoms_kinetic_energy = bulk_atoms.get_kinetic_energy()
+    bulk_total_energy = bulk_atoms_potential_energy + bulk_atoms_kinetic_energy
+    num_atoms = len(bulk_atoms)
+    cohesive_energy = (num_atoms*total_isolated_atoms_potential_energy - bulk_total_energy)/num_atoms
+    return cohesive_energy
+
+    # This will be used later probably so i am keeping this comment
+    # This uses Issa Nseir's personal API-key to access the database
+    # with MPRester("t4XwMQ3LLvLcnugLQQCCCII6BG85APG8") as mpr:
+    # some_material = mpr.materials.search(material_ids=[material_id])
+    # print(some_material)
