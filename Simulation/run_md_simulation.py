@@ -35,12 +35,8 @@ def run_md_simulation(config):
         atoms = run_NVE_NVT(atoms, config_data, simulation_type)
     elif simulation_type == "something_else":
         # TODO: implement run_other_simulation, e.g.,:
-        # atoms = run_other_simulation(atoms, config_data)
-        raise Exception(
-            "Running calculations with 'run_other_simulation'"
-            + "is not implemented yet."
-        )
-
+        #atoms = run_other_simulation(atoms, config_data)
+        raise Exception("Running calculations with 'run_other_simulation' is not implemented yet.")
     # Return atoms object after simulation
     return atoms
 
@@ -106,10 +102,7 @@ def show_properties(atoms, config_data):
     """
     # TODO: implement print_in_gui and calc_temp:
     # print_in_gui(calc_temp())
-    raise Exception(
-        "run_md_simulation.py: print_in_gui and calc_temp not" +
-        "implemented yet."
-    )
+    raise Exception("run_md_simulation.py: print_in_gui and calc_temp not implemented yet.")
     return
 
 
@@ -145,7 +138,4 @@ def create_atoms_object(config_data):
     """
     # TODO: implement parse_config to actually parse config data
     # return atoms
-    raise Exception(
-        "run_md_simulation.py: create_atoms_object not" +
-        "implemented yet."
-    )
+    raise Exception("run_md_simulation.py: create_atoms_object not implemented yet.")

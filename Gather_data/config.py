@@ -1,5 +1,6 @@
 from configparser import ConfigParser
 
+
 def config_file():
   """ Create the configuration file
 
@@ -17,6 +18,7 @@ def config_file():
   # Write to our config file
   with open('config.ini','w') as config_file:
     config.write(config_file)
-    
+
+
 if __name__ == "__main__":
   config_file()
