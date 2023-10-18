@@ -2,12 +2,14 @@
 
 At the time of writing, all functionality is not implemented
 """
+import os, sys, unittest
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 from tkinter import *
 from tkinter import filedialog
 from ase.build import molecule
 from ase.visualize import view
 from pathlib import Path
-from plot_in_gui import *
+from User_interface.plot_in_gui import *
 import Gather_data.configuration_file_script as cfs
 from Simulation.run_md_simulation import run_md_simulation
 
