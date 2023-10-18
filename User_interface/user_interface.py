@@ -7,8 +7,8 @@ from tkinter import filedialog
 from ase.build import molecule
 from ase.visualize import view
 from pathlib import Path
-import configuration_file_script as cfs
 from plot_in_gui import *
+import Gather_data.configuration_file_script as cfs
 from Simulation.run_md_simulation import run_md_simulation
 
 
