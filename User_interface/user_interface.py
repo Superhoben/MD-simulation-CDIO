@@ -2,15 +2,14 @@
 
 At the time of writing, all functionality is not implemented
 """
-
-from plot_in_gui import *
 from tkinter import *
 from tkinter import filedialog
 from ase.build import molecule
 from ase.visualize import view
-from run_md_simulation import run_md_simulation
 from pathlib import Path
 import configuration_file_script as cfs
+from plot_in_gui import *
+from Simulation.run_md_simulation import run_md_simulation
 
 
 
