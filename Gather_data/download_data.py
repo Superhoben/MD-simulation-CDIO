@@ -6,6 +6,31 @@ the so called new API (as opposed to the legacy API).
 
 from mp_api.client import MPRester
 from pymatgen.io.ase import AseAtomsAdaptor
+from ase.io.trajectory import Trajectory
+import os.path
+
+
+def make_traj_from_material_id(material_id: str):
+    """Take a material id and save a corresponding atoms object in
+    a .traj file which can be found in the folder Trajectory files.
+
+    Args:
+        material_id (str): The material id must exist in the next-gen material
+            projects database and should be in the form 'mp-1234' but with
+            another number.
+
+    Returns:
+        none
+            https://wiki.fysik.dtu.dk/ase/ase/atoms.html
+    """
+    # This uses Gustav Wassbäck's personal API-key to access the database
+    with MPRester("Aumz0uNirwQYwJgWgrLVFq3Fr1Z4SfwK") as mpr:
+        some_material = mpr.materials.search(material_ids=[material_id])
+        atoms = AseAtomsAdaptor.get_atoms(some_material[-1].structure)
+        path_to_traj_folder = os.path.dirname(os.path.abspath(__file__)) + '/../Trajectory_files/ '
+        location_and_name = path_to_traj_folder + material_id + '.traj'
+        traj = Trajectory(location_and_name, "w")
+        traj.write(atoms)
 
 
 def get_ASE_atoms_from_material_id(material_id: str):
@@ -76,3 +101,4 @@ if __name__ == "__main__":
     materials_dict = find_materials_by_elements_and_bandgap(["Ni", "Sb", "Zr"], (0, 1), ["band_gap"])
     print(materials_dict.keys())
     print(materials_dict.values())
+    make_traj_from_material_id('mp-24')
