@@ -107,6 +107,11 @@ class UnitTests(unittest.TestCase):
         gui = initiate_gui()
         self.assertTrue(type(gui) == Tk)
 
+    def test_run_NVE_NVT(self):
+        atoms = FaceCenteredCubic(size=(7, 7, 7), symbol='Cu', pbc=False)
+        config_data = {"show_properties": False, "calc_properties": False, "temperature": 300, "time_step": 5, "interval": 1000, "iterations": 500, "potential": 'EMT', "friction": None}
+        new_atoms = run_NVE_NVT(atoms, config_data, 'NVT')
+        self.assertTrue(280<calc_temp(new_atoms)<320)
 
 if __name__ == "__main__":
     tests = [unittest.TestLoader().loadTestsFromTestCase(UnitTests)]
