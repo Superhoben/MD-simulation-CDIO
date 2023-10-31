@@ -1,4 +1,4 @@
-import os, sys, unittest
+import os.path, sys, unittest
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 from ase.lattice.cubic import FaceCenteredCubic
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
