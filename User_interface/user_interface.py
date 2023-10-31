@@ -11,6 +11,7 @@ from ase.visualize import view
 from pathlib import Path
 from User_interface.plot_in_gui import *
 import Gather_data.configuration_file_script as cfs
+import Gather_data.download_data 
 from Simulation.run_md_simulation import run_md_simulation
 
 
@@ -77,23 +78,17 @@ def initiate_gui():
                                *ensamble_list)
     ensemble_menu.grid(row=1, column=1)
 
-    materialID_label = Label(data_frame, text="Material ID", width=20)
-    materialID_label.grid(row=2, column=0)
-
-    materialID_entry = Entry(data_frame)
-    materialID_entry.grid(row=2, column=1)
-
     temperature_label = Label(data_frame, text="Temperature (K)", width=20)
-    temperature_label.grid(row=3, column=0)
+    temperature_label.grid(row=2, column=0)
 
     temperature_entry = Entry(data_frame)
-    temperature_entry.grid(row=3, column=1)
+    temperature_entry.grid(row=2, column=1)
 
     steps_label = Label(data_frame, text="Number of steps", width=20)
-    steps_label.grid(row=4, column=0)
+    steps_label.grid(row=3, column=0)
 
     steps_entry = Entry(data_frame)
-    steps_entry.grid(row=4, column=1)
+    steps_entry.grid(row=3, column=1)
 
     config_button = Button(data_frame, text='Write to config file',
                            command=lambda: write_to_config(
@@ -102,12 +97,22 @@ def initiate_gui():
                                temperature_entry.get(),
                                steps_entry.get(),
                                value_inside_potential_list.get()))
-    config_button.grid(row=5, column=0, pady=10)
+    config_button.grid(row=4, column=0, pady=10)
 
+    materialID_label = Label(data_frame, text="Material ID", width=20)
+    materialID_label.grid(row=5, column=0)
+
+    materialID_entry = Entry(data_frame)
+    materialID_entry.grid(row=5, column=1)
+
+    gather_data_button = Button(data_frame, text='Gather material data from Material ID',
+                           command=lambda: send_mat_id_to_gather_data(
+                               materialID_entry.get()))
+    gather_data_button.grid(row=6, column=0, pady=10)
 
     md_sim_button = Button(data_frame, text='Start Simulation',
                             command=lambda: run_md_simulation("filepath to config ini"))
-    md_sim_button.grid(row=5, column=1)
+    md_sim_button.grid(row=4, column=1)
 
     quit_button = Button(data_frame, text="Exit Program", command=gui.quit)
     quit_button.grid(pady=500)
@@ -130,6 +135,18 @@ def write_to_config(ensemble, materialID, temperature, stepsnumber, potential):
         None
     """
     cfs.config_file(ensemble, materialID, temperature, stepsnumber, potential)
+
+
+def send_mat_id_to_gather_data(materialID):
+    """Write user input data to config file.
+
+    Args:
+        materialID(string): specifies which material is to be downloaded from database
+
+    Returns:
+        None
+    """
+    Gather_data.download_data.make_traj_from_material_id(materialID)
 
 
 def visualise_3D():
