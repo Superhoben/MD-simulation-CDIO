@@ -21,7 +21,6 @@ def make_traj_from_material_id(material_id: str):
 
     Returns:
         none
-            https://wiki.fysik.dtu.dk/ase/ase/atoms.html
     """
     # This uses Gustav Wassbäck's personal API-key to access the database
     with MPRester("Aumz0uNirwQYwJgWgrLVFq3Fr1Z4SfwK") as mpr:
