@@ -14,8 +14,6 @@ import Gather_data.configuration_file_script as cfs
 import Gather_data.download_data 
 from Simulation.run_md_simulation import run_md_simulation
 
-
-
 def initiate_gui():
     """Create a GUI and defines funtcionality.
 
@@ -56,7 +54,7 @@ def initiate_gui():
     potential_label = Label(data_frame, text="Choose potential", width=20)
     potential_label.grid(row=0, column=0)
 
-    potential_list = ["Lennard Jones", "EMT", "List goes on"]
+    potential_list = ["EMT", "LennardJones"]
 
     value_inside_potential_list = StringVar(gui)
     value_inside_potential_list.set("Select an Option")
@@ -65,11 +63,12 @@ def initiate_gui():
                                 *potential_list)
     potential_menu.grid(row=0, column=1)
 
-    ensamble_label = Label(data_frame, text="Ensamble", width=20)
+    ensamble_label = Label(data_frame, text="Ensemble", width=20)
     ensamble_label.grid(row=1, column=0)
 
-    ensamble_list = ["NVE (Microcanonical)", "NVT (Canonical)",
-                     "muVT (Grand canonical)", "NpT (Isothermal-Isobaric)"]
+    #ensamble_list = ["NVE (Microcanonical)", "NVT (Canonical)",
+    #                 "muVT (Grand canonical)", "NpT (Isothermal-Isobaric)"]
+    ensamble_list = ["NVE", "NVT"]
 
     value_inside_ensemble_list = StringVar(gui)
     value_inside_ensemble_list.set("Select an Option")
@@ -90,51 +89,54 @@ def initiate_gui():
     steps_entry = Entry(data_frame)
     steps_entry.grid(row=3, column=1)
 
+    time_steps_label = Label(data_frame, text="Time step", width=20)
+    time_steps_label.grid(row=5, column=0)
+
+    time_steps_entry = Entry(data_frame)
+    time_steps_entry.grid(row=5, column=1)
+
+    friction_label = Label(data_frame, text="Friction", width=20)
+    friction_label.grid(row=6, column=0)
+
+    friction_entry = Entry(data_frame)
+    friction_entry.grid(row=6, column=1)
+
+    interval_label = Label(data_frame, text="Interval", width=20)
+    interval_label.grid(row=7, column=0)
+
+    interval_entry = Entry(data_frame)
+    interval_entry.grid(row=7, column=1)
+
     config_button = Button(data_frame, text='Write to config file',
-                           command=lambda: write_to_config(
+                           command=lambda: cfs.config_file(
                                value_inside_ensemble_list.get(),
-                               materialID_entry.get(),
-                               temperature_entry.get(),
-                               steps_entry.get(),
-                               value_inside_potential_list.get()))
-    config_button.grid(row=4, column=0, pady=10)
+                               temperature_entry.get() or 500,
+                               value_inside_potential_list.get(),
+                               steps_entry.get() or 5000,
+                               time_steps_entry.get() or 5,
+                               friction_entry.get() or 0.005,
+                               interval_entry.get() or 100))
+    config_button.grid(row=9, column=0, pady=10)
 
     materialID_label = Label(data_frame, text="Material ID", width=20)
-    materialID_label.grid(row=5, column=0)
+    materialID_label.grid(row=10, column=0)
 
     materialID_entry = Entry(data_frame)
-    materialID_entry.grid(row=5, column=1)
+    materialID_entry.grid(row=10, column=1)
 
     gather_data_button = Button(data_frame, text='Gather material data from Material ID',
                            command=lambda: send_mat_id_to_gather_data(
                                materialID_entry.get()))
-    gather_data_button.grid(row=6, column=0, pady=10)
+    gather_data_button.grid(row=11, column=0, pady=10)
 
     md_sim_button = Button(data_frame, text='Start Simulation',
-                            command=lambda: run_md_simulation("filepath to config ini"))
-    md_sim_button.grid(row=4, column=1)
+                            command=lambda: run_md_simulation("config1.ini"))
+    md_sim_button.grid(row=12, column=1)
 
     quit_button = Button(data_frame, text="Exit Program", command=gui.quit)
-    quit_button.grid(pady=500)
+    quit_button.grid(pady=400)
 
     return gui
-
-    
-
-def write_to_config(ensemble, materialID, temperature, stepsnumber, potential):
-    """Write user input data to config file.
-
-    Args:
-        ensemble(string): the ensemble used in the simulation
-        materialID(string): specifies which structure is used
-        temperature(string): the temperature of the simulation
-        stepsnumber(string): the number of steps used in the simulation
-        potential(string): the type of potential that is used
-
-    Returns:
-        None
-    """
-    cfs.config_file(ensemble, materialID, temperature, stepsnumber, potential)
 
 
 def send_mat_id_to_gather_data(materialID):
