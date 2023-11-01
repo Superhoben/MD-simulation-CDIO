@@ -4,25 +4,36 @@ from configparser import ConfigParser
 config = ConfigParser()
 
 
-def config_file(ensemble, materialID, temperature, stepsnumber, potential):
+def config_file(ensemble='NVE', temperature=500, potential='EMT',
+                step_number=5000, time_step=5, friction=0.005,
+                interval=100, show_properties=False):
     """Create the configuration file.
 
     Args:
-        ensemble(string): the ensemble used in the simulation
-        materialID(string): specifies which structure is used
-        temperature(string): the temperature of the simulation
-        stepsnumber(string): the number of steps used in the simulation
-        potential(string): the type of potential that is used
+        ensemble(string): Ensemble to use in simulation
+        temperature(int): Initial temperature in simulation
+        potential(string): Potential to use in simulation
+        step_number(int): Number of steps to use in simulation
+        time_step(int): Time step in fs to use in simulation
+        friction(float): Friction for NVT simulation
+        interval(int): Interval for which to calculate properties
+        show_properties(bool): Show properties or not
 
     Returns:
         None
-    """
 
-    config['User inputs - Ensembles'] = {'Ensemble': ensemble}
-    config['User inputs - Material ID'] = {'Structure': materialID}
-    config['User inputs - Simulation parameter'] = {'Temperature': temperature,
-                                                    'StepsNumber': stepsnumber, 'Potential': potential}
-    # Write to our config file
+    """
+    if ensemble == "Select an Option":
+        ensemble = "NVE"
+    if potential == "Select an Option":
+        potential = "EMT"
+
+    config['config1'] = {'ensemble': ensemble, 'temperature': temperature,
+                         'potential': potential, 'step_number': step_number,
+                         'time_step': time_step, 'friction': friction,
+                         'interval': interval, 'show_properties': show_properties}
+
+    # Write to config file
     with open('config1.ini', 'w') as config_file:
         config.write(config_file)
 

@@ -16,7 +16,6 @@ from Simulation.run_md_simulation import run_md_simulation
 from os import listdir
 from os.path import isfile, join
 
-
 def initiate_gui():
     """Create a GUI and defines funtcionality.
 
@@ -59,8 +58,7 @@ def initiate_gui():
     # inits different data fields and buttons.
     potential_label = Label(data_frame, text="Choose potential", width=20)
     potential_label.grid(row=0, column=0)
-
-    potential_list = ["EMT", "Lennard Jones"]
+    potential_list = ["EMT", "LennardJones"]
 
     value_inside_potential_list = StringVar(gui)
     value_inside_potential_list.set("Select an Option")
@@ -72,7 +70,10 @@ def initiate_gui():
     ensamble_label = Label(data_frame, text="Ensemble", width=20)
     ensamble_label.grid(row=1, column=0)
     
+    #ensamble_list = ["NVE (Microcanonical)", "NVT (Canonical)",
+    #                 "muVT (Grand canonical)", "NpT (Isothermal-Isobaric)"]
     ensamble_list = ["NVE", "NVT"]
+
     value_inside_ensemble_list = StringVar(gui)
     value_inside_ensemble_list.set("Select an Option")
 
@@ -119,6 +120,7 @@ def initiate_gui():
                                time_steps_entry.get() or 5,
                                friction_entry.get() or 0.005,
                                interval_entry.get() or 100))
+
     config_button.grid(row=7, column=1, pady=10)
 
     # Gather data
@@ -197,20 +199,16 @@ def update_traj_file_lists(event, traj_menu, value_inside_traj_list):
         menu.add_command(label=traj_file, command=lambda value=traj_file: value_inside_traj_list.set(value))    
 
 
-def write_to_config(ensemble, materialID, temperature, stepsnumber, potential):
+def send_mat_id_to_gather_data(materialID):
     """Write user input data to config file.
 
     Args:
-        ensemble(string): the ensemble used in the simulation
-        materialID(string): specifies which structure is used
-        temperature(string): the temperature of the simulation
-        stepsnumber(string): the number of steps used in the simulation
-        potential(string): the type of potential that is used
+        materialID(string): specifies which material is to be downloaded from database
 
     Returns:
         None
     """
-    cfs.config_file(ensemble, materialID, temperature, stepsnumber, potential)
+    Gather_data.download_data.make_traj_from_material_id(materialID)
 
 
 def send_mat_id_to_gather_data(materialID):
