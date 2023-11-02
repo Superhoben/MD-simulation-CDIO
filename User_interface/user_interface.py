@@ -139,6 +139,8 @@ def initiate_gui():
     config_files_label = Label(data_frame, text="Config files", width=20)
     config_files_label.grid(row=10, column=0)
 
+    # Creates a list which contains the file names of all the files in a directory
+    # In this case the directory is the one we're standing in (since listdir has no input)
     config_files = [file for file in listdir() if isfile(file)]
     value_inside_config_files_list = StringVar(gui)
     value_inside_config_files_list.set("Select a config file")
@@ -183,6 +185,18 @@ def initiate_gui():
 
 
 def update_config_file_lists(event, config_files_menu, value_inside_config_files_list):
+    """Updates the config selection dropdown menu.
+
+    Args:
+        event(tkinter.Event): Handles input events, in our case mouse left click
+        config_files_menu(tkinter.OptionMenu): Dropdown menu which will be updated. 
+        value_inside_config_files_list(tkinter.StringVar): A variable which is set
+            when the user selects an item in the dropdown menu. The variable is a 
+            string which specifies the filename of the selected item.
+                          
+    Returns:
+        None
+    """
     config_files = [file for file in listdir() if isfile(file)]
     config_files = [file for file in config_files if file[-4:] == ".ini"]
     menu = config_files_menu["menu"]
@@ -193,6 +207,18 @@ def update_config_file_lists(event, config_files_menu, value_inside_config_files
 
 
 def update_traj_file_lists(event, traj_menu, value_inside_traj_list):
+    """Updates the trajectory selection dropdown menu.
+
+    Args:
+        event(tkinter.Event): Handles input events, in our case mouse left click
+        traj_menu(tkinter.OptionMenu): Dropdown menu which will be updated. 
+        value_inside_traj_list(tkinter.StringVar): A variable which is set
+            when the user selects an item in the dropdown menu. The variable is a 
+            string which specifies the filename of the selected item.
+                          
+    Returns:
+        None
+    """
     traj_files = [file for file in listdir("../Trajectory_files") if isfile(join("../Trajectory_files", file))]
     traj_files = [file for file in traj_files if file[-5:] == ".traj"]
     menu = traj_menu["menu"]
