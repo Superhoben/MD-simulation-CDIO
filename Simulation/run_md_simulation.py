@@ -8,8 +8,8 @@ from ase.calculators.lj import LennardJones
 from ase.md.langevin import Langevin
 import configparser
 
+def run_md_simulation(config_file_name: str, trajectory_file: str):
 
-def run_md_simulation(config_file_name: str):
     """Skeleton for the MD simulation program.
 
     Currently it is written mostly in pseudo code.
@@ -23,6 +23,7 @@ def run_md_simulation(config_file_name: str):
         atoms(ase atoms object): The ase atoms object after simulation.
 
     """
+
     # Parse the config file to get dictionary of data
     config_data = parse_config(config_file_name)
 
