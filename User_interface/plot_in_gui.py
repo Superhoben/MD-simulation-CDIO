@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.figure
 
 
-def plot(ax, canvas):
+def plot(ax, canvas, x = 1, y = 1):
     """Plot values in figure.
     
     Args:
@@ -16,9 +16,7 @@ def plot(ax, canvas):
         None
     """
     ax.clear()
-    x = np.random.randint(0, 10, 10)
-    y = np.random.randint(0, 10, 10)
-    ax.plot(x, y)
+    ax.plot(x, y, marker="o")
     canvas.draw()
 
 
@@ -45,3 +43,4 @@ def plot_backbone(frame):
     toolbar.update()
     toolbar.pack()
     Button(frame, text="Plot Graph", command=lambda: plot(ax, canvas)).pack(pady=10)
+    return [ax, canvas]
