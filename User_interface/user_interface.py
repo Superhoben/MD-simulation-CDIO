@@ -237,18 +237,6 @@ def send_mat_id_to_gather_data(materialID):
     Returns:
         None
     """
-    Gather_data.download_data.make_traj_from_material_id(materialID)
-
-
-def send_mat_id_to_gather_data(materialID):
-    """Write user input data to config file.
-
-    Args:
-        materialID(string): specifies which material is to be downloaded from database
-
-    Returns:
-        None
-    """
     if materialID[0:3] == "mp-":
         Gather_data.download_data.make_traj_from_material_id(materialID)
     else:
