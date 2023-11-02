@@ -13,8 +13,8 @@ from User_interface.plot_in_gui import *
 import Gather_data.configuration_file_script as cfs
 import Gather_data.download_data 
 from Simulation.run_md_simulation import run_md_simulation
-
-
+from os import listdir
+from os.path import isfile, join
 
 def initiate_gui():
     """Create a GUI and defines funtcionality.
@@ -40,6 +40,7 @@ def initiate_gui():
     plot_frame.grid_propagate(False)
     plot_frame.pack(padx=10, pady=10, side=RIGHT, expand=True, fill=BOTH)
 
+    # Frame 2
     # inits different visualization buttons aswell as calling the 2D-fig.
     three_dim_vis_button = Button(plot_frame, text="Visualize 3D Atom "
                                   "(Basic water at the moment)",
@@ -52,89 +53,179 @@ def initiate_gui():
 
     plot_backbone(plot_frame)
 
+    # Frame 1
+    # Config settings
     # inits different data fields and buttons.
     potential_label = Label(data_frame, text="Choose potential", width=20)
     potential_label.grid(row=0, column=0)
-
-    potential_list = ["Lennard Jones", "EMT", "List goes on"]
+    potential_list = ["EMT", "LennardJones"]
 
     value_inside_potential_list = StringVar(gui)
     value_inside_potential_list.set("Select an Option")
 
     potential_menu = OptionMenu(data_frame, value_inside_potential_list,
                                 *potential_list)
-    potential_menu.grid(row=0, column=1)
+    potential_menu.grid(row=0, column=2, padx=15)
 
-    ensamble_label = Label(data_frame, text="Ensamble", width=20)
+    ensamble_label = Label(data_frame, text="Ensemble", width=20)
     ensamble_label.grid(row=1, column=0)
-
-    ensamble_list = ["NVE (Microcanonical)", "NVT (Canonical)",
-                     "muVT (Grand canonical)", "NpT (Isothermal-Isobaric)"]
+    
+    #ensamble_list = ["NVE (Microcanonical)", "NVT (Canonical)",
+    #                 "muVT (Grand canonical)", "NpT (Isothermal-Isobaric)"]
+    ensamble_list = ["NVE", "NVT"]
 
     value_inside_ensemble_list = StringVar(gui)
     value_inside_ensemble_list.set("Select an Option")
 
     ensemble_menu = OptionMenu(data_frame, value_inside_ensemble_list,
                                *ensamble_list)
-    ensemble_menu.grid(row=1, column=1)
+    ensemble_menu.grid(row=1, column=2)
 
     temperature_label = Label(data_frame, text="Temperature (K)", width=20)
     temperature_label.grid(row=2, column=0)
 
     temperature_entry = Entry(data_frame)
-    temperature_entry.grid(row=2, column=1)
+    temperature_entry.grid(row=2, column=2)
 
     steps_label = Label(data_frame, text="Number of steps", width=20)
     steps_label.grid(row=3, column=0)
 
     steps_entry = Entry(data_frame)
-    steps_entry.grid(row=3, column=1)
+    steps_entry.grid(row=3, column=2)
+
+    time_steps_label = Label(data_frame, text="Time step", width=20)
+    time_steps_label.grid(row=4, column=0)
+
+    time_steps_entry = Entry(data_frame)
+    time_steps_entry.grid(row=4, column=2)
+
+    friction_label = Label(data_frame, text="Friction", width=20)
+    friction_label.grid(row=5, column=0)
+
+    friction_entry = Entry(data_frame)
+    friction_entry.grid(row=5, column=2)
+
+    interval_label = Label(data_frame, text="Interval", width=20)
+    interval_label.grid(row=6, column=0)
+
+    interval_entry = Entry(data_frame)
+    interval_entry.grid(row=6, column=2)
 
     config_button = Button(data_frame, text='Write to config file',
-                           command=lambda: write_to_config(
+                           command=lambda: cfs.config_file(
                                value_inside_ensemble_list.get(),
-                               materialID_entry.get(),
-                               temperature_entry.get(),
-                               steps_entry.get(),
-                               value_inside_potential_list.get()))
-    config_button.grid(row=4, column=0, pady=10)
+                               temperature_entry.get() or 500,
+                               value_inside_potential_list.get(),
+                               steps_entry.get() or 5000,
+                               time_steps_entry.get() or 5,
+                               friction_entry.get() or 0.005,
+                               interval_entry.get() or 100))
 
+    config_button.grid(row=7, column=1, pady=10)
+
+    # Gather data
     materialID_label = Label(data_frame, text="Material ID", width=20)
-    materialID_label.grid(row=5, column=0)
+    materialID_label.grid(row=8, column=0)
 
     materialID_entry = Entry(data_frame)
-    materialID_entry.grid(row=5, column=1)
+    materialID_entry.grid(row=8, column=2)
 
     gather_data_button = Button(data_frame, text='Gather material data from Material ID',
-                           command=lambda: send_mat_id_to_gather_data(
-                               materialID_entry.get()))
-    gather_data_button.grid(row=6, column=0, pady=10)
+                                command=lambda: send_mat_id_to_gather_data(
+                                materialID_entry.get()))
+    gather_data_button.grid(row=9, column=1, pady=10)
+
+    # Simulation
+    config_files_label = Label(data_frame, text="Config files", width=20)
+    config_files_label.grid(row=10, column=0)
+
+    # Creates a list which contains the file names of all the files in a directory
+    # In this case the directory is the one we're standing in (since listdir has no input)
+    config_files = [file for file in listdir() if isfile(file)]
+    value_inside_config_files_list = StringVar(gui)
+    value_inside_config_files_list.set("Select a config file")
+
+    config_files_menu = OptionMenu(data_frame, value_inside_config_files_list,
+                                *config_files)
+
+    # Argument trick to allow us to send in more than one argument to the event handler, config_files_menu.bind('<Button-1>', config_handler)
+    # For the curious, see: https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/extra-args.html 
+    def config_handler(event, config_files_menu=config_files_menu, value_inside_config_files_list=value_inside_config_files_list):   
+        return update_config_file_lists(event, config_files_menu, value_inside_config_files_list)
+    config_files_menu.bind('<Button-1>', config_handler)    
+
+    config_files_menu.grid(row=10, column=2)
+
+    ensamble_label = Label(data_frame, text=".traj files", width=20)
+    ensamble_label.grid(row=11, column=0)
+
+    traj_list = [file for file in listdir() if isfile(file)]
+    value_inside_traj_list = StringVar(gui)
+    value_inside_traj_list.set("Select a .traj file")
+
+    traj_menu = OptionMenu(data_frame, value_inside_traj_list,
+                               *traj_list)
+
+    #Same as for config handler
+    def traj_handler(event, traj_menu=traj_menu, value_inside_traj_list=value_inside_traj_list):   
+        return update_traj_file_lists(event, traj_menu, value_inside_traj_list)
+    traj_menu.bind('<Button-1>', traj_handler)  
+    
+    traj_menu.grid(row=11, column=2)
 
     md_sim_button = Button(data_frame, text='Start Simulation',
-                            command=lambda: run_md_simulation("filepath to config ini"))
-    md_sim_button.grid(row=4, column=1)
+                            command=lambda: run_md_simulation(value_inside_config_files_list.get(), value_inside_traj_list.get()))
+
+    md_sim_button.grid(row=12, column=1)
 
     quit_button = Button(data_frame, text="Exit Program", command=gui.quit)
-    quit_button.grid(pady=500)
+    quit_button.grid(pady=100)
 
     return gui
 
-    
 
-def write_to_config(ensemble, materialID, temperature, stepsnumber, potential):
-    """Write user input data to config file.
+def update_config_file_lists(event, config_files_menu, value_inside_config_files_list):
+    """Updates the config selection dropdown menu.
 
     Args:
-        ensemble(string): the ensemble used in the simulation
-        materialID(string): specifies which structure is used
-        temperature(string): the temperature of the simulation
-        stepsnumber(string): the number of steps used in the simulation
-        potential(string): the type of potential that is used
-
+        event(tkinter.Event): Handles input events, in our case mouse left click
+        config_files_menu(tkinter.OptionMenu): Dropdown menu which will be updated. 
+        value_inside_config_files_list(tkinter.StringVar): A variable which is set
+            when the user selects an item in the dropdown menu. The variable is a 
+            string which specifies the filename of the selected item.
+                          
     Returns:
         None
     """
-    cfs.config_file(ensemble, materialID, temperature, stepsnumber, potential)
+    config_files = [file for file in listdir() if isfile(file)]
+    config_files = [file for file in config_files if file[-4:] == ".ini"]
+    menu = config_files_menu["menu"]
+    menu.delete(0,"end")
+    
+    for config_file in config_files:
+        menu.add_command(label=config_file, command=lambda value=config_file: value_inside_config_files_list.set(value))
+
+
+def update_traj_file_lists(event, traj_menu, value_inside_traj_list):
+    """Updates the trajectory selection dropdown menu.
+
+    Args:
+        event(tkinter.Event): Handles input events, in our case mouse left click
+        traj_menu(tkinter.OptionMenu): Dropdown menu which will be updated. 
+        value_inside_traj_list(tkinter.StringVar): A variable which is set
+            when the user selects an item in the dropdown menu. The variable is a 
+            string which specifies the filename of the selected item.
+                          
+    Returns:
+        None
+    """
+    traj_files = [file for file in listdir("../Trajectory_files") if isfile(join("../Trajectory_files", file))]
+    traj_files = [file for file in traj_files if file[-5:] == ".traj"]
+    menu = traj_menu["menu"]
+    menu.delete(0,"end")
+    
+    for traj_file in traj_files:
+        menu.add_command(label=traj_file, command=lambda value=traj_file: value_inside_traj_list.set(value))    
 
 
 def send_mat_id_to_gather_data(materialID):
@@ -146,7 +237,10 @@ def send_mat_id_to_gather_data(materialID):
     Returns:
         None
     """
-    Gather_data.download_data.make_traj_from_material_id(materialID)
+    if materialID[0:3] == "mp-":
+        Gather_data.download_data.make_traj_from_material_id(materialID)
+    else:
+        print("Enter a valid ID")
 
 
 def visualise_3D():
