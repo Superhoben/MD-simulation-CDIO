@@ -6,6 +6,7 @@ from ase import units
 from asap3 import EMT
 from ase.calculators.lj import LennardJones
 from ase.md.langevin import Langevin
+from ase.io.trajectory import Trajectory
 import configparser
 
 def run_md_simulation(config_file_name: str, trajectory_file: str):
@@ -36,6 +37,7 @@ def run_md_simulation(config_file_name: str, trajectory_file: str):
         atoms = run_NVE_NVT(atoms, config_data, simulation_type)
     elif simulation_type == "something_else":
         # TODO: implement run_other_simulation, e.g.,:
+        # atoms = run_other_simulation(atoms, config_data)
         raise Exception("Running calculations with 'run_other_simulation' " +
                         "is not implemented yet.")
     # Return atoms object after simulation
@@ -127,22 +129,23 @@ def parse_config(config_file_name):
     return config_data
 
 
-def create_atoms_object(config_data):
-    """Create atoms object from the config data.
-
-    Note that this is yet to be written.
+def create_atoms_object(traj_file):
+    """Create a list which contains atom/atoms from the trajectory file.
 
     Args:
-        config_data(dict): Dictionary of parameters for simulation.
+        traj_file: The trajectory file created from the material ID
 
     Returns:
-        atoms(ase atoms object): The ase atoms object to simulate.
+        atom/atoms(list): The ase atom/atoms object.
 
     """
-    # TODO: implement parse_config to actually parse config data
-    # return atoms
-    raise Exception("run_md_simulation.py: create_atoms_object not " +
-                    "implemented yet.")
+    traj = Trajectory(traj_file)
+    atoms_list = []
+    for atom in traj:
+        atoms_list.append(atom)
+
+    return atoms_list
+
 
 
 if __name__ == "__main__":
