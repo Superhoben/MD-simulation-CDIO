@@ -145,7 +145,9 @@ def initiate_gui():
 
     config_files_menu = OptionMenu(data_frame, value_inside_config_files_list,
                                 *config_files)
-    
+
+    # Argument trick to allow us to send in more than one argument to the event handler, config_files_menu.bind('<Button-1>', config_handler)
+    # For the curious, see: https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/extra-args.html 
     def config_handler(event, config_files_menu=config_files_menu, value_inside_config_files_list=value_inside_config_files_list):   
         return update_config_file_lists(event, config_files_menu, value_inside_config_files_list)
     config_files_menu.bind('<Button-1>', config_handler)    
@@ -161,7 +163,8 @@ def initiate_gui():
 
     traj_menu = OptionMenu(data_frame, value_inside_traj_list,
                                *traj_list)
-    
+
+    #Same as for config handler
     def traj_handler(event, traj_menu=traj_menu, value_inside_traj_list=value_inside_traj_list):   
         return update_traj_file_lists(event, traj_menu, value_inside_traj_list)
     traj_menu.bind('<Button-1>', traj_handler)  
