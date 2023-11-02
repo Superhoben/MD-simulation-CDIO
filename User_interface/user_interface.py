@@ -63,6 +63,7 @@ def initiate_gui():
     # Frame 2
     #inits different visualization buttons aswell as calling the 2D-fig.
     three_dim_vis_button = Button(tabframe1, text="Visualize 3D Atom "
+
                                   "(Basic water at the moment)",
                                   command=visualise_3D)
     three_dim_vis_button.pack(padx=20, pady=20)
@@ -273,7 +274,7 @@ def update_config_file_lists(event, config_files_menu, value_inside_config_files
         value_inside_config_files_list(tkinter.StringVar): A variable which is set
             when the user selects an item in the dropdown menu. The variable is a 
             string which specifies the filename of the selected item
-                          
+            
     Returns:
         None
     """
@@ -361,7 +362,10 @@ def send_mat_id_to_gather_data(materialID):
     Returns:
         None
     """
-    Gather_data.download_data.make_traj_from_material_id(materialID)
+    if materialID[0:3] == "mp-":
+        Gather_data.download_data.make_traj_from_material_id(materialID)
+    else:
+        print("Enter a valid ID")
 
 
 def send_mat_id_to_gather_data(materialID):
