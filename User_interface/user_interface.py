@@ -16,7 +16,6 @@ from User_interface.plot_in_gui import *
 import Gather_data.configuration_file_script as cfs
 import Gather_data.download_data 
 from Simulation.run_md_simulation import run_md_simulation
-from Simulation import calc_bulk_properties
 from os import listdir
 from os.path import isfile, join
 
@@ -161,13 +160,17 @@ def initiate_gui():
     config_files_label = Label(data_frame, text="Config files", width=20)
     config_files_label.grid(row=10, column=0)
 
+    # Creates a list which contains the file names of all the files in a directory
+    # In this case the directory is the one we're standing in (since listdir has no input)
     config_files = [file for file in listdir() if isfile(file)]
     value_inside_config_files_list = StringVar(gui)
     value_inside_config_files_list.set("Select a config file")
 
     config_files_menu = OptionMenu(data_frame, value_inside_config_files_list,
                                 *config_files)
-    
+
+    # Argument trick to allow us to send in more than one argument to the event handler, config_files_menu.bind('<Button-1>', config_handler)
+    # For the curious, see: https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/extra-args.html 
     def config_handler(event, config_files_menu=config_files_menu, value_inside_config_files_list=value_inside_config_files_list):   
         return update_config_file_lists(event, config_files_menu, value_inside_config_files_list)
     config_files_menu.bind('<Button-1>', config_handler)    
@@ -183,7 +186,8 @@ def initiate_gui():
 
     traj_menu = OptionMenu(data_frame, value_inside_traj_list,
                                *traj_list)
-    
+
+    #Same as for config handler
     def traj_handler(event, traj_menu=traj_menu, value_inside_traj_list=value_inside_traj_list):   
         return update_traj_file_lists(event, traj_menu, value_inside_traj_list)
     traj_menu.bind('<Button-1>', traj_handler)  
@@ -255,12 +259,24 @@ def initiate_gui():
     # Quit
 
     quit_button = Button(data_frame, text="Exit Program", command=gui.quit)
-    quit_button.grid(pady=170)
+    quit_button.grid(pady=100)
 
     return gui
 
 
 def update_config_file_lists(event, config_files_menu, value_inside_config_files_list):
+    """Updates the config selection dropdown menu.
+
+    Args:
+        event(tkinter.Event): Handles input events, in our case mouse left click
+        config_files_menu(tkinter.OptionMenu): Dropdown menu which will be updated
+        value_inside_config_files_list(tkinter.StringVar): A variable which is set
+            when the user selects an item in the dropdown menu. The variable is a 
+            string which specifies the filename of the selected item
+                          
+    Returns:
+        None
+    """
     config_files = [file for file in listdir() if isfile(file)]
     config_files = [file for file in config_files if file[-4:] == ".ini"]
     menu = config_files_menu["menu"]
@@ -271,6 +287,18 @@ def update_config_file_lists(event, config_files_menu, value_inside_config_files
 
 
 def update_traj_file_lists(event, traj_menu, value_inside_traj_list):
+    """Updates the trajectory selection dropdown menu.
+
+    Args:
+        event(tkinter.Event): Handles input events, in our case mouse left click
+        traj_menu(tkinter.OptionMenu): Dropdown menu which will be updated
+        value_inside_traj_list(tkinter.StringVar): A variable which is set
+            when the user selects an item in the dropdown menu. The variable is a 
+            string which specifies the filename of the selected item
+                          
+    Returns:
+        None
+    """
     traj_files = [file for file in listdir("../Trajectory_files") if isfile(join("../Trajectory_files", file))]
     traj_files = [file for file in traj_files if file[-5:] == ".traj"]
     menu = traj_menu["menu"]
@@ -281,6 +309,18 @@ def update_traj_file_lists(event, traj_menu, value_inside_traj_list):
 
 
 def load_output_file_data(event, output_data_menu, value_inside_output_data):
+    """Updates the output selection dropdown menu.
+
+    Args:
+        event(tkinter.Event): Handles input events, in our case mouse left click
+        output_data_menu(tkinter.OptionMenu): Dropdown menu which will be updated
+        value_inside_output_data(tkinter.StringVar): A variable which is set
+            when the user selects an item in the dropdown menu. The variable is a 
+            string which specifies the filename of the selected item
+                          
+    Returns:
+        None
+    """
     output_files = [file for file in listdir() if isfile(file)]
     output_files = [file for file in output_files if file[-4:] == ".txt"]
     menu = output_data_menu["menu"]
@@ -291,6 +331,18 @@ def load_output_file_data(event, output_data_menu, value_inside_output_data):
 
 
 def load_traj_file_data(event, traj_menu, value_inside_traj_list):
+    """Updates the trajectory output selection dropdown menu.
+
+    Args:
+        event(tkinter.Event): Handles input events, in our case mouse left click
+        traj_menu(tkinter.OptionMenu): Dropdown menu which will be updated
+        value_inside_traj_list(tkinter.StringVar): A variable which is set
+            when the user selects an item in the dropdown menu. The variable is a 
+            string which specifies the filename of the selected item
+                          
+    Returns:
+        None
+    """
     traj_files = [file for file in listdir("../Trajectory_files") if isfile(join("../Trajectory_files", file))]
     traj_files = [file for file in traj_files if file[-5:] == ".traj"]
     menu = traj_menu["menu"]
@@ -343,10 +395,6 @@ def visualise_2D(value_inside_output_data, value_inside_traj_data, ax_canvas):
     
     print(atoms.get_potential_energy())
     plot(ax_canvas[0], ax_canvas[1], 1, atoms.get_potential_energy())
-
-    
-
-
 
 
 def visualise_3D(value_inside_output_data, value_inside_traj_data):
