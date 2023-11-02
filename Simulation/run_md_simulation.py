@@ -130,7 +130,7 @@ def parse_config(config_file_name):
 
 
 def create_atoms_object(traj_file):
-    """Create a list which contains our atom/atoms from the trajectory file.
+    """Create a list which contains atom/atoms from the trajectory file.
 
     Args:
         traj_file: The trajectory file created from the material ID
