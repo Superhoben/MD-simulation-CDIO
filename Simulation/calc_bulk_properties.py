@@ -11,7 +11,7 @@ import numpy as np
 from ase.units import kJ
 
 
-def calc_bulk_modulus(atoms: Atoms, output_dict):
+def calc_bulk_modulus(atoms: Atoms, output_dict={'bulk_modulus': []}):
     """Calculate the equilibrium bulk modulus B for solids using the equation of state.
 
     It is directly connnected to the second derivative given by the equation

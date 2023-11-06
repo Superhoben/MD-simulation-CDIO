@@ -3,7 +3,7 @@ from ase import Atoms
 import numpy as np
 
 
-def calc_temp(atoms, output_dict):
+def calc_temp(atoms, output_dict={'temperature': []}):
     """ Calculates temperature of atoms object
 
     Args:
@@ -18,7 +18,7 @@ def calc_temp(atoms, output_dict):
     return temperature
 
 
-def calc_pressure(atoms: Atoms, output_dict, external_field=None):
+def calc_pressure(atoms: Atoms, output_dict={'pressure': []}, external_field=None):
     """Calculate pressure of atoms object with or without an external field.
 
     The formula used is P=1/3V*(2*E_kin(t)+sum_over_all_atoms{r_i*f_i}) where

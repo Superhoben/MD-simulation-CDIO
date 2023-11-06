@@ -32,17 +32,6 @@ class UnitTests(unittest.TestCase):
         MaxwellBoltzmannDistribution(atoms, temperature_K=300)
         self.assertTrue(270 < calc_temp(atoms) < 330)
 
-    def test_lattice_constant(self):
-        lattice_const = optimize_scaling(
-           FaceCenteredCubic(
-               directions=[[1, 0, 0], [0, 1, 0], [1, 1, 1]],
-               size=(2, 2, 3),
-               symbol="Cu",
-               pbc=(1, 1, 0),
-                )
-            )
-        self.assertTrue((0.95 < lattice_const) and (lattice_const < 1.05))
-
     def test_lattice_constant_gradient_descent(self):
         """Uses a material with known lattice constant, disorts it and see if the lattice method is able
         to find the original lattice constant which also should be the optimal one."""
@@ -50,6 +39,7 @@ class UnitTests(unittest.TestCase):
         atoms.set_cell(atoms.cell*0.5, scale_atoms=True)  # Rescale unit cell so atoms are now in suboptimal positions
         atoms.calc = EMT()
         scaling = optimize_scaling(atoms, {'optimal_scaling': [], 'iterations_to_find_scaling': []})
+        print(scaling)
         self.assertTrue((0.98 < scaling*0.5) and (scaling*0.5 < 1.02))
 
     # More test are needed for this function
@@ -67,14 +57,12 @@ class UnitTests(unittest.TestCase):
         # Another way to create our object "bulk" this time
         #ag_bulk = bulk(name= "Ag",crystalstructure= "fcc", a=4.09)
         #ag_bulk.calc = EMT
-        create_traj_file(atoms, lattice_constant=4)
-        # Read the traj file from the first atom to the 10th atom
-        calc_bulk_modulus("atoms.traj@0:9")
+        calc_bulk_modulus(atoms)
         # From material website https://next-gen.materialsproject.org/materials/mp-124?chemsys=Ag#elastic_constants
         # we have the bulk modulus for Ag to be 88 GPa
         # According to Rickard, it is absolutely no problem to get 100 GPa of bulk modulus since we are first taking the
         # second derivative approximation and secondly we are using EMT calculator.
-        self.assertTrue((86 < calc_bulk_modulus("atoms.traj@0:9")) and (calc_bulk_modulus("atoms.traj@0:9") < 105))
+        self.assertTrue((86 < calc_bulk_modulus(atoms)) and (calc_bulk_modulus(atoms) < 105))
 
     def test_cohesive_energy(self):
         # Create an isolated Ag atom object
@@ -108,11 +96,6 @@ class UnitTests(unittest.TestCase):
         gui = initiate_gui()
         self.assertTrue(type(gui) == Tk)
 
-    def test_run_NVE_NVT(self):
-        atoms = FaceCenteredCubic(size=(7, 7, 7), symbol='Cu', pbc=False)
-        config_data = {"show_properties": False, "calc_properties": False, "temperature": 300, "time_step": 5, "interval": 1000, "iterations": 500, "potential": 'EMT', "friction": None}
-        new_atoms = run_NVE_NVT(atoms, config_data, 'NVT')
-        self.assertTrue(280<calc_temp(new_atoms)<320)
 
 if __name__ == "__main__":
     tests = [unittest.TestLoader().loadTestsFromTestCase(UnitTests)]

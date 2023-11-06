@@ -5,7 +5,7 @@ from asap3 import EMT
 from ase import Atoms
 
 
-def optimize_scaling(atoms, output_dict, learning_rate=0.05):
+def optimize_scaling(atoms, output_dict={'optimal_scaling': [], 'iterations_to_find_scaling': []}, learning_rate=0.05):
     """Find the optimal scaling of the lattice constant using a gradient descent method.
 
     The gradient descent method is modified by a sigmoid function since energy changes
@@ -37,10 +37,11 @@ def optimize_scaling(atoms, output_dict, learning_rate=0.05):
     old_energy_per_atom = atoms.get_total_energy()
     # Improve the lattice constant performing gradient descent until the gradient becomes
     # sufficiently small. A maximum of 100
-    while (abs(e_scaling_gradient) > 0.01) or (number_of_iterations > 100):
+    while (abs(e_scaling_gradient) > 0.01) or (number_of_iterations < 3):
         atoms_scaled = atoms.copy()
+        atoms_scaled.calc = atoms.calc
         atoms_scaled.set_cell(atoms.cell*scaling, scale_atoms=True)
-        energy_per_atom = atoms.get_total_energy()/len(atoms_scaled)
+        energy_per_atom = atoms_scaled.get_total_energy()/len(atoms_scaled)
         e_scaling_gradient = (energy_per_atom-old_energy_per_atom)/(scaling-old_scaling)
         old_scaling = scaling
         scaling = old_scaling - learning_rate*e_scaling_gradient/(2+abs(e_scaling_gradient))
@@ -49,6 +50,9 @@ def optimize_scaling(atoms, output_dict, learning_rate=0.05):
 #        print("New scaling: ", scaling)
         old_energy_per_atom = energy_per_atom
         number_of_iterations += 1
+        if (number_of_iterations > 100):
+            scaling = 0
+            break
     output_dict['optimal_scaling'].append(scaling)
     output_dict['iterations_to_find_scaling'].append(number_of_iterations)
     return scaling
