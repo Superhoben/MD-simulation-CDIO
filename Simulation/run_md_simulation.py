@@ -1,16 +1,25 @@
 """This runs MD simulations."""
-from ase.lattice.cubic import FaceCenteredCubic
+import os, sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.md.verlet import VelocityVerlet
 from ase import units
-from asap3 import EMT
+from asap3 import EMT, LennardJones
 from ase.calculators.lj import LennardJones
 from ase.md.langevin import Langevin
 from ase.io.trajectory import Trajectory
-import configparser
+from configparser import ConfigParser
+import json
+from Simulation import calc_properties, calc_bulk_properties, lattice_constant
 
-def run_md_simulation(config_file_name: str, trajectory_file: str):
 
+def save_configuration(atoms, output_file_name):
+    path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files/'
+    traj = Trajectory(path+output_file_name+'.traj', "w")
+    traj.write(atoms)
+
+
+def run_single_md_simulation(config_file: str, traj_file: str, output_name: str):
     """Skeleton for the MD simulation program.
 
     Currently it is written mostly in pseudo code.
@@ -24,129 +33,86 @@ def run_md_simulation(config_file_name: str, trajectory_file: str):
         atoms(ase atoms object): The ase atoms object after simulation.
 
     """
-
     # Parse the config file to get dictionary of data
-    config_data = parse_config(config_file_name)
+    config_path = os.path.dirname(os.path.abspath(__file__)) + '/../Input_config_files/'
+    config_data = ConfigParser()
+    config_data.read(config_path+config_file)
 
     # Create atoms object for simulation
-    atoms = create_atoms_object(config_data)
+    traj_path = os.path.dirname(os.path.abspath(__file__)) + '/../Input_trajectory_files/'
+    traj = Trajectory(traj_path+traj_file)
+    atoms = traj[0]
 
-    # Call appropriate function depending on simulation type
-    simulation_type = config_data['ensemble']
-    if simulation_type == "NVE" or simulation_type == "NVT":
-        atoms = run_NVE_NVT(atoms, config_data, simulation_type)
-    elif simulation_type == "something_else":
-        # TODO: implement run_other_simulation, e.g.,:
-        # atoms = run_other_simulation(atoms, config_data)
-        raise Exception("Running calculations with 'run_other_simulation' " +
-                        "is not implemented yet.")
-    # Return atoms object after simulation
-    return atoms
-
-
-def run_NVE_NVT(atoms, config_data, simulation_type):
-    """Run NVE or NVT simulation.
-
-    Args:
-        atoms(ase atoms object): The ase atoms object to simulate.
-        config_data(dict): Dictionary of parameters for simulation.
-        simulation_type(string): NVE or NVT
-
-    Returns:
-        atoms(ase atoms object): The ase atoms object after simulation.
-
-    """
     # Set potential for simulation
-    potential = config_data['potential']
+    potential = config_data['SimulationSettings']['potential']
     if potential == "EMT":
         atoms.calc = EMT()
     elif potential == "LennardJones":
         atoms.calc = LennardJones()
-    elif potential == "other_potential":
+    else:
         # TODO: implement running with other potentials, e.g.,:
         # atoms.calc = OtherPotential()
-        raise Exception(
-            "Running calculations with 'other_potential'" +
-            "is not implemented yet."
-        )
+        raise Exception("Running calculations with potential '" + potential + "' is not implemented yet.")
 
     # Set dynamics module depending on simulation type
-    if simulation_type == "NVE":
-        MaxwellBoltzmannDistribution(atoms,
-                                     temperature_K=int(config_data['temperature']))
-        dyn = VelocityVerlet(atoms, int(config_data['time_step'])*units.fs)
-    elif simulation_type == "NVT":
-        dyn = Langevin(
-            atoms,
-            timestep=config_data['time_step']*units.fs,
-            temperature_K=config_data['temperature'],
-            friction=(config_data['friction'] or 0.005),
-        )
-        MaxwellBoltzmannDistribution(atoms,
-                                     temperature_K=config_data['temperature'])
+    ensemble = config_data['SimulationSettings']['ensemble']
+    if ensemble == "NVE":
+        MaxwellBoltzmannDistribution(atoms, temperature_K=int(config_data['SimulationSettings']['temperature']))
+        dyn = VelocityVerlet(atoms, int(config_data['SimulationSettings']['time_step'])*units.fs)
+    elif ensemble == "NVT":
+        dyn = Langevin(atoms, timestep=config_data['SimulationSettings']['time_step']*units.fs,
+                       temperature_K=config_data['SimulationSettings']['temperature'],
+                       friction=(config_data['SimulationSettings']['friction'] or 0.005))
+        MaxwellBoltzmannDistribution(atoms, temperature_K=config_data['SimulationSettings']['temperature'])
+    else:
+        # TODO: implement run_other_simulation, e.g.,:
+        # atoms = run_other_simulation(atoms, config_data)
+        raise Exception("Running calculations with ensemble '" + ensemble + "' is not implemented yet.")
 
-    if config_data['show_properties'] is True:
-        dyn.attach(show_properties(atoms, config_data),
-                   interval=config_data['interval'])
+    # This dict will contain output data of the simulation to be written into the output text file
+    output_dict = {}
+    # Attach recorders that calculate a certain property and store in the output_dict
+    interval_to_record_temperature = int(config_data['RecordingIntervals']['record_temperature'])
+    if interval_to_record_temperature:
+        output_dict['temperature'] = []
+        dyn.attach(calc_properties.calc_temp, interval_to_record_temperature, atoms, output_dict)
 
-    dyn.run(5000)
+    interval_to_record_pressure = int(config_data['RecordingIntervals']['record_pressure'])
+    if interval_to_record_temperature:
+        output_dict['pressure'] = []
+        dyn.attach(calc_properties.calc_pressure, interval_to_record_pressure, atoms, output_dict)
+
+    interval_to_record_bulk_modulus = int(config_data['RecordingIntervals']['record_bulk_modulus'])
+    if interval_to_record_bulk_modulus:
+        output_dict['bulk_modulus'] = []
+        dyn.attach(calc_bulk_properties.calc_bulk_modulus, interval_to_record_bulk_modulus, atoms, output_dict)
+
+    interval_to_record_optimal_scaling = int(config_data['RecordingIntervals']['record_optimal_scaling'])
+    if interval_to_record_optimal_scaling:
+        output_dict['optimal_scaling'] = []
+        output_dict['iterations_to_find_scaling'] = []
+        dyn.attach(lattice_constant.optimize_scaling, interval_to_record_optimal_scaling, atoms, output_dict)
+
+    interval_to_record_configuration = int(config_data['RecordingIntervals']['record_configuration'])
+    if interval_to_record_configuration:
+        dyn.attach(save_configuration, interval_to_record_configuration, atoms, output_name)
+
+    # Run simulation with the attached recorders
+    dyn.run(int(config_data['SimulationSettings']['step_number']))
+
+    path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/'
+    with open(path + output_name + '.txt', 'w') as file:
+        json.dump(output_dict, file)
 
     return atoms
 
 
-def show_properties(atoms, config_data):
-    """Show properties in GUI duing simulations.
-
-    Note that this is yet to be written.
-
-    Args:
-        atoms(ase atoms object): The ase atoms object to simulate.
-        config_data(dict): Dictionary of parameters for simulation.
-    """
-    # TODO: implement print_in_gui and calc_temp:
-    # print_in_gui(calc_temp())
-    raise Exception("run_md_simulation.py: print_in_gui and calc_temp not " +
-                    "implemented yet.")
-    return
-
-
-def parse_config(config_file_name):
-    """Parse config file into a dictionary.
-
-    Note that this is yet to be written.
-
-    Args:
-        config_file_name(str): Parameters to use
-        in simulation.
-
-    Returns:
-        config_data(dict): Dictionary of parameters for simulation.
-
-    """
-    config = configparser.ConfigParser()
-    config.read('../User_interface/' + config_file_name)
-    config_data = config['config1']
-    return config_data
-
-
-def create_atoms_object(traj_file):
-    """Create a list which contains atom/atoms from the trajectory file.
-
-    Args:
-        traj_file: The trajectory file created from the material ID
-
-    Returns:
-        atom/atoms(list): The ase atom/atoms object.
-
-    """
-    traj = Trajectory(traj_file)
-    atoms_list = []
-    for atom in traj:
-        atoms_list.append(atom)
-
-    return atoms_list
-
+def run_md_simulation(config_file_list, trajectory_file_list):
+    i=0
+    for traj_file in trajectory_file_list:
+        i=i+1
+        run_single_md_simulation(config_file_list[0], traj_file, 'output'+str(i))
 
 
 if __name__ == "__main__":
-    run_md_simulation("config1.ini")
+    run_single_md_simulation("config1.ini", 'mp-124.traj', 'out_put1')

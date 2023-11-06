@@ -11,27 +11,7 @@ import numpy as np
 from ase.units import kJ
 
 
-def create_traj_file(atoms: Atoms, lattice_constant: float):
-    """Create our trajectory file from the best given lattice constant.
-
-    Args:
-        atoms(ase atom object): the system to create the trajectory file for
-        lattice constant (float): best lattice constant
-
-    Returns:
-       None
-    """
-    # approximate_pos = lattice_constant /2
-    cell = atoms.get_cell()
-    traj = Trajectory("atoms.traj", "w")   # Creating the traj. file
-    # Create for example only 10 differnet configuration for different lattice constant
-    for element in np.linspace(0.999, 1.001, 10):
-        atoms.set_cell(cell * element, scale_atoms=True)
-        atoms.get_potential_energy()
-        traj.write(atoms)
-
-
-def calc_bulk_modulus(traj_file):
+def calc_bulk_modulus(atoms: Atoms, output_dict={'bulk_modulus': []}):
     """Calculate the equilibrium bulk modulus B for solids using the equation of state.
 
     It is directly connnected to the second derivative given by the equation
@@ -46,20 +26,20 @@ def calc_bulk_modulus(traj_file):
     Returns:
         (float): the optimal bulk modulus in eV/Ångstrom^3
     """
-    traj_file = read(traj_file)
-    # Extract volumes and energies
+    cell = atoms.get_cell()
     volumes = []
     energies = []
-    for element in traj_file:
-        volume = element.get_volume()   # in Å^3
-        volumes.append(volume)
-        energy = element.get_potential_energy()  # in eV
-        energies.append(energy)
+    # Create for example only 10 differnet configuration for different lattice constant
+    for element in np.linspace(0.999, 1.001, 10):
+        atoms.set_cell(cell * element, scale_atoms=True)
+        volumes.append(atoms.get_volume())
+        energies.append(atoms.get_potential_energy())
     # Equation of state
     eos = EquationOfState(volumes, energies)
     v0, e0, B = eos.fit()
     B = B / kJ * 1.0e24
     # print(B, "GPa")
+    output_dict['bulk_modulus'].append(B)
     return B
 
 

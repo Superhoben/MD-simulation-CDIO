@@ -1,13 +1,13 @@
 """Import the configparser library which creates the config file."""
+import os
 from configparser import ConfigParser
 
-config = ConfigParser()
 
-
-def config_file(ensemble='NVE', temperature=500, potential='EMT',
+def config_file(file_name='default_config', ensemble='NVE', temperature=500, potential='EMT',
                 step_number=5000, time_step=5, friction=0.005,
-                interval=100, show_properties=False):
-    """Create the configuration file.
+                record_cohesive_energy = 0, record_temperature = 0, record_pressure = 0, 
+                record_configuration = 0, record_bulk_modulus = 0, record_optimal_scaling = 0):
+    """Create the configuration file
 
     Args:
         ensemble(string): Ensemble to use in simulation
@@ -21,20 +21,22 @@ def config_file(ensemble='NVE', temperature=500, potential='EMT',
 
     Returns:
         None
-
     """
-    if ensemble == "Select an Option":
-        ensemble = "NVE"
-    if potential == "Select an Option":
-        potential = "EMT"
+    config = ConfigParser()
+    config['SimulationSettings'] = {'ensemble': ensemble, 'temperature': temperature,
+                                    'potential': potential, 'step_number': step_number,
+                                    'time_step': time_step, 'friction': friction}
 
-    config['config1'] = {'ensemble': ensemble, 'temperature': temperature,
-                         'potential': potential, 'step_number': step_number,
-                         'time_step': time_step, 'friction': friction,
-                         'interval': interval, 'show_properties': show_properties}
+    config['RecordingIntervals'] = {'record_cohesive_energy': record_cohesive_energy,
+                                    'record_temperature': record_temperature,
+                                    'record_pressure': record_pressure,
+                                    'record_configuration': record_configuration,
+                                    'record_bulk_modulus': record_bulk_modulus,
+                                    'record_optimal_scaling': record_optimal_scaling}
 
     # Write to config file
-    with open('config1.ini', 'w') as config_file:
+    path = os.path.dirname(os.path.abspath(__file__)) + '/../Input_config_files/'
+    with open(path+file_name+'.ini', 'w') as config_file:
         config.write(config_file)
 
 
@@ -134,4 +136,4 @@ def material_id():
 
 
 if __name__ == "__main__":
-    config_file()
+    config_file('config_parser_test')

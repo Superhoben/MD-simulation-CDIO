@@ -3,7 +3,7 @@ from ase import Atoms
 import numpy as np
 
 
-def calc_temp(atoms):
+def calc_temp(atoms, output_dict={'temperature': []}):
     """ Calculates temperature of atoms object
 
     Args:
@@ -12,11 +12,13 @@ def calc_temp(atoms):
     Returns:
         (float): the calculated temperature
     """
-    ekin = atoms.get_kinetic_energy() / len(atoms)
-    return ekin / (1.5 * units.kB)
+    ekin_per_atom = atoms.get_kinetic_energy() / len(atoms)
+    temperature = ekin_per_atom / (1.5 * units.kB)
+    output_dict['temperature'].append(temperature)
+    return temperature
 
 
-def calc_pressure(atoms: Atoms, external_field=None):
+def calc_pressure(atoms: Atoms, output_dict={'pressure': []}, external_field=None):
     """Calculate pressure of atoms object with or without an external field.
 
     The formula used is P=1/3V*(2*E_kin(t)+sum_over_all_atoms{r_i*f_i}) where
@@ -41,10 +43,12 @@ def calc_pressure(atoms: Atoms, external_field=None):
 
     if external_field == None:
         pressure_in_eV_per_Å3 = (2*ekin+np.sum(np.multiply(forces, positions)))/(3*volume)
+        output_dict['pressure'].append(pressure_in_eV_per_Å3*160.21766208)
         return pressure_in_eV_per_Å3*160.21766208
     else:
         forces += external_field(atoms)
         # When having an external field point of origin needs to be centered
         centered_positions = positions-positions.mean(axis=0)
         pressure_in_eV_per_Å3 = (2*ekin+np.sum(np.multiply(forces, centered_positions)))/(3*volume)
+        output_dict['temperature'].append(pressure_in_eV_per_Å3*160.21766208)
         return pressure_in_eV_per_Å3*160.21766208
