@@ -26,7 +26,7 @@ def make_traj_from_material_id(material_id: str):
     with MPRester("Aumz0uNirwQYwJgWgrLVFq3Fr1Z4SfwK") as mpr:
         some_material = mpr.materials.search(material_ids=[material_id])
         atoms = AseAtomsAdaptor.get_atoms(some_material[-1].structure)
-        path_to_traj_folder = os.path.dirname(os.path.abspath(__file__)) + '/../Trajectory_files/'
+        path_to_traj_folder = os.path.dirname(os.path.abspath(__file__)) + '/../Input_trajectory_files/'
         location_and_name = path_to_traj_folder + material_id + '.traj'
         traj = Trajectory(location_and_name, "w")
         traj.write(atoms)
