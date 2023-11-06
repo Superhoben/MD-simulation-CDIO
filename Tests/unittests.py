@@ -7,9 +7,9 @@ from ase import Atoms
 #from asap3 import EMT
 from ase.calculators.emt import EMT
 from tkinter import Tk
-from Simulation.lattice_constant import optimize_lattice_const, example_simulation_function, optimize_lattice_const_gradient_descent
+from Simulation.lattice_constant import optimize_scaling
 from Simulation.calc_properties import calc_temp, calc_pressure
-from Simulation.calc_bulk_properties import create_traj_file, calc_bulk_modulus, calculate_cohesive_energy
+from Simulation.calc_bulk_properties import calc_bulk_modulus, calculate_cohesive_energy
 from Simulation.run_md_simulation import run_NVE_NVT
 from Gather_data.download_data import get_ASE_atoms_from_material_id
 from User_interface.user_interface import initiate_gui
@@ -33,7 +33,7 @@ class UnitTests(unittest.TestCase):
         self.assertTrue(270 < calc_temp(atoms) < 330)
 
     def test_lattice_constant(self):
-        lattice_const = optimize_lattice_const(
+        lattice_const = optimize_scaling(
            FaceCenteredCubic(
                directions=[[1, 0, 0], [0, 1, 0], [1, 1, 1]],
                size=(2, 2, 3),
@@ -48,7 +48,8 @@ class UnitTests(unittest.TestCase):
         to find the original lattice constant which also should be the optimal one."""
         atoms = get_ASE_atoms_from_material_id('mp-30')  # Get atoms object with atoms in optimal positions
         atoms.set_cell(atoms.cell*0.5, scale_atoms=True)  # Rescale unit cell so atoms are now in suboptimal positions
-        scaling, _, _ = optimize_lattice_const_gradient_descent(atoms, example_simulation_function)
+        atoms.calc = EMT()
+        scaling = optimize_scaling(atoms, {'optimal_scaling': [], 'iterations_to_find_scaling': []})
         self.assertTrue((0.98 < scaling*0.5) and (scaling*0.5 < 1.02))
 
     # More test are needed for this function
