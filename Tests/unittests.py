@@ -10,7 +10,7 @@ from tkinter import Tk
 from Simulation.lattice_constant import optimize_scaling
 from Simulation.calc_properties import calc_temp, calc_pressure
 from Simulation.calc_bulk_properties import calc_bulk_modulus, calculate_cohesive_energy
-from Simulation.run_md_simulation import run_NVE_NVT
+from Simulation.run_md_simulation import run_single_md_simulation
 from Gather_data.download_data import get_ASE_atoms_from_material_id
 from User_interface.user_interface import initiate_gui
 

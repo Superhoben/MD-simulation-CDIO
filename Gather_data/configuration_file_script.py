@@ -136,4 +136,4 @@ def material_id():
 
 
 if __name__ == "__main__":
-    config_file('config_parser_test.ini')
+    config_file('config_parser_test')

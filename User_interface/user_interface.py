@@ -17,7 +17,7 @@ import Gather_data.configuration_file_script as cfs
 import Gather_data.download_data 
 from Simulation.run_md_simulation import run_single_md_simulation
 from os import listdir
-from os.path import isfile, join
+from os.path import isfile
 
 
 def initiate_gui():
@@ -161,15 +161,22 @@ def initiate_gui():
     rec_scaling_entry = Entry(data_frame)
     rec_scaling_entry.grid(row=11, column=2)
 
+    config_name_label = Label(data_frame, text="Config file name", width=20)
+    config_name_label.grid(row=12, column=0)
+
+    config_name_entry = Entry(data_frame)
+    config_name_entry.grid(row=12, column=2)
+
     config_button = Button(data_frame, text='Write to config file',
                            command=lambda: cfs.config_file(
-                               'default_config',
+                               config_name_entry.get(),
                                value_inside_ensemble_list.get(),
                                temperature_entry.get() or 500,
                                value_inside_potential_list.get(),
                                steps_entry.get() or 5000,
                                time_steps_entry.get() or 5,
                                friction_entry.get() or 0.005,
+                               0,
                                rec_temp_entry.get() or 0,
                                rec_pressure_entry.get() or 0,
                                rec_config_entry.get() or 0,
@@ -178,23 +185,23 @@ def initiate_gui():
                                )
                            )
 
-    config_button.grid(row=12, column=1, pady=10)
+    config_button.grid(row=13, column=1, pady=10)
 
     # Gather data
     materialID_label = Label(data_frame, text="Material ID", width=20)
-    materialID_label.grid(row=13, column=0)
+    materialID_label.grid(row=14, column=0)
 
     materialID_entry = Entry(data_frame)
-    materialID_entry.grid(row=13, column=2)
+    materialID_entry.grid(row=14, column=2)
 
     gather_data_button = Button(data_frame, text='Gather material data from Material ID',
                                 command=lambda: send_mat_id_to_gather_data(
                                 materialID_entry.get()))
-    gather_data_button.grid(row=14, column=1, pady=10)
+    gather_data_button.grid(row=15, column=1, pady=10)
 
     # Simulation
     config_files_label = Label(data_frame, text="Config files", width=20)
-    config_files_label.grid(row=15, column=0)
+    config_files_label.grid(row=16, column=0)
 
     # Creates a list which contains the file names of all the files in a directory
     # In this case the directory is the one we're standing in (since listdir has no input)
@@ -211,10 +218,10 @@ def initiate_gui():
         return update_input_config_list(event, config_files_menu, value_inside_config_files_list)
     config_files_menu.bind('<Button-1>', config_handler)    
 
-    config_files_menu.grid(row=15, column=2)
+    config_files_menu.grid(row=16, column=2)
 
     ensamble_label = Label(data_frame, text=".traj files", width=20)
-    ensamble_label.grid(row=16, column=0)
+    ensamble_label.grid(row=17, column=0)
 
     traj_list = [file for file in listdir() if isfile(file)]
     value_inside_traj_list = StringVar(gui)
@@ -228,7 +235,7 @@ def initiate_gui():
         return update_input_traj_list(event, traj_menu, value_inside_traj_list)
     input_traj_menu.bind('<Button-1>', input_traj_handler)  
 
-    input_traj_menu.grid(row=16, column=2)
+    input_traj_menu.grid(row=17, column=2)
 
     # For a future state
     """
@@ -254,10 +261,10 @@ def initiate_gui():
 
     # Load traj file data
     output_name_label = Label(data_frame, text="Output name", width=20)
-    output_name_label.grid(row=17, column=0)
+    output_name_label.grid(row=18, column=0)
 
     output_name_entry = Entry(data_frame)
-    output_name_entry.grid(row=17, column=2)
+    output_name_entry.grid(row=18, column=2)
 
     # Start sim button 
     md_sim_button = Button(data_frame, text='Start Simulation',
@@ -265,13 +272,13 @@ def initiate_gui():
                                                                     value_inside_traj_list.get(),
                                                                     output_name_entry.get()))
 
-    md_sim_button.grid(row=18, column=1)
+    md_sim_button.grid(row=19, column=1)
 
     # Visualise results button
     vis_res_button = Button(data_frame, text='Potential energy',
                             command=lambda: visualise_2D(value_inside_output_data.get(), value_inside_traj_data.get(), ax_canvas))
 
-    vis_res_button.grid(row=19, column=1)
+    vis_res_button.grid(row=20, column=1)
 
     # Quit
     quit_button = Button(data_frame, text="Exit Program", command=gui.quit)
