@@ -10,48 +10,66 @@ from ase.io.trajectory import Trajectory
 import os.path
 
 
-def make_traj_from_material_id(material_id: str):
-    """Take a material id and save a corresponding atoms object in
+def make_traj_from_material_id(material_id: str, api_key: str):
+    """Take a material id and an API key and save a corresponding atoms object in
     a .traj file which can be found in the folder Trajectory files.
 
     Args:
         material_id (str): The material id must exist in the next-gen material
             projects database and should be in the form 'mp-1234' but with
             another number.
+        api_key (str): The user's Materials Project API key.
 
     Returns:
         none
     """
     # This uses Gustav Wassbäck's personal API-key to access the database
-    with MPRester("Aumz0uNirwQYwJgWgrLVFq3Fr1Z4SfwK") as mpr:
+    #with MPRester("Aumz0uNirwQYwJgWgrLVFq3Fr1Z4SfwK") as mpr:
+    ''' 
+    with MPRester(api_key) as mpr:
         some_material = mpr.materials.search(material_ids=[material_id])
         atoms = AseAtomsAdaptor.get_atoms(some_material[-1].structure)
         path_to_traj_folder = os.path.dirname(os.path.abspath(__file__)) + '/../Input_trajectory_files/'
         location_and_name = path_to_traj_folder + material_id + '.traj'
         traj = Trajectory(location_and_name, "w")
-        traj.write(atoms)
+        traj.write(atoms) 
+    '''
+
+    with MPRester(api_key) as mpr:
+        some_material = mpr.materials.search(material_ids=[material_id])
+        if some_material:
+            atoms = AseAtomsAdaptor.get_atoms(some_material[-1].structure)
+            path_to_traj_folder = os.path.dirname(os.path.abspath(__file__)) + '/../Input_trajectory_files/'
+            location_and_name = path_to_traj_folder + material_id + '.traj'
+            traj = Trajectory(location_and_name, "w")
+            traj.write(atoms)
+        else:
+            print(f"Material ID {material_id} not found in the database.")
 
 
-def get_ASE_atoms_from_material_id(material_id: str):
-    """Take a material id and return the primitive unitcell of
+
+def get_ASE_atoms_from_material_id(material_id: str, api_key: str):
+    """Take a material id and an API key and return the primitive unitcell of
     the material in a format that can be used in ASE simulations.
 
     Args:
         material_id (str): The material id must exist in the next-gen material
             projects database and should be in the form 'mp-1234' but with
             another number.
+        api_key (str): The user's Materials Project API key.
 
     Returns:
         atoms: An ASE atoms object, for more information see
             https://wiki.fysik.dtu.dk/ase/ase/atoms.html
     """
     # This uses Gustav Wassbäck's personal API-key to access the database
-    with MPRester("Aumz0uNirwQYwJgWgrLVFq3Fr1Z4SfwK") as mpr:
+    #with MPRester("Aumz0uNirwQYwJgWgrLVFq3Fr1Z4SfwK") as mpr:
+    with MPRester(api_key) as mpr:
         some_material = mpr.materials.search(material_ids=[material_id])
         return AseAtomsAdaptor.get_atoms(some_material[-1].structure)
 
 
-def find_materials_by_elements_and_bandgap(elements: list[str], band_gap: tuple[float, float], fields: list[str]):
+def find_materials_by_elements_and_bandgap(elements: list[str], band_gap: tuple[float, float], fields: list[str], api_key: str):
     """Search for materials containing at least every material mentioned in 'elements' that has a band gap in the
     range specified by 'band_gap' and for these materials gather only the properties specified by 'fields'.
 
@@ -78,6 +96,7 @@ def find_materials_by_elements_and_bandgap(elements: list[str], band_gap: tuple[
             'homogeneous_poisson', 'e_total', 'e_ionic', 'e_electronic', 'n', 'e_ij_max', 'weighted_surface_energy_EV_PER_ANG2',
             'weighted_surface_energy', 'weighted_work_function', 'surface_anisotropy', 'shape_factor', 'has_reconstructed',
             'possible_species', 'has_props', 'theoretical', 'database_IDs']
+        api_key (str): The user's Materials Project API key.
 
     Returns:
         dict[str, MPDataDoc]: A dictionary with material id's a keys and MPDataDocs object containing all properties for the
@@ -86,7 +105,9 @@ def find_materials_by_elements_and_bandgap(elements: list[str], band_gap: tuple[
     if not ("material_id" in fields):
         fields.append("material_id")
     # This uses Gustav Wassbäck's personal API-key to access the database
-    with MPRester("Aumz0uNirwQYwJgWgrLVFq3Fr1Z4SfwK") as mpr:
+    #with MPRester("Aumz0uNirwQYwJgWgrLVFq3Fr1Z4SfwK") as mpr:
+
+    with MPRester(api_key) as mpr:
         matching_materials = mpr.materials.summary.search(elements=elements, band_gap=band_gap, fields=fields)
         material_dictionary = {}
         for material in matching_materials:
@@ -97,7 +118,10 @@ def find_materials_by_elements_and_bandgap(elements: list[str], band_gap: tuple[
 
 # Example to show how it works
 if __name__ == "__main__":
-    materials_dict = find_materials_by_elements_and_bandgap(["Ni", "Sb", "Zr"], (0, 1), ["band_gap"])
+    api_key = "YOUR_API_KEY_HERE"  # Replace with your Materials Project API key
+    # Issa's api_key to test this script, i will delete it later
+    api_key = "t4XwMQ3LLvLcnugLQQCCCII6BG85APG8"
+    materials_dict = find_materials_by_elements_and_bandgap(["Ni", "Sb", "Zr"], (0, 1), ["band_gap"],api_key)
     print(materials_dict.keys())
     print(materials_dict.values())
-    make_traj_from_material_id('mp-24')
+    make_traj_from_material_id('mp-24',api_key)
