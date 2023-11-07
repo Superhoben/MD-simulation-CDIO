@@ -78,7 +78,7 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
         dyn.attach(calc_properties.calc_temp, interval_to_record_temperature, atoms, output_dict)
 
     interval_to_record_pressure = int(config_data['RecordingIntervals']['record_pressure'])
-    if interval_to_record_temperature:
+    if interval_to_record_pressure:
         output_dict['pressure'] = []
         dyn.attach(calc_properties.calc_pressure, interval_to_record_pressure, atoms, output_dict)
 
@@ -102,6 +102,7 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
 
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/'
     with open(path + output_name + '.txt', 'w') as file:
+        file.seek(0)
         json.dump(output_dict, file)
 
     return atoms

@@ -50,5 +50,5 @@ def calc_pressure(atoms: Atoms, output_dict={'pressure': []}, external_field=Non
         # When having an external field point of origin needs to be centered
         centered_positions = positions-positions.mean(axis=0)
         pressure_in_eV_per_Å3 = (2*ekin+np.sum(np.multiply(forces, centered_positions)))/(3*volume)
-        output_dict['temperature'].append(pressure_in_eV_per_Å3*160.21766208)
+        output_dict['pressure'].append(pressure_in_eV_per_Å3*160.21766208)
         return pressure_in_eV_per_Å3*160.21766208
