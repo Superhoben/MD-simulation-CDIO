@@ -1,9 +1,8 @@
-from ase import units
 from ase import Atoms
 import numpy as np
 
 
-def calc_temp(atoms, output_dict={'temperature': []}):
+def calc_temp(atoms: Atoms, output_dict={'temperature': []}):
     """ Calculates temperature of atoms object
 
     Args:
@@ -12,8 +11,7 @@ def calc_temp(atoms, output_dict={'temperature': []}):
     Returns:
         (float): the calculated temperature
     """
-    ekin_per_atom = atoms.get_kinetic_energy() / len(atoms)
-    temperature = ekin_per_atom / (1.5 * units.kB)
+    temperature = atoms.get_temperature()
     output_dict['temperature'].append(temperature)
     return temperature
 
