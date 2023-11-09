@@ -142,7 +142,7 @@ def initiate_gui():
     friction_entry = Entry(data_frame)
     friction_entry.grid(row=5, column=2)
 
-    rec_cohesive_label = Label(data_frame, text="Intervals for recording attributes", width=30)
+    rec_cohesive_label = Label(data_frame, text="Intervals for recording attributes", width=35)
     rec_cohesive_label.grid(row=6, column=1)
 
     rec_temp_label = Label(data_frame, text="Temperature", width=20)
@@ -182,20 +182,20 @@ def initiate_gui():
     config_name_entry.grid(row=12, column=2)
 
     config_button = Button(data_frame, text='Write to config file',
-                           command=lambda: cfs.config_file(
+                           command=lambda: write_to_config(
                                config_name_entry.get(),
                                value_inside_ensemble_list.get(),
-                               temperature_entry.get() or 500,
+                               temperature_entry.get() or "500",
                                value_inside_potential_list.get(),
-                               steps_entry.get() or 5000,
-                               time_steps_entry.get() or 5,
-                               friction_entry.get() or 0.005,
-                               0,
-                               rec_temp_entry.get() or 0,
-                               rec_pressure_entry.get() or 0,
-                               rec_config_entry.get() or 0,
-                               rec_bulk_entry.get() or 0,
-                               rec_scaling_entry.get() or 0
+                               steps_entry.get() or "5000",
+                               time_steps_entry.get() or "5",
+                               friction_entry.get() or "0.005",
+                               "0",
+                               rec_temp_entry.get() or "0",
+                               rec_pressure_entry.get() or "0",
+                               rec_config_entry.get() or "0",
+                               rec_bulk_entry.get() or "0",
+                               rec_scaling_entry.get() or "0"
                                )
                            )
 
@@ -297,7 +297,8 @@ def initiate_gui():
 
     output_data_menu.grid(row=23, column=2)
     
-    plottable_attributes = ["Temperature", "Pressure", "Bulk Modulus"]
+    plottable_attributes = ["Temperature", "Pressure", "Bulk Modulus",
+                            "Cohesive energy", "Optimal Scaling"]
     value_inside_plottable_list = StringVar(gui)
     value_inside_plottable_list.set("Attribute to plot")
 
@@ -312,12 +313,13 @@ def initiate_gui():
                             command=lambda: visualise_2D(value_inside_plottable_list.get(), value_inside_output_data.get(), ax_canvas, text_box, tabframe1 ,False))
 
     plot_button.grid(row=24, column=1)
+    
+    Button(data_frame, text="Open plot in new window", command=lambda: visualise_2D(value_inside_plottable_list.get(), value_inside_output_data.get(), ax_canvas, text_box, tabframe1, True)).grid(row=25,column=1,pady=30)
 
     # Quit
     quit_button = Button(data_frame, text="Exit Program", command=gui.quit)
-    quit_button.grid(pady=100)
+    quit_button.grid(pady=50)
 
-    Button(tabframe1, text="Open plot in new window", command=lambda: visualise_2D(value_inside_plottable_list.get(), value_inside_output_data.get(), ax_canvas, text_box, tabframe1, True)).pack(pady=30)
     Button(tabframe1, text="Clear Graph", command=lambda: clear_canvas(ax_canvas[0], ax_canvas[1])).pack()
 
     return gui
@@ -415,6 +417,116 @@ def update_output_traj_list(event, traj_menu, value_inside_traj_list):
         menu.add_command(label=traj_file, command=lambda value=traj_file: value_inside_traj_list.set(value))
 
 
+def write_to_config(config_name, value_inside_ensemble_list, 
+                    temperature, value_inside_potential_list, steps, 
+                    time_steps, friction, rec_coh_e, rec_temp, 
+                    rec_pressure, rec_config, rec_bulk, rec_scaling):
+    """Create the configuration file
+
+    Args:
+        ensemble(string): Ensemble to use in simulation
+        temperature(int): Initial temperature in simulation
+        potential(string): Potential to use in simulation
+        step_number(int): Number of steps to use in simulation
+        time_step(int): Time step in fs to use in simulation
+        friction(float): Friction for NVT simulation
+        interval(int): Interval for which to calculate properties
+        show_properties(bool): Show properties or not
+
+    Returns:
+        None
+    """
+    # Check if temperature is valid
+    if temperature.isdigit():
+        if int(temperature) <= 0:
+            messagebox.showerror("Value error", "Invalid temperature") 
+            return None
+        elif (int(temperature) > 10000):
+            if not messagebox.askokcancel("Value doubt", "This value might result in an unstable simulation, you sure you'd like to continue?"):
+                return None
+    else:
+        messagebox.showerror("Value error", "Invalid temperature")
+        return None
+   
+    # Check if number of steps is valid
+    if steps.isdigit():
+        if (int(steps) <= 0):
+            messagebox.showerror("Value error", "Invalid number of steps") 
+            return None
+    else:
+        messagebox.showerror("Value error", "Invalid number of steps")
+        return None
+    
+    # Check if time step is valid
+    print(time_steps)
+    if time_steps.isdigit():
+        if (int(time_steps) <= 0):
+            messagebox.showerror("Value error", "Invalid time step") 
+            return None
+    else:
+        messagebox.showerror("Value error", "Invalid time step here?") 
+        return None
+    
+    # Check if cohesive energy step is valid
+    if rec_coh_e.isdigit():
+        if (0 < int(rec_coh_e) < int(steps)):
+            messagebox.showerror("Value error", "Invalid cohesive energy step") 
+            return None
+    else:
+        messagebox.showerror("Value error", "Invalid cohesive energy step") 
+        return None
+    
+    # Check if temperature step is valid
+    if rec_temp.isdigit():
+        if not (0 < int(rec_temp) < int(steps)):
+            messagebox.showerror("Value error", "Invalid temperature step") 
+            return None
+    else:
+        messagebox.showerror("Value error", "Invalid temperature step") 
+        return None
+    
+    # Check if pressure step is valid
+    if rec_pressure.isdigit():
+        if not (0 < int(rec_pressure) < int(steps)):
+            messagebox.showerror("Value error", "Invalid pressure step") 
+            return None
+    else:
+        messagebox.showerror("Value error", "Invalid pressure step") 
+        return None
+    
+    # Check if configuration step is valid
+    if rec_config.isdigit():
+        if not (0 < int(rec_config) < int(steps)):
+            messagebox.showerror("Value error", "Invalid configuration step") 
+            return None
+    else:
+        messagebox.showerror("Value error", "Invalid configuration step") 
+        return None
+    
+    # Check if bulk step is valid
+    if rec_bulk.isdigit():
+        if not (0 < int(rec_bulk) < int(steps)):
+            messagebox.showerror("Value error", "Invalid bulk step") 
+            return None
+    else:
+        messagebox.showerror("Value error", "Invalid bulk step") 
+        return None
+    
+    # Check if scaling step is valid
+    if rec_scaling.isdigit():
+        if not (0 < int(rec_scaling) < int(steps)):
+            messagebox.showerror("Value error", "Invalid scaling step") 
+            return None
+    else:
+        messagebox.showerror("Value error", "Invalid scaling step") 
+        return None
+    
+    cfs.config_file(config_name, value_inside_ensemble_list, temperature,
+                        value_inside_potential_list, steps, time_steps,
+                        friction, 0, rec_temp, rec_pressure, rec_config, rec_bulk,
+                        rec_scaling)
+
+
 def send_mat_id_to_gather_data(materialID):
     """Write user input data to config file.
 
@@ -430,10 +542,8 @@ def send_mat_id_to_gather_data(materialID):
         messagebox.showerror("Invalid id", "Please enter a valid id")
 
 
-
-
 def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, boolean):
-    """Visualize data in 3D.
+    """Visualize data in 2D.
 
     Args:
         At the time of writing not fully clear.
@@ -441,7 +551,6 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
     Returns:
         None
     """
-
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/' + file_to_plot
     opened_file = open(path, 'r')
     data = opened_file.readline()
@@ -461,12 +570,19 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
     config_friction = config_data['SimulationSettings']['friction']
 
     attribute = attribute_to_plot.lower()
+    try:
+        material_data_dict[attribute]
+    except KeyError:
+        messagebox.showerror("Missing data", "Attribute not recorded")
+        return None
+    
     average_attribute = round(sum(material_data_dict[attribute])/len(material_data_dict[attribute]))
     max_attribute = round(max(material_data_dict[attribute]),4)
     min_attribute = round(min(material_data_dict[attribute]),4)
     
     message = f"""
     Simulation inputs:
+        Config file: {config_file}
         Ensemble: {config_ensemble}
         Temperature: {config_temperature}
         Potential: {config_potential}
@@ -495,11 +611,11 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
     
     x_lim = int(config_data['SimulationSettings']['time_step']) * int(config_data['SimulationSettings']['step_number'])
 
-    graph_in_plot = plot(ax_canvas[0], ax_canvas[1], x_values, material_data_dict[attribute_to_plot.lower()], x_lim, attribute_to_plot, frame)
-    #if boolean:
-        #open_window(graph_in_plot[0], material_data_dict[attribute_to_plot.lower()], x_lim, attribute_to_plot)
-
-
+    graph_in_plot = plot(ax_canvas[0], ax_canvas[1], x_values, material_data_dict[attribute_to_plot.lower()], x_lim, attribute_to_plot)
+    if boolean:
+        open_window(graph_in_plot[0], material_data_dict[attribute_to_plot.lower()], x_lim, attribute_to_plot)
+    else:
+        plot(ax_canvas[0],ax_canvas[1], x_values, material_data_dict[attribute_to_plot.lower()], x_lim, attribute_to_plot)
 
 
 def visualise_3D(value_inside_output_data, value_inside_traj_data):
