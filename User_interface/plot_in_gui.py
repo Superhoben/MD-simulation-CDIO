@@ -1,5 +1,4 @@
-
-    """This file makes a 2D plot with functionality in the main gui."""
+"""This file makes a 2D plot with functionality in the main gui."""
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from tkinter import *
 import numpy as np
