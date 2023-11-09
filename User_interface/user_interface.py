@@ -74,21 +74,7 @@ def initiate_gui():
     text_box.pack(expand=True)
     text_box.config(state="disabled")
 
-
-    # Frame 2
-    # inits different visualization buttons aswell as calling the 2D-fig.
-    #three_dim_vis_button = Button(tabframe1, text="Visualize 3D Atom "
-    #
-    #                              "(Basic water at the moment)",
-    #                              command=visualise_3D)
-    #plot_label = Label(tabframe1, text="Plot of data")
-    #plot_label.pack(padx=20, pady=20)
-
-    #import_data_button = Button(tabframe2, text="Import Data",
-     #                           command=lambda: load_data(gui))
-    #import_data_button.pack(padx=20, pady=5)
-
-    ax_canvas = plot_backbone(tabframe1)
+    ax_canvas, plot_title = plot_backbone(tabframe1)
 
     # Frame 1
     # Config settings
@@ -107,8 +93,6 @@ def initiate_gui():
     ensamble_label = Label(data_frame, text="Ensemble", width=20)
     ensamble_label.grid(row=1, column=0)
 
-    #ensamble_list = ["NVE (Microcanonical)", "NVT (Canonical)",
-    #                 "muVT (Grand canonical)", "NpT (Isothermal-Isobaric)"]
     ensamble_list = ["NVE", "NVT"]
 
     value_inside_ensemble_list = StringVar(gui)
@@ -278,12 +262,6 @@ def initiate_gui():
     sep_label3.grid(row=22, column = 0, columnspan = 3)
 
 
-    # For a future state
-    
-    # Load output file data
-    #output_label = Label(data_frame, text="output files", width=20)
-    #output_label.grid(row=13, column=0)
-
     output_data = [file for file in listdir() if isfile(file)]
     value_inside_output_data = StringVar(gui)
     value_inside_output_data.set("Select an output file")
@@ -310,17 +288,17 @@ def initiate_gui():
 
     # Visualise results button
     plot_button = Button(data_frame, text='Plot data',
-                            command=lambda: visualise_2D(value_inside_plottable_list.get(), value_inside_output_data.get(), ax_canvas, text_box, tabframe1 ,False))
+                            command=lambda: visualise_2D(value_inside_plottable_list.get(), value_inside_output_data.get(), ax_canvas, text_box, tabframe1 ,False,plot_title))
 
     plot_button.grid(row=24, column=1)
     
-    Button(data_frame, text="Open plot in new window", command=lambda: visualise_2D(value_inside_plottable_list.get(), value_inside_output_data.get(), ax_canvas, text_box, tabframe1, True)).grid(row=25,column=1,pady=30)
+    Button(data_frame, text="Open plot in new window", command=lambda: visualise_2D(value_inside_plottable_list.get(), value_inside_output_data.get(), ax_canvas, text_box, tabframe1, True, plot_title="Attribute")).grid(row=25,column=1,pady=30)
 
     # Quit
     quit_button = Button(data_frame, text="Exit Program", command=gui.quit)
-    quit_button.grid(pady=50)
+    quit_button.grid(pady=30)
 
-    Button(tabframe1, text="Clear Graph", command=lambda: clear_canvas(ax_canvas[0], ax_canvas[1])).pack()
+    Button(tabframe1, text="Clear Graph", command=lambda: clear_canvas(ax_canvas[0], ax_canvas[1], plot_title)).pack(pady=50)
 
     return gui
 
@@ -542,7 +520,7 @@ def send_mat_id_to_gather_data(materialID):
         messagebox.showerror("Invalid id", "Please enter a valid id")
 
 
-def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, boolean):
+def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, boolean, plot_title):
     """Visualize data in 2D.
 
     Args:
@@ -610,38 +588,11 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
         i += 1
     
     x_lim = int(config_data['SimulationSettings']['time_step']) * int(config_data['SimulationSettings']['step_number'])
-
-    graph_in_plot = plot(ax_canvas[0], ax_canvas[1], x_values, material_data_dict[attribute_to_plot.lower()], x_lim, attribute_to_plot)
     if boolean:
-        open_window(graph_in_plot[0], material_data_dict[attribute_to_plot.lower()], x_lim, attribute_to_plot)
+        open_window(x_values, material_data_dict[attribute_to_plot.lower()], x_lim, attribute_to_plot)
     else:
+        plot_title.config(text = "Plotted Attribute: \n" + attribute_to_plot)
         plot(ax_canvas[0],ax_canvas[1], x_values, material_data_dict[attribute_to_plot.lower()], x_lim, attribute_to_plot)
-
-
-def visualise_3D(value_inside_output_data, value_inside_traj_data):
-    """Visualize data in 3D.
-
-    Args:
-        At the time of writing not fully clear.
-
-    Returns:
-        None
-    """
-    h2o = molecule("H2O")
-    view(h2o)
-
-
-def load_data(gui):
-    """Load atom data to plot.
-
-    Args:
-        At the time of writing not fully clear.
-
-    Returns:
-        None
-    """
-    gui.filename = filedialog.askopenfilename()
-    print(gui.filename)
 
 
 if __name__ == "__main__":
