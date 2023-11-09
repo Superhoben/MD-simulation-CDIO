@@ -7,6 +7,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 from tkinter import *
 from tkinter import filedialog
 from tkinter import ttk
+from tkinter import messagebox
 from ase.build import molecule
 from ase.io.trajectory import Trajectory
 from asap3 import EMT
@@ -16,8 +17,10 @@ from User_interface.plot_in_gui import *
 import Gather_data.configuration_file_script as cfs
 import Gather_data.download_data 
 from Simulation.run_md_simulation import run_single_md_simulation
+from configparser import ConfigParser
 from os import listdir
 from os.path import isfile
+import json
 
 
 def initiate_gui():
@@ -32,6 +35,7 @@ def initiate_gui():
     gui.geometry("1200x800")
     gui.resizable(width=False, height=False)
 
+    # 
     # Define the 2 different main sections of the gui.
     data_frame = Frame(gui, background="medium aquamarine")
     data_frame.pack_propagate(False)
@@ -47,12 +51,12 @@ def initiate_gui():
 
     tabs = ttk.Notebook(plot_frame)
     tabs.pack()
-    tabframe1 = Frame(tabs, height=800, width=600, bg="light blue")
+    tabframe1 = Frame(tabs, height=800, width=600, bg="SkyBlue1")
     tabframe1.pack_propagate(False)
     tabframe1.grid_propagate(False)
     tabframe1.pack(expand=True, fill=BOTH)
 
-    tabframe2 = Frame(tabs, height=800, width=600, bg="blue")
+    tabframe2 = Frame(tabs, height=800, width=600, bg="SkyBlue1")
     tabframe2.pack_propagate(False)
     tabframe2.grid_propagate(False)
     tabframe2.pack(expand=True, fill=BOTH)
@@ -60,21 +64,31 @@ def initiate_gui():
     tabs.add(tabframe1, text="Visualisation")
     tabs.add(tabframe2, text="Data output")
 
+    text_box_frame = Frame(tabframe2, bg="lemon chiffon")
+    text_box_frame.pack_propagate(False)
+    text_box_frame.grid_propagate(False)
+    text_box_frame.pack(fill="both", expand=True, padx=5, pady=225) 
+
+
+    text_box = Text(text_box_frame, bg="lemon chiffon")
+    text_box.pack(expand=True)
+    text_box.config(state="disabled")
+
 
     # Frame 2
     # inits different visualization buttons aswell as calling the 2D-fig.
-    three_dim_vis_button = Button(tabframe1, text="Visualize 3D Atom "
-
-                                  "(Basic water at the moment)",
-                                  command=visualise_3D)
-    three_dim_vis_button.pack(padx=20, pady=20)
+    #three_dim_vis_button = Button(tabframe1, text="Visualize 3D Atom "
+    #
+    #                              "(Basic water at the moment)",
+    #                              command=visualise_3D)
+    #plot_label = Label(tabframe1, text="Plot of data")
+    #plot_label.pack(padx=20, pady=20)
 
     #import_data_button = Button(tabframe2, text="Import Data",
      #                           command=lambda: load_data(gui))
     #import_data_button.pack(padx=20, pady=5)
 
     ax_canvas = plot_backbone(tabframe1)
-
 
     # Frame 1
     # Config settings
@@ -187,25 +201,33 @@ def initiate_gui():
 
     config_button.grid(row=13, column=1, pady=10)
 
+    sep_label1 = Label(data_frame, text="-"*100, bg = "medium aquamarine")
+    sep_label1.grid(row=14, column = 0, columnspan = 3)
+
+
     # Gather data
     materialID_label = Label(data_frame, text="Material ID", width=20)
-    materialID_label.grid(row=14, column=0)
+    materialID_label.grid(row=15, column=0)
 
     materialID_entry = Entry(data_frame)
-    materialID_entry.grid(row=14, column=2)
+    materialID_entry.grid(row=15, column=2)
 
     gather_data_button = Button(data_frame, text='Gather material data from Material ID',
                                 command=lambda: send_mat_id_to_gather_data(
                                 materialID_entry.get()))
-    gather_data_button.grid(row=15, column=1, pady=10)
+    gather_data_button.grid(row=16, column=1, pady=10)
+
+    sep_label2 = Label(data_frame, text="-"*100, bg = "medium aquamarine")
+    sep_label2.grid(row=17, column = 0, columnspan = 3)
+
 
     # Simulation
     config_files_label = Label(data_frame, text="Config files", width=20)
-    config_files_label.grid(row=16, column=0)
+    config_files_label.grid(row=18, column=0)
 
     # Creates a list which contains the file names of all the files in a directory
     # In this case the directory is the one we're standing in (since listdir has no input)
-    config_files = [file for file in listdir() if isfile(file)]
+    config_files = ["Initializing list"]
     value_inside_config_files_list = StringVar(gui)
     value_inside_config_files_list.set("Select a config file")
 
@@ -218,10 +240,10 @@ def initiate_gui():
         return update_input_config_list(event, config_files_menu, value_inside_config_files_list)
     config_files_menu.bind('<Button-1>', config_handler)    
 
-    config_files_menu.grid(row=16, column=2)
+    config_files_menu.grid(row=18, column=2)
 
-    ensamble_label = Label(data_frame, text=".traj files", width=20)
-    ensamble_label.grid(row=17, column=0)
+    traj_file_label = Label(data_frame, text=".traj files", width=20)
+    traj_file_label.grid(row=19, column=0)
 
     traj_list = [file for file in listdir() if isfile(file)]
     value_inside_traj_list = StringVar(gui)
@@ -235,36 +257,14 @@ def initiate_gui():
         return update_input_traj_list(event, traj_menu, value_inside_traj_list)
     input_traj_menu.bind('<Button-1>', input_traj_handler)  
 
-    input_traj_menu.grid(row=17, column=2)
-
-    # For a future state
-    """
-    # Load output file data
-    output_label = Label(data_frame, text="output files", width=20)
-    output_label.grid(row=13, column=0)
-
-    output_data = [file for file in listdir() if isfile(file)]
-    value_inside_output_data = StringVar(gui)
-    value_inside_output_data.set("Select a .traj file")
-
-    output_data_menu = OptionMenu(data_frame, value_inside_output_data,
-                               *output_data)
-
-    def output_data_handler(event, output_data_menu=output_data_menu, value_inside_output_data=value_inside_output_data):   
-        return load_output_file_data(event, output_data_menu, value_inside_output_data)
-    output_data_menu.bind('<Button-1>', output_data_handler)  
-
-    output_data_menu.grid(row=13, column=2)
-    """
-    value_inside_output_data = StringVar(gui)
-    value_inside_output_data.set("Select a .traj file")
+    input_traj_menu.grid(row=19, column=2)
 
     # Load traj file data
     output_name_label = Label(data_frame, text="Output name", width=20)
-    output_name_label.grid(row=18, column=0)
+    output_name_label.grid(row=20, column=0)
 
     output_name_entry = Entry(data_frame)
-    output_name_entry.grid(row=18, column=2)
+    output_name_entry.grid(row=20, column=2)
 
     # Start sim button 
     md_sim_button = Button(data_frame, text='Start Simulation',
@@ -272,17 +272,53 @@ def initiate_gui():
                                                                     value_inside_traj_list.get(),
                                                                     output_name_entry.get()))
 
-    md_sim_button.grid(row=19, column=1)
+    md_sim_button.grid(row=21, column=1)
+
+    sep_label3 = Label(data_frame, text="-"*100, bg = "medium aquamarine")
+    sep_label3.grid(row=22, column = 0, columnspan = 3)
+
+
+    # For a future state
+    
+    # Load output file data
+    #output_label = Label(data_frame, text="output files", width=20)
+    #output_label.grid(row=13, column=0)
+
+    output_data = [file for file in listdir() if isfile(file)]
+    value_inside_output_data = StringVar(gui)
+    value_inside_output_data.set("Select an output file")
+
+    output_data_menu = OptionMenu(data_frame, value_inside_output_data,
+                               *output_data)
+
+    def output_data_handler(event, output_data_menu=output_data_menu, value_inside_output_data=value_inside_output_data):   
+        return update_output_txt_list(event, output_data_menu, value_inside_output_data)
+    output_data_menu.bind('<Button-1>', output_data_handler)  
+
+    output_data_menu.grid(row=23, column=2)
+    
+    plottable_attributes = ["Temperature", "Pressure", "Bulk Modulus"]
+    value_inside_plottable_list = StringVar(gui)
+    value_inside_plottable_list.set("Attribute to plot")
+
+    attributes_menu = OptionMenu(data_frame, value_inside_plottable_list,
+                                *plottable_attributes)
+    
+    attributes_menu.grid(row=23, column=0)
+    
 
     # Visualise results button
-    vis_res_button = Button(data_frame, text='Potential energy',
-                            command=lambda: visualise_2D(value_inside_output_data.get(), value_inside_traj_data.get(), ax_canvas))
+    plot_button = Button(data_frame, text='Plot data',
+                            command=lambda: visualise_2D(value_inside_plottable_list.get(), value_inside_output_data.get(), ax_canvas, text_box, tabframe1 ,False))
 
-    vis_res_button.grid(row=20, column=1)
+    plot_button.grid(row=24, column=1)
 
     # Quit
     quit_button = Button(data_frame, text="Exit Program", command=gui.quit)
     quit_button.grid(pady=100)
+
+    Button(tabframe1, text="Open plot in new window", command=lambda: visualise_2D(value_inside_plottable_list.get(), value_inside_output_data.get(), ax_canvas, text_box, tabframe1, True)).pack(pady=30)
+    Button(tabframe1, text="Clear Graph", command=lambda: clear_canvas(ax_canvas[0], ax_canvas[1])).pack()
 
     return gui
 
@@ -342,7 +378,7 @@ def update_output_txt_list(event, output_data_menu, value_inside_output_data):
         value_inside_output_data(tkinter.StringVar): A variable which is set
             when the user selects an item in the dropdown menu. The variable is a 
             string which specifies the filename of the selected item
-
+ax.set_xlabel("Time [femto seconds]")
     Returns:
         None
     """
@@ -388,28 +424,15 @@ def send_mat_id_to_gather_data(materialID):
     Returns:
         None
     """
-    if materialID[0:3] == "mp-":
+    try:
         Gather_data.download_data.make_traj_from_material_id(materialID)
-    else:
-        print("Enter a valid ID")
+    except:
+        messagebox.showerror("Invalid id", "Please enter a valid id")
 
 
-def send_mat_id_to_gather_data(materialID):
-    """Write user input data to config file.
-
-    Args:
-        materialID(string): specifies which material is to be downloaded from database
-
-    Returns:
-        None
-    """
-    if materialID[0:3] == "mp-":
-        Gather_data.download_data.make_traj_from_material_id(materialID)
-    else:
-        print("Enter a valid ID")
 
 
-def visualise_2D(value_inside_output_data, value_inside_traj_data, ax_canvas):
+def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, boolean):
     """Visualize data in 3D.
 
     Args:
@@ -419,12 +442,64 @@ def visualise_2D(value_inside_output_data, value_inside_traj_data, ax_canvas):
         None
     """
 
-    traj = Trajectory("../Trajectory_files/" + value_inside_traj_data)
-    atoms = traj[0]
-    atoms.calc = EMT()
+    path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/' + file_to_plot
+    opened_file = open(path, 'r')
+    data = opened_file.readline()
+    opened_file.close()
+    material_data_dict = json.loads(data)
 
-    print(atoms.get_potential_energy())
-    plot(ax_canvas[0], ax_canvas[1], 1, atoms.get_potential_energy())
+    config_file = material_data_dict['config_file']
+    path = os.path.dirname(os.path.abspath(__file__)) + '/../Input_config_files/' + config_file
+    config_data = ConfigParser()
+    config_data.read(path)
+
+    config_ensemble = config_data['SimulationSettings']['ensemble']
+    config_temperature = config_data['SimulationSettings']['temperature']
+    config_potential = config_data['SimulationSettings']['potential']
+    config_step_number = config_data['SimulationSettings']['step_number']
+    config_time_step = config_data['SimulationSettings']['time_step']
+    config_friction = config_data['SimulationSettings']['friction']
+
+    attribute = attribute_to_plot.lower()
+    average_attribute = round(sum(material_data_dict[attribute])/len(material_data_dict[attribute]))
+    max_attribute = round(max(material_data_dict[attribute]),4)
+    min_attribute = round(min(material_data_dict[attribute]),4)
+    
+    message = f"""
+    Simulation inputs:
+        Ensemble: {config_ensemble}
+        Temperature: {config_temperature}
+        Potential: {config_potential}
+        Step number: {config_step_number}
+        Time step: {config_time_step}
+        Friction: {config_friction}
+
+    Simulation results:
+        Average {attribute}: {average_attribute}
+        Max {attribute}: {max_attribute}
+        Min {attribute}: {min_attribute}"""
+    
+    text_box.config(state="normal")
+    text_box.delete('1.0', END)
+    text_box.insert("end", message)
+    text_box.config(font=("bitstream charter", 15))
+    text_box.update()
+    text_box.config(state="disabled")
+ 
+    x_values = []
+    i = 0
+    while i < len(material_data_dict[attribute_to_plot.lower()]):
+        x_values.append(i * int(config_data['SimulationSettings']['time_step']) * 
+                      int(config_data['RecordingIntervals']['record_' + attribute_to_plot.lower()]))
+        i += 1
+    
+    x_lim = int(config_data['SimulationSettings']['time_step']) * int(config_data['SimulationSettings']['step_number'])
+
+    graph_in_plot = plot(ax_canvas[0], ax_canvas[1], x_values, material_data_dict[attribute_to_plot.lower()], x_lim, attribute_to_plot, frame)
+    #if boolean:
+        #open_window(graph_in_plot[0], material_data_dict[attribute_to_plot.lower()], x_lim, attribute_to_plot)
+
+
 
 
 def visualise_3D(value_inside_output_data, value_inside_traj_data):
