@@ -114,7 +114,7 @@ def initiate_gui():
     steps_entry = Entry(data_frame)
     steps_entry.grid(row=3, column=2)
 
-    time_steps_label = Label(data_frame, text="Time step", width=20)
+    time_steps_label = Label(data_frame, text="Time step (fs)", width=20)
     time_steps_label.grid(row=4, column=0)
 
     time_steps_entry = Entry(data_frame)
@@ -277,6 +277,7 @@ def initiate_gui():
     
     plottable_attributes = ["Temperature", "Pressure", "Bulk Modulus",
                             "Cohesive energy", "Optimal Scaling"]
+
     value_inside_plottable_list = StringVar(gui)
     value_inside_plottable_list.set("Attribute to plot")
 
@@ -436,13 +437,12 @@ def write_to_config(config_name, value_inside_ensemble_list,
         return None
     
     # Check if time step is valid
-    print(time_steps)
     if time_steps.isdigit():
         if (int(time_steps) <= 0):
             messagebox.showerror("Value error", "Invalid time step") 
             return None
     else:
-        messagebox.showerror("Value error", "Invalid time step here?") 
+        messagebox.showerror("Value error", "Invalid time step") 
         return None
     
     # Check if cohesive energy step is valid
@@ -456,7 +456,7 @@ def write_to_config(config_name, value_inside_ensemble_list,
     
     # Check if temperature step is valid
     if rec_temp.isdigit():
-        if not (0 < int(rec_temp) < int(steps)):
+        if int(rec_temp) < 0 or int(rec_temp) > int(steps):
             messagebox.showerror("Value error", "Invalid temperature step") 
             return None
     else:
@@ -465,7 +465,7 @@ def write_to_config(config_name, value_inside_ensemble_list,
     
     # Check if pressure step is valid
     if rec_pressure.isdigit():
-        if not (0 < int(rec_pressure) < int(steps)):
+        if int(rec_pressure) < 0 or int(rec_pressure) > int(steps):
             messagebox.showerror("Value error", "Invalid pressure step") 
             return None
     else:
@@ -474,7 +474,7 @@ def write_to_config(config_name, value_inside_ensemble_list,
     
     # Check if configuration step is valid
     if rec_config.isdigit():
-        if not (0 < int(rec_config) < int(steps)):
+        if int(rec_config) < 0 or int(rec_config) > int(steps):
             messagebox.showerror("Value error", "Invalid configuration step") 
             return None
     else:
@@ -483,7 +483,7 @@ def write_to_config(config_name, value_inside_ensemble_list,
     
     # Check if bulk step is valid
     if rec_bulk.isdigit():
-        if not (0 < int(rec_bulk) < int(steps)):
+        if int(rec_bulk) < 0 or int(rec_bulk) > int(steps):
             messagebox.showerror("Value error", "Invalid bulk step") 
             return None
     else:
@@ -492,7 +492,7 @@ def write_to_config(config_name, value_inside_ensemble_list,
     
     # Check if scaling step is valid
     if rec_scaling.isdigit():
-        if not (0 < int(rec_scaling) < int(steps)):
+        if int(rec_scaling) < 0 or int(rec_scaling) > int(steps):
             messagebox.showerror("Value error", "Invalid scaling step") 
             return None
     else:
@@ -530,7 +530,14 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
         None
     """
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/' + file_to_plot
-    opened_file = open(path, 'r')
+    if attribute_to_plot == "Attribute to plot":
+        messagebox.showerror("Missing attribute", "Choose attribute")
+
+    try:
+        opened_file = open(path, 'r')
+    except FileNotFoundError:
+        messagebox.showerror("Missing text file", "Choose text file")
+        return None
     data = opened_file.readline()
     opened_file.close()
     material_data_dict = json.loads(data)
@@ -548,6 +555,14 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
     config_friction = config_data['SimulationSettings']['friction']
 
     attribute = attribute_to_plot.lower()
+
+    if attribute == "bulk modulus":
+        attribute = "bulk_modulus"
+    elif attribute == "cohesive energy":
+        attribute = "cohesive_energy"
+    elif attribute == "optimal scaling":
+        attribute = "optimal_scaling"
+
     try:
         material_data_dict[attribute]
     except KeyError:
@@ -557,6 +572,7 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
     average_attribute = round(sum(material_data_dict[attribute])/len(material_data_dict[attribute]))
     max_attribute = round(max(material_data_dict[attribute]),4)
     min_attribute = round(min(material_data_dict[attribute]),4)
+    data_points = len(material_data_dict[attribute])
     
     message = f"""
     Simulation inputs:
@@ -571,7 +587,8 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
     Simulation results:
         Average {attribute}: {average_attribute}
         Max {attribute}: {max_attribute}
-        Min {attribute}: {min_attribute}"""
+        Min {attribute}: {min_attribute}
+        Data points: {data_points}"""
     
     text_box.config(state="normal")
     text_box.delete('1.0', END)
@@ -582,17 +599,18 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
  
     x_values = []
     i = 0
-    while i < len(material_data_dict[attribute_to_plot.lower()]):
+    while i < len(material_data_dict[attribute]):
         x_values.append(i * int(config_data['SimulationSettings']['time_step']) * 
-                      int(config_data['RecordingIntervals']['record_' + attribute_to_plot.lower()]))
+                      int(config_data['RecordingIntervals']['record_' + attribute]))
         i += 1
     
     x_lim = int(config_data['SimulationSettings']['time_step']) * int(config_data['SimulationSettings']['step_number'])
+
     if boolean:
-        open_window(x_values, material_data_dict[attribute_to_plot.lower()], x_lim, attribute_to_plot)
+        open_window(x_values, material_data_dict[attribute], x_lim, attribute_to_plot)
     else:
         plot_title.config(text = "Plotted Attribute: \n" + attribute_to_plot)
-        plot(ax_canvas[0],ax_canvas[1], x_values, material_data_dict[attribute_to_plot.lower()], x_lim, attribute_to_plot)
+        plot(ax_canvas[0],ax_canvas[1], x_values, material_data_dict[attribute], x_lim, attribute_to_plot)
 
 
 if __name__ == "__main__":

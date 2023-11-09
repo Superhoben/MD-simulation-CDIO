@@ -68,9 +68,9 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
         # TODO: implement run_other_simulation, e.g.,:
         # atoms = run_other_simulation(atoms, config_data)
         raise Exception("Running calculations with ensemble '" + ensemble + "' is not implemented yet.")
-
     # This dict will contain output data of the simulation to be written into the output text file
     output_dict = {}
+    output_dict["config_file"] = config_file
     # Attach recorders that calculate a certain property and store in the output_dict
     interval_to_record_temperature = int(config_data['RecordingIntervals']['record_temperature'])
     if interval_to_record_temperature:
