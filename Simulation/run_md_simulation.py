@@ -109,11 +109,11 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
 
 
 def run_md_simulation(config_file_list, trajectory_file_list):
-    i=0
+    i = 0
     for traj_file in trajectory_file_list:
-        i=i+1
+        i = i+1
         run_single_md_simulation(config_file_list[0], traj_file, 'output'+str(i))
 
 
 if __name__ == "__main__":
-    run_single_md_simulation("config1.ini", 'mp-124.traj', 'out_put1')
+    run_single_md_simulation("example_config.ini", 'mp-30.traj', 'out_put1')
