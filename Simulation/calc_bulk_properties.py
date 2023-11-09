@@ -9,6 +9,11 @@ from ase.io import read
 from ase.eos import EquationOfState
 import numpy as np
 from ase.units import kJ
+from elastic import get_pressure, BMEOS, get_strain
+from elastic import get_elementary_deformations, scan_volumes
+from elastic import get_BM_EOS, get_elastic_tensor
+
+import ase.units as units
 
 
 def calc_bulk_modulus(atoms: Atoms, output_dict={'bulk_modulus': []}):
@@ -76,3 +81,21 @@ def calculate_cohesive_energy(isolated_atoms, bulk_atoms):
     # with MPRester("t4XwMQ3LLvLcnugLQQCCCII6BG85APG8") as mpr:
     # some_material = mpr.materials.search(material_ids=[material_id])
     # print(some_material)
+
+
+def calc_elastic(atoms: Atoms, output_dict={'elastic_tensor': []}):
+    """Calculate the elastic tensor C11.
+    
+    Args:
+        atoms(ase atoms object): atoms object to calculate the tensor for
+        output_dict(dict): dictionary to append the result to
+    
+    Returns:
+        (float): Elastic tensor C11 in GPa
+        
+    """
+    systems = get_elementary_deformations(atoms, n=5, d=0.33)
+    Cij, Bij = get_elastic_tensor(atoms, systems)
+    output_dict['elastic_tensor'].append(Cij[0]/units.GPa)
+    return Cij/units.GPa
+
