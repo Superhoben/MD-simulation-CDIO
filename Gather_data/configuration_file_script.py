@@ -4,9 +4,10 @@ from configparser import ConfigParser
 
 
 def config_file(file_name='default_config', ensemble='NVE', temperature=500, potential='EMT',
-                step_number=5000, time_step=5, friction=0.005,
+                step_number=5000, time_step=5, friction=0.005, record_energy = 0,
                 record_cohesive_energy = 0, record_temperature = 0, record_pressure = 0, 
-                record_configuration = 0, record_bulk_modulus = 0, record_optimal_scaling = 0):
+                record_configuration = 0, record_bulk_modulus = 0, record_optimal_scaling = 0,
+                record_elastic = 0):
     """Create the configuration file
 
     Args:
@@ -22,17 +23,24 @@ def config_file(file_name='default_config', ensemble='NVE', temperature=500, pot
     Returns:
         None
     """
+    if ensemble == "Select an Option":
+        ensemble = "NVE"
+    if potential == "Select an Option":
+        potential = "EMT"
+    
     config = ConfigParser()
     config['SimulationSettings'] = {'ensemble': ensemble, 'temperature': temperature,
                                     'potential': potential, 'step_number': step_number,
                                     'time_step': time_step, 'friction': friction}
 
-    config['RecordingIntervals'] = {'record_cohesive_energy': record_cohesive_energy,
+    config['RecordingIntervals'] = {'record_energy': record_energy,
+    				    'record_cohesive_energy': record_cohesive_energy,
                                     'record_temperature': record_temperature,
                                     'record_pressure': record_pressure,
                                     'record_configuration': record_configuration,
                                     'record_bulk_modulus': record_bulk_modulus,
-                                    'record_optimal_scaling': record_optimal_scaling}
+                                    'record_optimal_scaling': record_optimal_scaling,
+                                    'record_elastic': record_elastic}
 
     # Write to config file
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Input_config_files/'
