@@ -300,7 +300,7 @@ def initiate_gui():
     output_data_menu.grid(row=rownumber, column=2)
     
     plottable_attributes = ["Temperature", "Pressure", "Bulk Modulus",
-                            "Cohesive energy", "Optimal Scaling"]
+                            "Cohesive energy", "Optimal Scaling", ]
 
     value_inside_plottable_list = StringVar(gui)
     value_inside_plottable_list.set("Attribute to plot")
@@ -527,10 +527,11 @@ def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE'
         messagebox.showerror("Value error", "Invalid scaling step") 
         return None
     
-    cfs.config_file(file_name, value_inside_ensemble_list, temperature,
-                        value_inside_potential_list, steps, time_steps,
-                        friction, 0, rec_temp, rec_pressure, rec_config, rec_bulk,
-                        rec_scaling)
+    cfs.config_file(file_name, value_inside_ensemble_list, temperature, value_inside_potential_list,
+                steps, time_steps, friction, record_energy,
+                rec_coh_e, rec_temp, rec_pressure, 
+                rec_config, rec_bulk, rec_scaling,
+                record_elastic):
 
 
 def send_mat_id_to_gather_data(materialID, cell_size):
