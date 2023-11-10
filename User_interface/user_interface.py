@@ -32,7 +32,7 @@ def initiate_gui():
     # Define Tkinter window
     gui = Tk()
     gui.title("Molecular Dynamics simulations")
-    gui.geometry("1200x800")
+    gui.geometry("1200x900")
     gui.resizable(width=False, height=False)
 
     # 
@@ -197,8 +197,9 @@ def initiate_gui():
                            )
     config_button.grid(row=rownumber, column=1, pady=10)
 
+    rownumber += 1
     sep_label1 = Label(data_frame, text="-"*100, bg = "medium aquamarine")
-    sep_label1.grid(row=14, column = 0, columnspan = 3)
+    sep_label1.grid(row=rownumber, column = 0, columnspan = 3)
 
 
     # Gather data
@@ -284,7 +285,7 @@ def initiate_gui():
     sep_label3 = Label(data_frame, text="-"*100, bg = "medium aquamarine")
     sep_label3.grid(row=rownumber, column = 0, columnspan = 3)
 
-
+    rownumber += 1
     output_data = [file for file in listdir() if isfile(file)]
     value_inside_output_data = StringVar(gui)
     value_inside_output_data.set("Select an output file")
@@ -296,7 +297,7 @@ def initiate_gui():
         return update_output_txt_list(event, output_data_menu, value_inside_output_data)
     output_data_menu.bind('<Button-1>', output_data_handler)  
 
-    output_data_menu.grid(row=23, column=2)
+    output_data_menu.grid(row=rownumber, column=2)
     
     plottable_attributes = ["Temperature", "Pressure", "Bulk Modulus",
                             "Cohesive energy", "Optimal Scaling"]
@@ -307,7 +308,7 @@ def initiate_gui():
     attributes_menu = OptionMenu(data_frame, value_inside_plottable_list,
                                 *plottable_attributes)
     
-    rownumber += 1
+    #rownumber += 1
     attributes_menu.grid(row=rownumber, column=0)
     
 
@@ -318,13 +319,14 @@ def initiate_gui():
     rownumber += 1
     plot_button.grid(row=rownumber, column=1)
     
-    Button(data_frame, text="Open plot in new window", command=lambda: visualise_2D(value_inside_plottable_list.get(), value_inside_output_data.get(), ax_canvas, text_box, tabframe1, True, plot_title="Attribute")).grid(row=25,column=1,pady=30)
+    rownumber += 1
+    Button(data_frame, text="Open plot in new window", command=lambda: visualise_2D(value_inside_plottable_list.get(), value_inside_output_data.get(), ax_canvas, text_box, tabframe1, True, plot_title="Attribute")).grid(row=rownumber,column=1,pady=10)
 
     # Quit
     quit_button = Button(data_frame, text="Exit Program", command=gui.quit)
-    quit_button.grid(pady=30)
+    quit_button.grid(pady=10)
 
-    Button(tabframe1, text="Clear Graph", command=lambda: clear_canvas(ax_canvas[0], ax_canvas[1], plot_title)).pack(pady=50)
+    Button(tabframe1, text="Clear Graph", command=lambda: clear_canvas(ax_canvas[0], ax_canvas[1], plot_title)).pack(pady=10)
 
     return gui
 
@@ -421,10 +423,11 @@ def update_output_traj_list(event, traj_menu, value_inside_traj_list):
         menu.add_command(label=traj_file, command=lambda value=traj_file: value_inside_traj_list.set(value))
 
 
-def write_to_config(config_name, value_inside_ensemble_list, 
-                    temperature, value_inside_potential_list, steps, 
-                    time_steps, friction, rec_coh_e, rec_temp, 
-                    rec_pressure, rec_config, rec_bulk, rec_scaling):
+def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE', temperature=500, value_inside_potential_list='EMT',
+                steps=5000, time_steps=5, friction=0.005, record_energy = 0,
+                rec_coh_e = 0, rec_temp = 0, rec_pressure = 0, 
+                rec_config = 0, rec_bulk = 0, rec_scaling = 0,
+                record_elastic = 0):
     """Create the configuration file
 
     Args:
@@ -524,7 +527,7 @@ def write_to_config(config_name, value_inside_ensemble_list,
         messagebox.showerror("Value error", "Invalid scaling step") 
         return None
     
-    cfs.config_file(config_name, value_inside_ensemble_list, temperature,
+    cfs.config_file(file_name, value_inside_ensemble_list, temperature,
                         value_inside_potential_list, steps, time_steps,
                         friction, 0, rec_temp, rec_pressure, rec_config, rec_bulk,
                         rec_scaling)
