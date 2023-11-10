@@ -79,92 +79,103 @@ def initiate_gui():
     # Frame 1
     # Config settings
     # inits different data fields and buttons.
+    rownumber = 0
     potential_label = Label(data_frame, text="Choose potential", width=20)
-    potential_label.grid(row=0, column=0)
+    potential_label.grid(row=rownumber, column=0)
     potential_list = ["EMT", "LennardJones"]
-
     value_inside_potential_list = StringVar(gui)
     value_inside_potential_list.set("Select an Option")
-
     potential_menu = OptionMenu(data_frame, value_inside_potential_list,
                                 *potential_list)
-    potential_menu.grid(row=0, column=2, padx=15)
+    potential_menu.grid(row=rownumber, column=2, padx=15)
 
+    rownumber += 1
     ensamble_label = Label(data_frame, text="Ensemble", width=20)
-    ensamble_label.grid(row=1, column=0)
-
+    ensamble_label.grid(row=rownumber, column=0)
     ensamble_list = ["NVE", "NVT"]
-
     value_inside_ensemble_list = StringVar(gui)
     value_inside_ensemble_list.set("Select an Option")
-
     ensemble_menu = OptionMenu(data_frame, value_inside_ensemble_list,
                                *ensamble_list)
-    ensemble_menu.grid(row=1, column=2)
+    ensemble_menu.grid(row=rownumber, column=2)
 
+    rownumber += 1
     temperature_label = Label(data_frame, text="Temperature (K)", width=20)
-    temperature_label.grid(row=2, column=0)
-
+    temperature_label.grid(row=rownumber, column=0)
     temperature_entry = Entry(data_frame)
-    temperature_entry.grid(row=2, column=2)
+    temperature_entry.grid(row=rownumber, column=2)
 
+    rownumber += 1
     steps_label = Label(data_frame, text="Number of steps", width=20)
-    steps_label.grid(row=3, column=0)
-
+    steps_label.grid(row=rownumber, column=0)
     steps_entry = Entry(data_frame)
-    steps_entry.grid(row=3, column=2)
+    steps_entry.grid(row=rownumber, column=2)
 
+    rownumber += 1
     time_steps_label = Label(data_frame, text="Time step (fs)", width=20)
-    time_steps_label.grid(row=4, column=0)
-
+    time_steps_label.grid(row=rownumber, column=0)
     time_steps_entry = Entry(data_frame)
-    time_steps_entry.grid(row=4, column=2)
+    time_steps_entry.grid(row=rownumber, column=2)
 
+    rownumber += 1
     friction_label = Label(data_frame, text="Friction", width=20)
-    friction_label.grid(row=5, column=0)
-
+    friction_label.grid(row=rownumber, column=0)
     friction_entry = Entry(data_frame)
-    friction_entry.grid(row=5, column=2)
+    friction_entry.grid(row=rownumber, column=2)
 
+    rownumber += 1
     rec_cohesive_label = Label(data_frame, text="Intervals for recording attributes", width=35)
-    rec_cohesive_label.grid(row=6, column=1)
+    rec_cohesive_label.grid(row=rownumber, column=1)
 
+    rownumber += 1    
+    rec_energy_label = Label(data_frame, text="Energy", width=20)
+    rec_energy_label.grid(row=rownumber, column=0)
+    rec_energy_entry = Entry(data_frame)
+    rec_energy_entry.grid(row=rownumber, column=2)
+
+    rownumber += 1    
     rec_temp_label = Label(data_frame, text="Temperature", width=20)
-    rec_temp_label.grid(row=7, column=0)
-
+    rec_temp_label.grid(row=rownumber, column=0)
     rec_temp_entry = Entry(data_frame)
-    rec_temp_entry.grid(row=7, column=2)
+    rec_temp_entry.grid(row=rownumber, column=2)
 
+    rownumber += 1    
     rec_pressure_label = Label(data_frame, text="Pressure", width=20)
-    rec_pressure_label.grid(row=8, column=0)
-
+    rec_pressure_label.grid(row=rownumber, column=0)
     rec_pressure_entry = Entry(data_frame)
-    rec_pressure_entry.grid(row=8, column=2)
+    rec_pressure_entry.grid(row=rownumber, column=2)
 
+    rownumber += 1
     rec_config_label = Label(data_frame, text="Configuration", width=20)
-    rec_config_label.grid(row=9, column=0)
-
+    rec_config_label.grid(row=rownumber, column=0)
     rec_config_entry = Entry(data_frame)
-    rec_config_entry.grid(row=9, column=2)
+    rec_config_entry.grid(row=rownumber, column=2)
 
+    rownumber += 1
     rec_bulk_label = Label(data_frame, text="Bulk modulus", width=20)
-    rec_bulk_label.grid(row=10, column=0)
-
+    rec_bulk_label.grid(row=rownumber, column=0)
     rec_bulk_entry = Entry(data_frame)
-    rec_bulk_entry.grid(row=10, column=2)
+    rec_bulk_entry.grid(row=rownumber, column=2)
 
+    rownumber += 1
     rec_scaling_label = Label(data_frame, text="Optimal scaling", width=20)
-    rec_scaling_label.grid(row=11, column=0)
-
+    rec_scaling_label.grid(row=rownumber, column=0)
     rec_scaling_entry = Entry(data_frame)
-    rec_scaling_entry.grid(row=11, column=2)
+    rec_scaling_entry.grid(row=rownumber, column=2)
+    
+    rownumber += 1
+    rec_elastic_label = Label(data_frame, text="Elastic tensor", width=20)
+    rec_elastic_label.grid(row=rownumber, column=0)
+    rec_elastic_entry = Entry(data_frame)
+    rec_elastic_entry.grid(row=rownumber, column=2)
 
+    rownumber += 1
     config_name_label = Label(data_frame, text="Config file name", width=20)
-    config_name_label.grid(row=12, column=0)
-
+    config_name_label.grid(row=rownumber, column=0)
     config_name_entry = Entry(data_frame)
-    config_name_entry.grid(row=12, column=2)
+    config_name_entry.grid(row=rownumber, column=2)
 
+    rownumber += 1
     config_button = Button(data_frame, text='Write to config file',
                            command=lambda: write_to_config(
                                config_name_entry.get(),
@@ -174,40 +185,49 @@ def initiate_gui():
                                steps_entry.get() or "5000",
                                time_steps_entry.get() or "5",
                                friction_entry.get() or "0.005",
+                               rec_energy_entry.get() or "0",
                                "0",
                                rec_temp_entry.get() or "0",
                                rec_pressure_entry.get() or "0",
                                rec_config_entry.get() or "0",
                                rec_bulk_entry.get() or "0",
-                               rec_scaling_entry.get() or "0"
+                               rec_scaling_entry.get() or "0",
+                               rec_elastic_entry.get() or "0"
                                )
                            )
-
-    config_button.grid(row=13, column=1, pady=10)
+    config_button.grid(row=rownumber, column=1, pady=10)
 
     sep_label1 = Label(data_frame, text="-"*100, bg = "medium aquamarine")
     sep_label1.grid(row=14, column = 0, columnspan = 3)
 
 
     # Gather data
+    rownumber += 1
     materialID_label = Label(data_frame, text="Material ID", width=20)
-    materialID_label.grid(row=15, column=0)
-
+    materialID_label.grid(row=rownumber, column=0)
     materialID_entry = Entry(data_frame)
-    materialID_entry.grid(row=15, column=2)
+    materialID_entry.grid(row=rownumber, column=2)
+    
+    rownumber += 1
+    cell_size_label = Label(data_frame, text="Supercell size", width=20)
+    cell_size_label.grid(row=rownumber, column=0)
+    cell_size_entry = Entry(data_frame)
+    cell_size_entry.grid(row=rownumber, column=2)
 
+    rownumber += 1
     gather_data_button = Button(data_frame, text='Gather material data from Material ID',
                                 command=lambda: send_mat_id_to_gather_data(
-                                materialID_entry.get()))
-    gather_data_button.grid(row=16, column=1, pady=10)
-
+                                materialID_entry.get(), cell_size_entry.get()))
+    gather_data_button.grid(row=rownumber, column=1, pady=10)
+    
+    rownumber += 1
     sep_label2 = Label(data_frame, text="-"*100, bg = "medium aquamarine")
-    sep_label2.grid(row=17, column = 0, columnspan = 3)
-
+    sep_label2.grid(row=rownumber, column = 0, columnspan = 3)
 
     # Simulation
+    rownumber += 1
     config_files_label = Label(data_frame, text="Config files", width=20)
-    config_files_label.grid(row=18, column=0)
+    config_files_label.grid(row=rownumber, column=0)
 
     # Creates a list which contains the file names of all the files in a directory
     # In this case the directory is the one we're standing in (since listdir has no input)
@@ -224,10 +244,11 @@ def initiate_gui():
         return update_input_config_list(event, config_files_menu, value_inside_config_files_list)
     config_files_menu.bind('<Button-1>', config_handler)    
 
-    config_files_menu.grid(row=18, column=2)
+    config_files_menu.grid(row=rownumber, column=2)
 
-    traj_file_label = Label(data_frame, text=".traj files", width=20)
-    traj_file_label.grid(row=19, column=0)
+    rownumber += 1
+    ensamble_label = Label(data_frame, text=".traj files", width=20)
+    ensamble_label.grid(row=rownumber, column=0)
 
     traj_list = [file for file in listdir() if isfile(file)]
     value_inside_traj_list = StringVar(gui)
@@ -241,25 +262,27 @@ def initiate_gui():
         return update_input_traj_list(event, traj_menu, value_inside_traj_list)
     input_traj_menu.bind('<Button-1>', input_traj_handler)  
 
-    input_traj_menu.grid(row=19, column=2)
+    input_traj_menu.grid(row=rownumber, column=2)
 
+    rownumber += 1
     # Load traj file data
     output_name_label = Label(data_frame, text="Output name", width=20)
-    output_name_label.grid(row=20, column=0)
+    output_name_label.grid(row=rownumber, column=0)
 
     output_name_entry = Entry(data_frame)
-    output_name_entry.grid(row=20, column=2)
+    output_name_entry.grid(row=rownumber, column=2)
 
     # Start sim button 
     md_sim_button = Button(data_frame, text='Start Simulation',
                            command=lambda: run_single_md_simulation(value_inside_config_files_list.get(), 
                                                                     value_inside_traj_list.get(),
                                                                     output_name_entry.get()))
+    rownumber += 1
+    md_sim_button.grid(row=rownumber, column=1)
 
-    md_sim_button.grid(row=21, column=1)
-
+    rownumber += 1
     sep_label3 = Label(data_frame, text="-"*100, bg = "medium aquamarine")
-    sep_label3.grid(row=22, column = 0, columnspan = 3)
+    sep_label3.grid(row=rownumber, column = 0, columnspan = 3)
 
 
     output_data = [file for file in listdir() if isfile(file)]
@@ -284,14 +307,16 @@ def initiate_gui():
     attributes_menu = OptionMenu(data_frame, value_inside_plottable_list,
                                 *plottable_attributes)
     
-    attributes_menu.grid(row=23, column=0)
+    rownumber += 1
+    attributes_menu.grid(row=rownumber, column=0)
     
 
     # Visualise results button
     plot_button = Button(data_frame, text='Plot data',
                             command=lambda: visualise_2D(value_inside_plottable_list.get(), value_inside_output_data.get(), ax_canvas, text_box, tabframe1 ,False,plot_title))
 
-    plot_button.grid(row=24, column=1)
+    rownumber += 1
+    plot_button.grid(row=rownumber, column=1)
     
     Button(data_frame, text="Open plot in new window", command=lambda: visualise_2D(value_inside_plottable_list.get(), value_inside_output_data.get(), ax_canvas, text_box, tabframe1, True, plot_title="Attribute")).grid(row=25,column=1,pady=30)
 
@@ -505,7 +530,7 @@ def write_to_config(config_name, value_inside_ensemble_list,
                         rec_scaling)
 
 
-def send_mat_id_to_gather_data(materialID):
+def send_mat_id_to_gather_data(materialID, cell_size):
     """Write user input data to config file.
 
     Args:
@@ -515,9 +540,10 @@ def send_mat_id_to_gather_data(materialID):
         None
     """
     try:
-        Gather_data.download_data.make_traj_from_material_id(materialID)
+        Gather_data.download_data.make_traj_from_material_id(materialID, int(cell_size))
     except:
         messagebox.showerror("Invalid id", "Please enter a valid id")
+
 
 
 def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, boolean, plot_title):

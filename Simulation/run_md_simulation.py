@@ -11,6 +11,8 @@ from ase.io.trajectory import Trajectory
 from configparser import ConfigParser
 import json
 from Simulation import calc_properties, calc_bulk_properties, lattice_constant
+from parcalc import ParCalculate
+from elastic import get_elastic_tensor
 
 
 def save_configuration(atoms, output_file_name):
@@ -20,14 +22,14 @@ def save_configuration(atoms, output_file_name):
 
 
 def run_single_md_simulation(config_file: str, traj_file: str, output_name: str):
-    """Skeleton for the MD simulation program.
-
-    Currently it is written mostly in pseudo code.
-    It is not supposed to work yet.
+    """Run md simulation for a single trajectory file, with parameters specified in config
 
     Args:
         config_file_name(str): Name of file with parameters
         to use in simulation.
+        traj_file(str): Name of file with parameters
+        to use in simulation.
+        output_name(str): Name of file to write results to
 
     Returns:
         atoms(ase atoms object): The ase atoms object after simulation.
@@ -72,6 +74,13 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
     output_dict = {}
     output_dict["config_file"] = config_file
     # Attach recorders that calculate a certain property and store in the output_dict
+    interval_to_record_energy = int(config_data['RecordingIntervals']['record_energy'])
+    if interval_to_record_energy:
+        output_dict['total_energy'] = []
+        output_dict['kinetic_energy'] = []
+        output_dict['potential_energy'] = []
+        dyn.attach(calc_properties.calc_energy, interval_to_record_energy, atoms, output_dict)
+    
     interval_to_record_temperature = int(config_data['RecordingIntervals']['record_temperature'])
     if interval_to_record_temperature:
         output_dict['temperature'] = []
@@ -96,6 +105,11 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
     interval_to_record_configuration = int(config_data['RecordingIntervals']['record_configuration'])
     if interval_to_record_configuration:
         dyn.attach(save_configuration, interval_to_record_configuration, atoms, output_name)
+    
+    interval_to_record_elastic_properties = int(config_data['RecordingIntervals']['record_elastic'])
+    if interval_to_record_elastic_properties:
+        output_dict['elastic_tensor'] = []
+        dyn.attach(calc_bulk_properties.calc_elastic, interval_to_record_elastic_properties, atoms, output_dict)
 
     # Run simulation with the attached recorders
     dyn.run(int(config_data['SimulationSettings']['step_number']))
@@ -109,11 +123,11 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
 
 
 def run_md_simulation(config_file_list, trajectory_file_list):
-    i=0
+    i = 0
     for traj_file in trajectory_file_list:
-        i=i+1
+        i = i+1
         run_single_md_simulation(config_file_list[0], traj_file, 'output'+str(i))
 
 
 if __name__ == "__main__":
-    run_single_md_simulation("config1.ini", 'mp-124.traj', 'out_put1')
+    run_single_md_simulation("example_config.ini", 'mp-30.traj', 'out_put1')

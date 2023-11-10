@@ -1,9 +1,8 @@
-from ase import units
 from ase import Atoms
 import numpy as np
 
 
-def calc_temp(atoms, output_dict={'temperature': []}):
+def calc_temp(atoms: Atoms, output_dict={'temperature': []}):
     """ Calculates temperature of atoms object
 
     Args:
@@ -12,10 +11,25 @@ def calc_temp(atoms, output_dict={'temperature': []}):
     Returns:
         (float): the calculated temperature
     """
-    ekin_per_atom = atoms.get_kinetic_energy() / len(atoms)
-    temperature = ekin_per_atom / (1.5 * units.kB)
+    temperature = atoms.get_temperature()
     output_dict['temperature'].append(temperature)
     return temperature
+
+def calc_energy(atoms: Atoms, output_dict={'total_energy': [], 'kinetic_energy': [], 'potential_energy': []}):
+    """ Calculates total, kinetic, and potential energy of atoms object
+
+    Args:
+        atoms(ase atom object): the system to calculate the energy for
+        output_dict(dict): dictionary to append the result to
+
+    Returns:
+        (float): the calculated total energy
+    """
+    total_energy = atoms.get_total_energy()
+    output_dict['total_energy'].append(total_energy)
+    output_dict['kinetic_energy'].append(atoms.get_kinetic_energy())
+    output_dict['potential_energy'].append(atoms.get_potential_energy())
+    return total_energy
 
 
 def calc_pressure(atoms: Atoms, output_dict={'pressure': []}, external_field=None):
