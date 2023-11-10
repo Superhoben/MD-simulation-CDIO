@@ -299,8 +299,9 @@ def initiate_gui():
 
     output_data_menu.grid(row=rownumber, column=2)
     
-    plottable_attributes = ["Temperature", "Pressure", "Bulk Modulus",
-                            "Cohesive energy", "Optimal Scaling", ]
+    plottable_attributes = ["Total Energy", "Kinetic Energy", "Potential Energy", 
+                            "Temperature", "Pressure", "Bulk Modulus",
+                            "Optimal Scaling", "Elastic Tensor"]
 
     value_inside_plottable_list = StringVar(gui)
     value_inside_plottable_list.set("Attribute to plot")
@@ -424,7 +425,7 @@ def update_output_traj_list(event, traj_menu, value_inside_traj_list):
 
 
 def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE', temperature=500, value_inside_potential_list='EMT',
-                steps=5000, time_steps=5, friction=0.005, record_energy = 0,
+                steps=5000, time_steps=5, friction=0.005, rec_energy = 0,
                 rec_coh_e = 0, rec_temp = 0, rec_pressure = 0, 
                 rec_config = 0, rec_bulk = 0, rec_scaling = 0,
                 record_elastic = 0):
@@ -482,6 +483,15 @@ def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE'
         messagebox.showerror("Value error", "Invalid cohesive energy step") 
         return None
     
+    # Check if energy step is valid
+    if rec_energy.isdigit():
+        if int(rec_energy) < 0 or int(rec_energy) > int(steps):
+            messagebox.showerror("Value error", "Invalid energy step") 
+            return None
+    else:
+        messagebox.showerror("Value error", "Invalid energy step") 
+        return None
+    
     # Check if temperature step is valid
     if rec_temp.isdigit():
         if int(rec_temp) < 0 or int(rec_temp) > int(steps):
@@ -528,10 +538,10 @@ def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE'
         return None
     
     cfs.config_file(file_name, value_inside_ensemble_list, temperature, value_inside_potential_list,
-                steps, time_steps, friction, record_energy,
+                steps, time_steps, friction, rec_energy,
                 rec_coh_e, rec_temp, rec_pressure, 
                 rec_config, rec_bulk, rec_scaling,
-                record_elastic):
+                record_elastic)
 
 
 def send_mat_id_to_gather_data(materialID, cell_size):
@@ -592,6 +602,14 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
         attribute = "cohesive_energy"
     elif attribute == "optimal scaling":
         attribute = "optimal_scaling"
+    elif attribute == "elastic tensor":
+        attribute = "elastic_tensor"
+    elif attribute == "total energy":
+        attribute = "total_energy"
+    elif attribute == "kinetic energy":
+        attribute = "kinetic_energy"
+    elif attribute == "potential energy":
+        attribute = "potential_energy"
 
     try:
         material_data_dict[attribute]
@@ -626,12 +644,18 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
     text_box.config(font=("bitstream charter", 15))
     text_box.update()
     text_box.config(state="disabled")
+    
+    record_attribute = attribute
+    if attribute in ["total_energy", "kinetic_energy", "potential_energy"]:
+        record_attribute = "energy"
+    elif attribute == "elastic_tensor":
+        record_attribute = "elastic"
  
     x_values = []
     i = 0
     while i < len(material_data_dict[attribute]):
         x_values.append(i * int(config_data['SimulationSettings']['time_step']) * 
-                      int(config_data['RecordingIntervals']['record_' + attribute]))
+                      int(config_data['RecordingIntervals']['record_' + record_attribute]))
         i += 1
     
     x_lim = int(config_data['SimulationSettings']['time_step']) * int(config_data['SimulationSettings']['step_number'])
