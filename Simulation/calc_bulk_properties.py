@@ -72,7 +72,5 @@ def calculate_cohesive_energy(isolated_atoms, bulk_atoms):
     return cohesive_energy
 
     # This will be used later probably so i am keeping this comment
-    # This uses Issa Nseir's personal API-key to access the database
-    # with MPRester("t4XwMQ3LLvLcnugLQQCCCII6BG85APG8") as mpr:
     # some_material = mpr.materials.search(material_ids=[material_id])
     # print(some_material)

@@ -1,6 +1,5 @@
 """This handel the user's API key."""
-import os, sys
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
+import os
 from configparser import ConfigParser
 
 
@@ -10,6 +9,7 @@ section = "User"
 
 # Create and load the configuration file
 config = ConfigParser()
+
 
 # Function to prompt the user for the API key
 def prompt_for_api_key():
@@ -25,13 +25,14 @@ def prompt_for_api_key():
         else:
             print("Vaild key is required.")
 
+
 # Function to get user's API key
 def get_api_key():
     # Check if the API key is already saved in the configuration file
     path = os.path.dirname(os.path.abspath(__file__)) + '/../User_API_key/'
     full_path = path+config_file
 
-    #config.read(config_file_path+config_file)
+    # Config.read(config_file_path+config_file)
     if os.path.isfile(full_path):
         config.read(full_path)
         if section in config and "api_key" in config[section]:
@@ -42,20 +43,11 @@ def get_api_key():
                 return saved_api_key
             elif confirmation == "no" or confirmation == "No" or confirmation == "NO":
                 print("API key not confirmed.")
-                return prompt_for_api_key()
             else:
                 print("Invalid option, try again")
-    
     return prompt_for_api_key()
-
-
 
 
 if __name__ == "__main__":
     api_key = get_api_key()
     print(f"Using API key: {api_key}")
-#Issa's key : t4XwMQ3LLvLcnugLQQCCCII6BG85APG8
-#Gustav's key : Aumz0uNirwQYwJgWgrLVFq3Fr1Z4SfwK
-
-
-

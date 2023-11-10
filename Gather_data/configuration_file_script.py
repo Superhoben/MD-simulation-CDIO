@@ -129,8 +129,6 @@ def material_id():
     Returns:
         (string): the material id
     """
-    # here it is better to call a file (cif file for example) which will be created from Gustav function some how
-    # which then fetch the data and store it into a seperate cif file, it was Rickard advice :/
     material_id = input("What is the Material ID?  (hint: mp-123456 or cif file)   \n")
     return material_id
 
