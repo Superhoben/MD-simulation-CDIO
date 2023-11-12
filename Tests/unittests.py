@@ -79,6 +79,7 @@ class UnitTests(unittest.TestCase):
         # Another way to test stuff (1 line of code)
         self.assertTrue((2.8 < calculate_cohesive_energy(atom_structure, bulk_structure)) and
                         (calculate_cohesive_energy(atom_structure,bulk_structure) < 3))
+        pass
 
     def test_cohesive_energy(self):
         atom_structure = Atoms("N")
@@ -90,6 +91,7 @@ class UnitTests(unittest.TestCase):
         # From ase example:https://wiki.fysik.dtu.dk/ase/tutorials/atomization.html
         self.assertTrue((4.7 < calculate_cohesive_energy(atom_structure, molecule_structure)) and
                         (calculate_cohesive_energy(atom_structure, molecule_structure) < 5))
+        pass
 
     def test_GUI(self):
         # There will be further testing when other methods connected to the gui has been developed.

@@ -9,6 +9,8 @@ from ase.io import read
 from ase.eos import EquationOfState
 import numpy as np
 from ase.units import kJ
+from ase.build import bulk
+from ase.build import add_adsorbate, fcc111
 
 
 def calc_bulk_modulus(atoms: Atoms, output_dict={'bulk_modulus': []}):
@@ -43,34 +45,40 @@ def calc_bulk_modulus(atoms: Atoms, output_dict={'bulk_modulus': []}):
     return B
 
 
-def calculate_cohesive_energy(isolated_atoms, bulk_atoms):
-    """Calculate the cohesive energy of an object, Atoms, cluster or Bulk.
+def calculate_cohesive_energy(atoms):
+    """Calculate the cohesive energy of an object (Atoms, cluster or Bulk).
 
     To calculate the cohesive energy of a crystal(cluster/Bulk), we need to find the energy required
     to separate its components into neutral free atoms at rest and at infinite separation,
     the formula: Cohesive energy = (energy of free atoms - crystal atoms energy) / nr of crystal (cluster/bulk) atoms
 
     Args:
-        isolated_atoms (ase atoms object): the isolated atoms object
-        bulk_atoms (ase atoms object): cluster or bulk atoms object
+        atoms (ase atoms object): the atoms object (can be isolated, cluster, or bulk)
 
     Returns:
         (float): the Cohesive energy in eV
     """
     # Get all potential energy in a list for each atom exist in our object, molecule, soild etc.
     # Bear in mind, here the atoms are static so total energy = potentail energy only
-    isolated_atoms_potential_energies = isolated_atoms.get_potential_energies()
+    isolated_atoms_potential_energies = atoms.get_potential_energies()
+    print(isolated_atoms_potential_energies)
+    
     # Get the total potential energy for all our atoms
-    total_isolated_atoms_potential_energy = 0
-    for atom_potential_energy in isolated_atoms_potential_energies:
-        total_isolated_atoms_potential_energy += atom_potential_energy
-    bulk_atoms_potential_energy = bulk_atoms.get_potential_energy()
-    bulk_atoms_kinetic_energy = bulk_atoms.get_kinetic_energy()
+    total_isolated_atoms_potential_energy = sum(isolated_atoms_potential_energies)
+    print(total_isolated_atoms_potential_energy)
+    bulk_atoms_potential_energy = atoms.get_potential_energy()
+    print(bulk_atoms_potential_energy)
+    bulk_atoms_kinetic_energy = atoms.get_kinetic_energy()
+    print(bulk_atoms_kinetic_energy)
     bulk_total_energy = bulk_atoms_potential_energy + bulk_atoms_kinetic_energy
-    num_atoms = len(bulk_atoms)
+    num_atoms = len(atoms)
+    print(num_atoms)
     cohesive_energy = (num_atoms*total_isolated_atoms_potential_energy - bulk_total_energy)/num_atoms
     return cohesive_energy
 
-    # This will be used later probably so i am keeping this comment
-    # some_material = mpr.materials.search(material_ids=[material_id])
-    # print(some_material)
+
+if __name__ == "__main__":
+    # Create Cu bulk crystal structure
+    slab = fcc111('Cu', size=(1, 2, 1), vacuum=10.0)
+    slab.calc = EMT()
+    print(calculate_cohesive_energy(slab))
