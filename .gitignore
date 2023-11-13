@@ -1,4 +1,4 @@
-.DS_Store
-__pycache__
-*.traj
-*.ini
+**/.DS_Store
+**/__pycache__
+**/*.traj
+**/*.ini
