@@ -12,7 +12,6 @@ from ase.units import kJ
 from elastic import get_pressure, BMEOS, get_strain
 from elastic import get_elementary_deformations, scan_volumes
 from elastic import get_BM_EOS, get_elastic_tensor
-from ase.build import bulk, molecule
 import ase.units as units
 
 
