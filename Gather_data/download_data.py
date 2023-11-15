@@ -13,7 +13,7 @@ from math import floor
 import os.path
 
 
-def make_traj_from_material_id(material_id: str, target_number_of_atoms=300, api_key: str):
+def make_traj_from_material_id(material_id: str, api_key: str, target_number_of_atoms=300):
     """Take a material id and an API key and save a corresponding atoms object in
     a .traj file which can be found in the folder Trajectory files.
 
