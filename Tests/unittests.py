@@ -39,7 +39,7 @@ class UnitTests(unittest.TestCase):
         atoms.set_cell(atoms.cell*0.5, scale_atoms=True)  # Rescale unit cell so atoms are now in suboptimal positions
         atoms.calc = EMT()
         scaling = optimize_scaling(atoms, {'optimal_scaling': [], 'iterations_to_find_scaling': []})
-        print(scaling)
+        # print(scaling)
         self.assertTrue((0.98 < scaling*0.5) and (scaling*0.5 < 1.02))
 
     # More test are needed for this function
@@ -65,31 +65,39 @@ class UnitTests(unittest.TestCase):
         self.assertTrue((86 < calc_bulk_modulus(atoms)) and (calc_bulk_modulus(atoms) < 105))
 
     def test_cohesive_energy(self):
-        # Create an isolated Ag atom object
-        atom_structure = Atoms("Ag", positions=[(0, 0, 0)])
-        atom_structure.calc = EMT()
-        # Create Ag bulk crystal structure
-        bulk_structure = bulk(name="Ag", crystalstructure="fcc", a = 4.09)
-        bulk_structure.calc = EMT()
-        # From Charles Kittle book "Introduction to Solid State Physics" page 50
-        # you can find every single cohesive energy per atom for each elements in eV/atom
-        #expected_cohesive_energy_range = (2.8, 3)
-        #cohesive_energy = calculate_cohesive_energy(atom_structure, bulk_structure)
-        #self.assertTrue(expected_cohesive_energy_range[0] <= cohesive_energy <= expected_cohesive_energy_range[1])
-        # Another way to test stuff (1 line of code)
-        self.assertTrue((2.8 < calculate_cohesive_energy(atom_structure, bulk_structure)) and
-                        (calculate_cohesive_energy(atom_structure,bulk_structure) < 3))
+        # Cohesive energy per atom (eV/atom) values from Charles Kittle book "Introduction to Solid State Physics" page 50
+        # Ag cohesive energy = 2.95
+        # Au cohesive energy = 3.81
+        # Ni cohesive energy = 4.44
+        # Cu cohesive energy = 3.49
+        # Create multiple atoms object
+        atom_structure_Ag = Atoms("Ag")
+        atom_structure_Ag.calc = EMT()
+        atom_structure_Au = Atoms("Au")
+        atom_structure_Au.calc = EMT()
+        atom_structure_Ni = Atoms("Ni")
+        atom_structure_Ni.calc = EMT()
+        atom_structure_Cu = Atoms("Cu")
+        atom_structure_Cu.calc = EMT()
+        # From 
+        # you can find every single cohesive energy per atom for each elements in 
+        self.assertTrue((2.9 < calculate_cohesive_energy(atom_structure_Ag)) and
+                        (calculate_cohesive_energy(atom_structure_Ag) < 3))
+        self.assertTrue((3.76 < calculate_cohesive_energy(atom_structure_Au)) and
+                        (calculate_cohesive_energy(atom_structure_Au) < 3.86))
+        self.assertTrue((4.39 < calculate_cohesive_energy(atom_structure_Ni)) and
+                        (calculate_cohesive_energy(atom_structure_Ni) < 4.49))
+        self.assertTrue((3.44 < calculate_cohesive_energy(atom_structure_Cu)) and
+                        (calculate_cohesive_energy(atom_structure_Cu) < 3.54))
 
     def test_cohesive_energy(self):
-        atom_structure = Atoms("N")
-        atom_structure.calc = EMT()
-        # Create 2N molecule structure
-        #molecule_structure = molecule('N2')
-        molecule_structure = Atoms('2N', [(0., 0., 0.), (0., 0., 1.1)])
+        # Create N2 molecule structure
+        molecule_structure = molecule('N2')
         molecule_structure.calc = EMT()
-        # From ase example:https://wiki.fysik.dtu.dk/ase/tutorials/atomization.html
-        self.assertTrue((4.7 < calculate_cohesive_energy(atom_structure, molecule_structure)) and
-                        (calculate_cohesive_energy(atom_structure, molecule_structure) < 5))
+        # From ase example:https://wiki.fysik.dtu.dk/ase/tutorials/atomization.html, Obs: they 
+        # had 2N Atomization energy(cohesive energy)= 9.76 eV, Which means N alone is 9.76/2 = 4.88 ev/atom
+        self.assertTrue((4.82 < calculate_cohesive_energy(molecule_structure)) and
+                        (calculate_cohesive_energy(molecule_structure) < 4.93))
 
     def test_GUI(self):
         # There will be further testing when other methods connected to the gui has been developed.
