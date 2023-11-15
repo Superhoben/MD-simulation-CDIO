@@ -23,6 +23,7 @@ from os.path import isfile
 import json
 
 
+
 def initiate_gui():
     """Create a GUI and defines funtcionality.
 
@@ -168,6 +169,12 @@ def initiate_gui():
     rec_elastic_label.grid(row=rownumber, column=0)
     rec_elastic_entry = Entry(data_frame)
     rec_elastic_entry.grid(row=rownumber, column=2)
+    
+    rownumber += 1
+    rec_mean_square_displacement_label = Label(data_frame, text="Mean square displacement", width=20)
+    rec_mean_square_displacement_label.grid(row=rownumber, column=0)
+    rec_mean_square_displacement_entry = Entry(data_frame)
+    rec_mean_square_displacement_entry.grid(row=rownumber, column=2)
 
     rownumber += 1
     config_name_label = Label(data_frame, text="Config file name", width=20)
@@ -192,7 +199,8 @@ def initiate_gui():
                                rec_config_entry.get() or "0",
                                rec_bulk_entry.get() or "0",
                                rec_scaling_entry.get() or "0",
-                               rec_elastic_entry.get() or "0"
+                               rec_elastic_entry.get() or "0",
+                               rec_mean_square_displacement_entry.get() or "0"
                                )
                            )
     config_button.grid(row=rownumber, column=1, pady=10)
@@ -301,7 +309,7 @@ def initiate_gui():
     
     plottable_attributes = ["Total Energy", "Kinetic Energy", "Potential Energy", 
                             "Temperature", "Pressure", "Bulk Modulus",
-                            "Optimal Scaling", "Elastic Tensor"]
+                            "Optimal Scaling", "Elastic Tensor", "mean_square_displacement"]
 
     value_inside_plottable_list = StringVar(gui)
     value_inside_plottable_list.set("Attribute to plot")
@@ -428,7 +436,7 @@ def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE'
                 steps=5000, time_steps=5, friction=0.005, rec_energy = 0,
                 rec_coh_e = 0, rec_temp = 0, rec_pressure = 0, 
                 rec_config = 0, rec_bulk = 0, rec_scaling = 0,
-                record_elastic = 0):
+                record_elastic = 0, rec_MSD = 0):
     """Create the configuration file
 
     Args:
@@ -541,7 +549,7 @@ def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE'
                 steps, time_steps, friction, rec_energy,
                 rec_coh_e, rec_temp, rec_pressure, 
                 rec_config, rec_bulk, rec_scaling,
-                record_elastic)
+                record_elastic, rec_MSD)
 
 
 def send_mat_id_to_gather_data(materialID, cell_size):

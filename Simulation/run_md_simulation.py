@@ -110,9 +110,16 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
     if interval_to_record_elastic_properties:
         output_dict['elastic_tensor'] = []
         dyn.attach(calc_bulk_properties.calc_elastic, interval_to_record_elastic_properties, atoms, output_dict)
+    
+    interval_to_record_mean_square_displacement = int(config_data['RecordingIntervals']['record_mean_square_displacement'])
+    if interval_to_record_mean_square_displacement:
+        output_dict['mean_square_displacement'] = []
+        dyn.attach(calc_properties.calc_mean_square_displacement, interval_to_record_mean_square_displacement, atoms, output_dict)
 
     # Run simulation with the attached recorders
     dyn.run(int(config_data['SimulationSettings']['step_number']))
+    
+    output_dict['mean_square_displacement'][0] = 0
 
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/'
     with open(path + output_name + '.txt', 'w') as file:

@@ -1,5 +1,6 @@
 from ase import Atoms
 import numpy as np
+from numpy import linalg as LA
 
 
 def calc_temp(atoms: Atoms, output_dict={'temperature': []}):
@@ -66,3 +67,35 @@ def calc_pressure(atoms: Atoms, output_dict={'pressure': []}, external_field=Non
         pressure_in_eV_per_Å3 = (2*ekin+np.sum(np.multiply(forces, centered_positions)))/(3*volume)
         output_dict['pressure'].append(pressure_in_eV_per_Å3*160.21766208)
         return pressure_in_eV_per_Å3*160.21766208
+    
+
+def calc_mean_square_displacement(atoms: Atoms, output_dict={'MSQ': []}, external_field=None):
+    """Calculate pressure of atoms object with or without an external field.
+
+    The formula used is MSQ=1/N*sum{(r_i(t_n)*r_i(t_0))^2 where r_i is the 
+    position of atom i
+
+    Args:
+        atoms(ase atom object): the system to calculate the pressure for
+        external_field(function(Atoms)->np.array): A function which takes an ase Atom object
+            and returns the force on each atom as an array in the same format as Atoms.force
+            function would but converted to an np.array. For N atoms in 3 dimensions:
+            [[f_x_atom1, f_y_atom1, f_z_atom1], ..., [f_x_atomN, f_y_atomN, f_z_atomN]]
+
+    Returns:
+        (float): the calculated pressure in GPa (giga pascal)
+    """
+    positions = np.array(atoms.get_positions())
+    MSQD = 0
+    
+    if output_dict['mean_square_displacement'] == []:
+        output_dict['mean_square_displacement'].append(positions)
+    else:
+        atom_pos_diffs = positions-output_dict['mean_square_displacement'][0]
+        MSQD_sum = 0
+        for atom in atom_pos_diffs:
+            MSQD_sum += LA.norm(atom)
+        MSQD = MSQD_sum/len(positions)
+        output_dict['mean_square_displacement'].append(MSQD)
+
+    return MSQD
