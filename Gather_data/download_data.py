@@ -7,10 +7,13 @@ the so called new API (as opposed to the legacy API).
 from mp_api.client import MPRester
 from pymatgen.io.ase import AseAtomsAdaptor
 from ase.io.trajectory import Trajectory
+from ase.build import make_supercell
+from numpy import cbrt
+from math import floor
 import os.path
 
 
-def make_traj_from_material_id(material_id: str, api_key: str):
+def make_traj_from_material_id(material_id: str, target_number_of_atoms=300, api_key: str):
     """Take a material id and an API key and save a corresponding atoms object in
     a .traj file which can be found in the folder Trajectory files.
 
@@ -19,24 +22,31 @@ def make_traj_from_material_id(material_id: str, api_key: str):
             projects database and should be in the form 'mp-1234' but with
             another number.
         api_key (str): The user's Materials Project API key.
+        traget_number_of_atoms (int): The number of atoms of the material desired
+            in the system. It is a maximum rather than a minimum.
+
 
     Returns:
         none
     """
     with MPRester(api_key) as mpr:
         some_material = mpr.materials.search(material_ids=[material_id])
-        if some_material:
-            atoms = AseAtomsAdaptor.get_atoms(some_material[-1].structure)
-            path_to_traj_folder = os.path.dirname(os.path.abspath(__file__)) + '/../Input_trajectory_files/'
-            location_and_name = path_to_traj_folder + material_id + '.traj'
-            traj = Trajectory(location_and_name, "w")
-            traj.write(atoms)
-        else:
-            print(f"Material ID {material_id} not found in the database.")
+        primitive_cell = AseAtomsAdaptor.get_atoms(some_material[-1].structure)
+        number_atoms_primitive = primitive_cell.get_number_of_atoms()
+        n = floor(cbrt(target_number_of_atoms/number_atoms_primitive))
+        M = [[n, 0, 0], [0, n, 0], [0, 0, n]]
+        atoms = make_supercell(primitive_cell, M)
+        size_descripition = str(atoms.get_number_of_atoms())+'_atoms_of_'
+        path_to_traj_folder = os.path.dirname(os.path.abspath(__file__)) + '/../Input_trajectory_files/'
+        location_and_name = path_to_traj_folder + size_descripition + material_id + '.traj'
+        traj = Trajectory(location_and_name, "w")
+        traj.write(atoms)
+        
 
 
 def get_ASE_atoms_from_material_id(material_id: str, api_key: str):
-    """Take a material id and an API key and return the primitive unitcell of
+    """Take a material id and return the primitive unitcell of
+
     the material in a format that can be used in ASE simulations.
 
     Args:
