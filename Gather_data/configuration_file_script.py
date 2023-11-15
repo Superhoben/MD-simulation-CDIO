@@ -11,14 +11,21 @@ def config_file(file_name='default_config', ensemble='NVE', temperature=500, pot
     """Create the configuration file
 
     Args:
+    	file_name(string): Name of the file to create
         ensemble(string): Ensemble to use in simulation
         temperature(int): Initial temperature in simulation
         potential(string): Potential to use in simulation
         step_number(int): Number of steps to use in simulation
         time_step(int): Time step in fs to use in simulation
         friction(float): Friction for NVT simulation
-        interval(int): Interval for which to calculate properties
-        show_properties(bool): Show properties or not
+        record_energy(int): Interval to record energy in simulation
+        record_cohesive_energy(int): Interval to record cohesive energy in simulation
+        record_temperature(int): Interval to record temperature in simulation
+        record_pressure(int): Interval to record pressure in simulation
+        record_configuration(int): Interval to record configuration in simulation
+        record_bulk_modulus(int): Interval to record bulk modulus in simulation
+        record_optimal_scaling(int): Interval to record optimal scaling in simulation
+        record_elastic(int): Interval to record elastic properties in simulation
 
     Returns:
         None

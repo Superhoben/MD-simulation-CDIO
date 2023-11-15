@@ -24,11 +24,11 @@ def calc_bulk_modulus(atoms: Atoms, output_dict={'bulk_modulus': []}):
     all directions.
 
     Args:
-        atoms(ase atom object): the system to calculate the bulk modulus for
-        traj_file: list of configuration files which provide us with volumes and potential energies
+        atoms(ase atom object): The system to calculate the bulk modulus for
+        traj_file: List of configuration files which provide us with volumes and potential energies
 
     Returns:
-        (float): the optimal bulk modulus in eV/Ångstrom^3
+        (float): The optimal bulk modulus in eV/Ångstrom^3
     """
     cell = atoms.get_cell()
     volumes = []
@@ -57,11 +57,11 @@ def calculate_cohesive_energy(atoms, output_dict={'cohesive_energy': []}):
     Formula: Cohesive energy=(isolated atoms potential energies-total atoms potential energy)/nr of atoms
 
     Args:
-        atoms (ASE atoms object): the ASE atoms object for which to calculate the cohesive energy.
-        output_dict(dict): dictionary to append the result to
+        atoms (ASE atoms object): The ASE atoms object for which to calculate the cohesive energy.
+        output_dict(dict): Dictionary to append the result to.
 
     Returns:
-        (float): the Cohesive energy in eV
+        (float): The Cohesive energy in eV.
     """
     # Check if the atoms object is a single atom to begin with
     if len(atoms) == 1:
@@ -94,11 +94,11 @@ def calc_elastic(atoms: Atoms, output_dict={'elastic_tensor': []}):
     """Calculate the elastic tensor C11.
 
     Args:
-        atoms(ase atoms object): atoms object to calculate the tensor for
-        output_dict(dict): dictionary to append the result to
+        atoms(ase atoms object): Atoms object to calculate the tensor for.
+        output_dict(dict): Dictionary to append the result to.
 
     Returns:
-        (float): Elastic tensor C11 in GPa
+        (float): Elastic tensor C11 in GPa.
 
     """
     systems = get_elementary_deformations(atoms, n=5, d=0.33)
