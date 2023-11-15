@@ -7,6 +7,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 from tkinter import *
 from tkinter import filedialog
 from tkinter import ttk
+from tkinter import messagebox
 from ase.build import molecule
 from ase.io.trajectory import Trajectory
 from asap3 import EMT
