@@ -394,7 +394,7 @@ def send_mat_id_to_gather_data(materialID):
     api_key = get_api_key()
     messagebox.showinfo("API key", f"Using API key: {api_key}")
     try:
-        Gather_data.download_data.make_traj_from_material_id(materialID, api_key, int(cell_size))
+        Gather_data.download_data.make_traj_from_material_id(materialID, api_key)
     except:
         messagebox.showerror("Invalid id", "Please enter a valid id")
 
