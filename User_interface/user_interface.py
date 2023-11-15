@@ -379,7 +379,7 @@ def update_output_traj_list(event, traj_menu, value_inside_traj_list):
         menu.add_command(label=traj_file, command=lambda value=traj_file: value_inside_traj_list.set(value))
 
 
-def send_mat_id_to_gather_data(materialID, cell_size):
+def send_mat_id_to_gather_data(materialID):
     """Write user input data to config file.
 
     Args:
@@ -395,21 +395,6 @@ def send_mat_id_to_gather_data(materialID, cell_size):
         Gather_data.download_data.make_traj_from_material_id(materialID, api_key, int(cell_size))
     except:
         messagebox.showerror("Invalid id", "Please enter a valid id")
-
-
-def send_mat_id_to_gather_data(materialID):
-    """Write user input data to config file.
-
-    Args:
-        materialID(string): specifies which material is to be downloaded from database
-
-    Returns:
-        None
-    """
-    if materialID[0:3] == "mp-":
-        Gather_data.download_data.make_traj_from_material_id(materialID)
-    else:
-        print("Enter a valid ID")
 
 
 def visualise_2D(value_inside_output_data, value_inside_traj_data, ax_canvas):
