@@ -19,6 +19,7 @@ import Gather_data.download_data
 from Simulation.run_md_simulation import run_single_md_simulation
 from os import listdir
 from os.path import isfile
+from User_API_key.start_program import get_api_key
 
 
 def initiate_gui():
