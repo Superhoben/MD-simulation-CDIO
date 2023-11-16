@@ -38,12 +38,12 @@ def mix_materials(traj_name: str, add_element: str, interval=10):
         '/../Input_trajectory_files/'
     traj = Trajectory(traj_path+traj_name)
     atoms = traj[0]
-    original_positions = atoms.get_chemical_symbols()
-    len_atoms = len(atoms)
+    original_symbols = atoms.get_chemical_symbols()
+    nr_of_atoms = len(atoms)
     traj_name = traj_path + traj_name.split(".")[0] + "_" + add_element + "_"
-    for x in range(1, len_atoms, interval):
-        atoms_positions = original_positions.copy()
-        interval = len_atoms/x
+    for x in range(1, nr_of_atoms, interval):
+        atoms_positions = original_symbols.copy()
+        interval = nr_of_atoms/x
         for y in range(x):
             atoms_positions[int(y*interval)] = add_element
         atoms.set_chemical_symbols(atoms_positions)
