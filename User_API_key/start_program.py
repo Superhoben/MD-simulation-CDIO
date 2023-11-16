@@ -38,10 +38,10 @@ def get_api_key():
         if section in config and "api_key" in config[section]:
             saved_api_key = config[section]["api_key"]
             confirmation = input(f"Is this your API key? (yes/no): {saved_api_key} ").strip().lower()
-            if confirmation == "yes" or confirmation == "Yes" or confirmation == "YES":
+            if confirmation == "yes":
                 print(f"Using saved API key: {saved_api_key}")
                 return saved_api_key
-            elif confirmation == "no" or confirmation == "No" or confirmation == "NO":
+            elif confirmation == "no":
                 print("API key not confirmed.")
             else:
                 print("Invalid option, try again")
