@@ -116,10 +116,21 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
         output_dict['mean_square_displacement'] = []
         dyn.attach(calc_properties.calc_mean_square_displacement, interval_to_record_mean_square_displacement, atoms, output_dict)
 
+    interval_to_record_lindemann_criterion = int(config_data['RecordingIntervals']['record_lindemann_criterion'])
+    if interval_to_record_lindemann_criterion:
+        output_dict['lindemann_criterion'] = []
+        dyn.attach(calc_properties.lindemann_criterion, interval_to_record_lindemann_criterion, atoms, output_dict)
+    
     # Run simulation with the attached recorders
     dyn.run(int(config_data['SimulationSettings']['step_number']))
     
     output_dict['mean_square_displacement'][0] = 0
+    
+       
+    time_avg_MSD = 0
+    for MSD in output_dict['mean_square_displacement']:
+        time_avg_MSD = time_avg_MSD + MSD
+    output_dict["avg_MSD"] = time_avg_MSD/int(config_data['SimulationSettings']['step_number'])
 
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/'
     with open(path + output_name + '.txt', 'w') as file:

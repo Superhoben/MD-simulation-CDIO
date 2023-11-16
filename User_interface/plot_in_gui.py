@@ -94,8 +94,9 @@ def plot(ax, canvas, x, y, x_lim, y_title):
 def clear_canvas(ax, canvas, title):
     title.config(text="Attribute to be plotted")
     ax.clear()
-    canvas.draw()
     ax.set_xlabel("Time [femto seconds]")
+    canvas.draw()
+    
 
 def open_window(x, y, x_lim ,y_title):
 
