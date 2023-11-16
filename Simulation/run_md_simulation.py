@@ -15,12 +15,6 @@ from parcalc import ParCalculate
 from elastic import get_elastic_tensor
 
 
-def save_configuration(atoms, output_file_name):
-    path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files/'
-    traj = Trajectory(path+output_file_name+'.traj', "w")
-    traj.write(atoms)
-
-
 def run_single_md_simulation(config_file: str, traj_file: str, output_name: str):
     """Run md simulation for a single trajectory file, with parameters specified in config
 
@@ -102,10 +96,12 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
         output_dict['iterations_to_find_scaling'] = []
         dyn.attach(lattice_constant.optimize_scaling, interval_to_record_optimal_scaling, atoms, output_dict)
 
+    path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files/'
+    traj = Trajectory(path+output_name+'.traj', "w", atoms)
     interval_to_record_configuration = int(config_data['RecordingIntervals']['record_configuration'])
     if interval_to_record_configuration:
-        dyn.attach(save_configuration, interval_to_record_configuration, atoms, output_name)
-    
+        dyn.attach(traj.write, interval_to_record_configuration)
+
     interval_to_record_elastic_properties = int(config_data['RecordingIntervals']['record_elastic'])
     if interval_to_record_elastic_properties:
         output_dict['elastic_tensor'] = []
