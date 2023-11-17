@@ -19,16 +19,13 @@ def optimize_scaling(atoms, output_dict={'optimal_scaling': [], 'iterations_to_f
 
     Args:
         atoms(ASE atoms object): The configuration to find an optimal lattice constant for
+        output_dict(dict): Dictionary to append the result to.
         learning_rate(float): The scaling converges quicker for larger values but if
              it's too large the scaling will oscillate and not converge at all
-        simulation_function(function[atoms_object]->atoms_object): A function which take an
-            atoms obejct, evolves this object throughout time and return the atoms object
 
     Returns:
         scaling(float): Return the scaling factor which would give the inputed atoms object
             the lowest possible energy
-        energy(float): Also return the energy for the scaled atoms object
-        number_of_iterations(int): Shows how many iterations it took for the energy to converge
     """
     old_scaling = 1
     scaling = 1.001
@@ -59,7 +56,7 @@ def optimize_scaling(atoms, output_dict={'optimal_scaling': [], 'iterations_to_f
 
 
 if __name__ == "__main__":
-    atoms = FaceCenteredCubic(directions=[[1, 0, 0], [0, 1, 0], [1, 1, 1]], 
-                                             size=(2, 2, 3), symbol='Cu', pbc=(1, 1, 0))
+    atoms = FaceCenteredCubic(directions=[[1, 0, 0], [0, 1, 0], [1, 1, 1]],
+                              size=(2, 2, 3), symbol='Cu', pbc=(1, 1, 0))
     atoms.calc = EMT()
     optimize_scaling(atoms, {'optimal_scaling': [], 'iterations_to_find_scaling': []})
