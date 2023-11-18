@@ -13,6 +13,8 @@ import json
 from Simulation import calc_properties, calc_bulk_properties, lattice_constant
 from parcalc import ParCalculate
 from elastic import get_elastic_tensor
+import numpy as np
+from scipy.spatial.distance import cdist
 
 
 def save_configuration(atoms, output_file_name):
@@ -71,8 +73,15 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
         # atoms = run_other_simulation(atoms, config_data)
         raise Exception("Running calculations with ensemble '" + ensemble + "' is not implemented yet.")
     # This dict will contain output data of the simulation to be written into the output text file
+    
+    positions = np.array(atoms.get_positions())
+    distances_between_atoms = cdist(positions, positions)
+    # Finds distance d between the two closest atoms and is used to calculate the Lindemann criterion
+    d = np.min(distances_between_atoms[np.nonzero(distances_between_atoms)])
+    
     output_dict = {}
     output_dict["config_file"] = config_file
+    
     # Attach recorders that calculate a certain property and store in the output_dict
     interval_to_record_energy = int(config_data['RecordingIntervals']['record_energy'])
     if interval_to_record_energy:
@@ -119,14 +128,17 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
     interval_to_record_lindemann_criterion = int(config_data['RecordingIntervals']['record_lindemann_criterion'])
     if interval_to_record_lindemann_criterion:
         output_dict['lindemann_criterion'] = []
-        dyn.attach(calc_properties.lindemann_criterion, interval_to_record_lindemann_criterion, atoms, output_dict)
+        dyn.attach(calc_properties.lindemann_criterion, interval_to_record_lindemann_criterion, atoms, output_dict, d)
+        
+    interval_to_record_self_diffusion_coefficient = int(config_data['RecordingIntervals']['record_self_diffusion_coefficient'])
+    if interval_to_record_lindemann_criterion:
+        output_dict['self_diffusion_coefficient'] = []
+        dyn.attach(calc_properties.self_diffusion_coefficent, interval_to_record_self_diffusion_coefficient, atoms, output_dict, interval_to_record_self_diffusion_coefficient*config_data['SimulationSettings']['time_step'])
     
     # Run simulation with the attached recorders
     dyn.run(int(config_data['SimulationSettings']['step_number']))
     
     output_dict['mean_square_displacement'][0] = 0
-    
-       
     time_avg_MSD = 0
     for MSD in output_dict['mean_square_displacement']:
         time_avg_MSD = time_avg_MSD + MSD

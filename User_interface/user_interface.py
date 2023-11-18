@@ -181,6 +181,12 @@ def initiate_gui():
     rec_lindemann_criterion_label.grid(row=rownumber, column=0)
     rec_lindemann_criterion_entry = Entry(data_frame)
     rec_lindemann_criterion_entry.grid(row=rownumber, column=2)
+    
+    rownumber += 1
+    rec_self_diffusion_coefficient_label = Label(data_frame, text="Self Diffusion Coefficient", width=20)
+    rec_self_diffusion_coefficient_label.grid(row=rownumber, column=0)
+    rec_self_diffusion_coefficient_entry = Entry(data_frame)
+    rec_self_diffusion_coefficient_entry.grid(row=rownumber, column=2)
 
     rownumber += 1
     config_name_label = Label(data_frame, text="Config file name", width=20)
@@ -207,7 +213,8 @@ def initiate_gui():
                                rec_scaling_entry.get() or "0",
                                rec_elastic_entry.get() or "0",
                                rec_mean_square_displacement_entry.get() or "0",
-                               rec_lindemann_criterion_entry.get() or "0"
+                               rec_lindemann_criterion_entry.get() or "0",
+                               rec_self_diffusion_coefficient_entry.get() or "0"
                                )
                            )
     config_button.grid(row=rownumber, column=1, pady=10)
@@ -317,7 +324,7 @@ def initiate_gui():
     plottable_attributes = ["Total Energy", "Kinetic Energy", "Potential Energy", 
                             "Temperature", "Pressure", "Bulk Modulus",
                             "Optimal Scaling", "Elastic Tensor", "Mean Square Displacement",
-                            "Lindemann Criterion"]
+                            "Lindemann Criterion", "Self Diffusion Coefficient"]
 
     value_inside_plottable_list = StringVar(gui)
     value_inside_plottable_list.set("Attribute to plot")
@@ -444,7 +451,8 @@ def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE'
                 steps=5000, time_steps=5, friction=0.005, rec_energy = 0,
                 rec_coh_e = 0, rec_temp = 0, rec_pressure = 0, 
                 rec_config = 0, rec_bulk = 0, rec_scaling = 0,
-                record_elastic = 0, rec_MSD = 0, rec_lindemann = 0):
+                record_elastic = 0, rec_MSD = 0, rec_lindemann = 0,
+                rec_diffusion_coef = 0):
     """Create the configuration file
 
     Args:
@@ -557,7 +565,7 @@ def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE'
                 steps, time_steps, friction, rec_energy,
                 rec_coh_e, rec_temp, rec_pressure, 
                 rec_config, rec_bulk, rec_scaling,
-                record_elastic, rec_MSD, rec_lindemann)
+                record_elastic, rec_MSD, rec_lindemann, rec_diffusion_coef)
 
 
 def send_mat_id_to_gather_data(materialID, cell_size):

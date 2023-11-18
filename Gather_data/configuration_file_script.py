@@ -8,7 +8,7 @@ def config_file(file_name='default_config', ensemble='NVE', temperature=500, pot
                 record_cohesive_energy = 0, record_temperature = 0, record_pressure = 0, 
                 record_configuration = 0, record_bulk_modulus = 0, record_optimal_scaling = 0,
                 record_elastic = 0, record_mean_square_displacement = 0, 
-                record_lindemann_criterion = 0):
+                record_lindemann_criterion = 0, record_self_diffusion_coefficient = 0):
     """Create the configuration file
 
     Args:
@@ -43,7 +43,8 @@ def config_file(file_name='default_config', ensemble='NVE', temperature=500, pot
                                     'record_optimal_scaling': record_optimal_scaling,
                                     'record_elastic': record_elastic,
                                     'record_mean_square_displacement': record_mean_square_displacement,
-                                    'record_lindemann_criterion': record_lindemann_criterion}
+                                    'record_lindemann_criterion': record_lindemann_criterion,
+                                    'record_self_diffusion_coefficient': record_self_diffusion_coefficient}
 
     # Write to config file
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Input_config_files/'
