@@ -71,7 +71,7 @@ def calc_pressure(atoms: Atoms, output_dict={'pressure': []}, external_field=Non
         return pressure_in_eV_per_Å3*160.21766208
     
 
-def calc_mean_square_displacement(atoms: Atoms, output_dict={'mean_square_displacement': []}, external_field=None):
+def calc_mean_square_displacement(atoms: Atoms, output_dict={'mean_square_displacement': []}):
     """Calculate pressure of atoms object with or without an external field.
 
     The formula used is MSQ=1/N*sum{(r_i(t_n)*r_i(t_0))^2 where r_i is the 
@@ -103,7 +103,7 @@ def calc_mean_square_displacement(atoms: Atoms, output_dict={'mean_square_displa
     return MSD
 
 
-def lindemann_criterion(atoms: Atoms, output_dict={'lindemann_criterion': []}, external_field=None, d = 1):
+def lindemann_criterion(atoms: Atoms, output_dict={'lindemann_criterion': []}, d = 1):
     """Calculate pressure of atoms object with or without an external field.
 
     The formula used is MSQ=1/N*sum{(r_i(t_n)*r_i(t_0))^2 where r_i is the 
@@ -132,7 +132,7 @@ def lindemann_criterion(atoms: Atoms, output_dict={'lindemann_criterion': []}, e
     return lindemann
 
 
-def self_diffusion_coefficent(atoms: Atoms, output_dict={'lindemann_criterion': []}, external_field=None, time_elapsed_per_interval = 1):
+def self_diffusion_coefficent(atoms: Atoms, output_dict={'lindemann_criterion': []}, time_elapsed_per_interval = 1):
     """Calculate pressure of atoms object with or without an external field.
 
     The formula used is MSQ=1/N*sum{(r_i(t_n)*r_i(t_0))^2 where r_i is the 
@@ -156,7 +156,7 @@ def self_diffusion_coefficent(atoms: Atoms, output_dict={'lindemann_criterion': 
         # Calculate self_diffusion_coefficient at time t. t is calculated by 
         # using how many iterations of calc_self_diffusion_coefficient have
         # been performed, and multiplying this by how long the intervals are.
-        self_diffusion_coefficient = output_dict['mean_square_displacement'][-1]/(6*time_elapsed_per_interval*len(output_dict['self_diffusion_coefficient'])*units.fs)
+        self_diffusion_coefficient = output_dict['mean_square_displacement'][-1]/(6*time_elapsed_per_interval*(len(output_dict['mean_square_displacement']) - 1)*units.fs)
         
     output_dict['self_diffusion_coefficient'].append(self_diffusion_coefficient)
 
