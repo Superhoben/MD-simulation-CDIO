@@ -149,7 +149,7 @@ def run_single_md_simulation(config_file: str, traj_file: str,
     interval_to_record_self_diffusion_coefficient = int(config_data['RecordingIntervals']['record_self_diffusion_coefficient'])
     if interval_to_record_lindemann_criterion:
         output_dict['self_diffusion_coefficient'] = []
-        dyn.attach(calc_properties.self_diffusion_coefficent, interval_to_record_self_diffusion_coefficient, atoms, output_dict, interval_to_record_self_diffusion_coefficient*config_data['SimulationSettings']['time_step'])
+        dyn.attach(calc_properties.self_diffusion_coefficent, interval_to_record_self_diffusion_coefficient, atoms, output_dict, interval_to_record_self_diffusion_coefficient*int(config_data['SimulationSettings']['time_step']))
     
     # Run simulation with the attached recorders
 
