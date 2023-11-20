@@ -20,6 +20,7 @@ from Simulation.run_md_simulation import run_single_md_simulation
 from configparser import ConfigParser
 from os import listdir
 from os.path import isfile
+from User_API_key.start_program import get_api_key
 import json
 
 
@@ -456,17 +457,39 @@ def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE'
     """Create the configuration file
 
     Args:
+    	file_name(string): Name of the file to create
         ensemble(string): Ensemble to use in simulation
         temperature(int): Initial temperature in simulation
         potential(string): Potential to use in simulation
         step_number(int): Number of steps to use in simulation
         time_step(int): Time step in fs to use in simulation
         friction(float): Friction for NVT simulation
-        interval(int): Interval for which to calculate properties
-        show_properties(bool): Show properties or not
+        record_energy(int): Interval to record energy in simulation
+        record_cohesive_energy(int): Interval to record cohesive energy in simulation
+        record_temperature(int): Interval to record temperature in simulation
+        record_pressure(int): Interval to record pressure in simulation
+        record_configuration(int): Interval to record configuration in simulation
+        record_bulk_modulus(int): Interval to record bulk modulus in simulation
+        record_optimal_scaling(int): Interval to record optimal scaling in simulation
+        record_elastic(int): Interval to record elastic properties in simulation
 
     Returns:
         None
+    """
+    messagebox.showinfo("Information", "Please Check the terminal")
+    api_key = get_api_key()
+    messagebox.showinfo("API key", f"Using API key: {api_key}")
+    try:
+        Gather_data.download_data.make_traj_from_material_id(materialID, api_key)
+    except:
+        messagebox.showerror("Invalid id", "Please enter a valid id")
+
+
+def visualise_2D(value_inside_output_data, value_inside_traj_data, ax_canvas):
+    """Visualize data in 3D.
+
+    Args:
+        At the time of writing not fully clear.
     """
     # Check if temperature is valid
     if temperature.isdigit():
@@ -574,14 +597,18 @@ def send_mat_id_to_gather_data(materialID, cell_size):
     Args:
         materialID(string): specifies which material is to be downloaded from database
 
+
     Returns:
         None
     """
+    traj = Trajectory("../Trajectory_files/" + value_inside_traj_data)
+    atoms = traj[0]
+    atoms.calc = EMT()
+
     try:
         Gather_data.download_data.make_traj_from_material_id(materialID, int(cell_size))
     except:
         messagebox.showerror("Invalid id", "Please enter a valid id")
-
 
 
 def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, boolean, plot_title):
