@@ -117,7 +117,7 @@ def create_crystal_guided():
             lengths_and_angles['gamma'] = float(input("Input angle between the second and third translation vector: "))
             elements = input("Input two elements in chemical notation separated by space: ")
             elements = elements.split()
-            atoms = BaseCenteredMonoclinic(symbol=elements[0], latticeconstant=lattice_constants)
+            atoms = BaseCenteredMonoclinic(symbol=elements[0], latticeconstant=lengths_and_angles)
             atoms.set_chemical_symbols(elements)
             return atoms
 
