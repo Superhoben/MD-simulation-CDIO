@@ -418,7 +418,6 @@ ax.set_xlabel("Time [femto seconds]")
         None
     """
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/'
-    print(path)
     all_files = [file for file in listdir(path) if isfile(path+file)]
     output_files = [file for file in all_files if file[-4:] == ".txt"]
     menu = output_data_menu["menu"]
