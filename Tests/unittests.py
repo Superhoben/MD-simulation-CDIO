@@ -3,7 +3,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 from ase.lattice.cubic import FaceCenteredCubic
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.build import bulk, molecule
-from ase import Atoms
+from ase import Atoms, Atom
 #from asap3 import EMT
 from ase.calculators.emt import EMT
 from tkinter import Tk
@@ -13,6 +13,7 @@ from Simulation.calc_bulk_properties import calc_bulk_modulus, calculate_cohesiv
 from Simulation.run_md_simulation import run_single_md_simulation
 from Gather_data.download_data import get_ASE_atoms_from_material_id
 from User_interface.user_interface import initiate_gui
+from User_API_key import start_program
 
 
 class UnitTests(unittest.TestCase):
@@ -35,24 +36,37 @@ class UnitTests(unittest.TestCase):
     def test_lattice_constant_gradient_descent(self):
         """Uses a material with known lattice constant, disorts it and see if the lattice method is able
         to find the original lattice constant which also should be the optimal one."""
-        atoms = get_ASE_atoms_from_material_id('mp-30')  # Get atoms object with atoms in optimal positions
+        #atoms = get_ASE_atoms_from_material_id('mp-30')  # Get atoms object with atoms in optimal positions
+        atoms = FaceCenteredCubic(directions=[[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+                          symbol="Cu",
+                          size=(2, 2, 2),
+                          pbc=True)
         atoms.set_cell(atoms.cell*0.5, scale_atoms=True)  # Rescale unit cell so atoms are now in suboptimal positions
         atoms.calc = EMT()
         scaling = optimize_scaling(atoms, {'optimal_scaling': [], 'iterations_to_find_scaling': []})
         # print(scaling)
         self.assertTrue((0.98 < scaling*0.5) and (scaling*0.5 < 1.02))
+        
 
     # More test are needed for this function
     def test_calc_pressure_no_field(self):
-        atoms = get_ASE_atoms_from_material_id('mp-30')  # Get atoms object with atoms in optimal positions
+        #atoms = get_ASE_atoms_from_material_id('mp-30')  # Get atoms object with atoms in optimal positions
+        atoms = FaceCenteredCubic(directions=[[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+                          symbol="Cu",
+                          size=(2, 2, 2),
+                          pbc=True)
         atoms.calc = EMT()  # If atoms are only, Ni, Cu, Pd, Ag, Pt or Au no input parameters are nessecary
         # When atoms are still at optimal positions no pressure should occur, +-0.1 GPa tolerance is given
         self.assertTrue((-0.1 < calc_pressure(atoms)) and (calc_pressure(atoms) < 0.1))
-
+        
     def test_bulk_modulus(self):
         # lattice_constant = 4
         # choosing more specific silver to test the bulk modulus
-        atoms = get_ASE_atoms_from_material_id('mp-124')
+        #atoms = get_ASE_atoms_from_material_id('mp-124')
+        atoms = FaceCenteredCubic(directions=[[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+                          symbol="Ag",
+                          size=(2, 2, 2),
+                          pbc=True)
         atoms.calc = EMT()
         # Another way to create our object "bulk" this time
         #ag_bulk = bulk(name= "Ag",crystalstructure= "fcc", a=4.09)

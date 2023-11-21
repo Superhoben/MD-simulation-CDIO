@@ -3,27 +3,29 @@ import numpy as np
 
 
 def calc_temp(atoms: Atoms, output_dict={'temperature': []}):
-    """ Calculates temperature of atoms object
+    """Calculate the temperature of atoms object
 
     Args:
-        atoms(ase atom object): the system to calculate the temperature for
+        atoms(ase atom object): The system to calculate the temperature for.
+        output_dict(dict): Dictionary to append the result to.
 
     Returns:
-        (float): the calculated temperature
+        (float): The calculated temperature.
     """
     temperature = atoms.get_temperature()
     output_dict['temperature'].append(temperature)
     return temperature
 
+
 def calc_energy(atoms: Atoms, output_dict={'total_energy': [], 'kinetic_energy': [], 'potential_energy': []}):
-    """ Calculates total, kinetic, and potential energy of atoms object
+    """ Calculate the total, kinetic, and potential energy of atoms object
 
     Args:
-        atoms(ase atom object): the system to calculate the energy for
-        output_dict(dict): dictionary to append the result to
+        atoms(ase atom object): The system to calculate the energy for.
+        output_dict(dict): Dictionary to append the result to.
 
     Returns:
-        (float): the calculated total energy
+        (float): The calculated total energy.
     """
     total_energy = atoms.get_total_energy()
     output_dict['total_energy'].append(total_energy)
@@ -40,14 +42,15 @@ def calc_pressure(atoms: Atoms, output_dict={'pressure': []}, external_field=Non
     volume of the unitcell.
 
     Args:
-        atoms(ase atom object): the system to calculate the pressure for
+        atoms(ase atom object): The system to calculate the pressure for.
+        output_dict(dict): Dictionary to append the result to.
         external_field(function(Atoms)->np.array): A function which takes an ase Atom object
             and returns the force on each atom as an array in the same format as Atoms.force
             function would but converted to an np.array. For N atoms in 3 dimensions:
             [[f_x_atom1, f_y_atom1, f_z_atom1], ..., [f_x_atomN, f_y_atomN, f_z_atomN]]
 
     Returns:
-        (float): the calculated pressure in GPa (giga pascal)
+        (float): The calculated pressure in GPa (giga pascal).
     """
     forces = np.array(atoms.get_forces(apply_constraint=False, md=True))
     positions = np.array(atoms.get_positions())
@@ -55,7 +58,7 @@ def calc_pressure(atoms: Atoms, output_dict={'pressure': []}, external_field=Non
     volume = atoms.get_volume()        # in Å^3
     ekin = atoms.get_kinetic_energy()  # in eV
 
-    if external_field == None:
+    if external_field is None:
         pressure_in_eV_per_Å3 = (2*ekin+np.sum(np.multiply(forces, positions)))/(3*volume)
         output_dict['pressure'].append(pressure_in_eV_per_Å3*160.21766208)
         return pressure_in_eV_per_Å3*160.21766208
