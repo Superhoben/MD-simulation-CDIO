@@ -312,7 +312,8 @@ def initiate_gui():
     rownumber += 1
     plottable_attributes = ["Total Energy", "Kinetic Energy", "Potential Energy", 
                             "Temperature", "Pressure", "Bulk Modulus",
-                            "Optimal Scaling", "Elastic Tensor"]
+                            "Optimal Scaling", "Elastic Tensor", "Mean Square Displacement",
+                            "Lindemann Criterion", "Self Diffusion Coefficient"]
 
     value_inside_plottable_list = StringVar(gui)
     value_inside_plottable_list.set("Attribute to plot")
@@ -335,12 +336,6 @@ def initiate_gui():
     output_data_menu.bind('<Button-1>', output_data_handler)  
 
     output_data_menu.grid(row=rownumber, column=2)
-    
-
-    plottable_attributes = ["Total Energy", "Kinetic Energy", "Potential Energy", 
-                            "Temperature", "Pressure", "Bulk Modulus",
-                            "Optimal Scaling", "Elastic Tensor", "Mean Square Displacement",
-                            "Lindemann Criterion", "Self Diffusion Coefficient"]
 
     # Visualise results button
     plot_button = Button(data_frame, text='Plot data',
@@ -443,7 +438,6 @@ ax.set_xlabel("Time [femto seconds]")
         None
     """
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/'
-    print(path)
     all_files = [file for file in listdir(path) if isfile(path+file)]
     output_files = [file for file in all_files if file[-4:] == ".txt"]
     menu = output_data_menu["menu"]
