@@ -16,26 +16,8 @@ from elastic import get_elastic_tensor
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 
 
-def save_configuration(atoms, output_file_name):
-    """Save the configuration of an atoms object.
-
-    Args:
-        atoms(ase atoms object): The ase atoms object to save configuration of.
-        output_file_name(str): Name of file to write the configuration to.
-
-    Returns:
-        None.
-
-    """
-    path = os.path.dirname(os.path.abspath(__file__)) + \
-        '/../Output_trajectory_files/'
-    traj = Trajectory(path+output_file_name+'.traj', "w")
-    traj.write(atoms)
-
-
-def run_single_md_simulation(config_file: str, traj_file: str,
-                             output_name: str):
-    """Run md simulation for a single trajectory file.
+def run_single_md_simulation(config_file: str, traj_file: str, output_name: str):
+    """Run md simulation for a single trajectory file, with parameters specified in config
 
     Args:
         config_file(str): Name of file with parameters to use in simulation.
@@ -118,9 +100,11 @@ def run_single_md_simulation(config_file: str, traj_file: str,
         output_dict['iterations_to_find_scaling'] = []
         dyn.attach(lattice_constant.optimize_scaling, interval_to_record_optimal_scaling, atoms, output_dict)
 
-    interval_to_record_configuration = int(recording_intervals['record_configuration'])
+    interval_to_record_configuration = int(config_data['RecordingIntervals']['record_configuration'])
     if interval_to_record_configuration:
-        dyn.attach(save_configuration, interval_to_record_configuration, atoms, output_name)
+        path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files/'
+        traj = Trajectory(path+output_name+'.traj', "w", atoms)
+        dyn.attach(traj.write, interval_to_record_configuration)
 
     interval_to_record_elastic_properties = int(recording_intervals['record_elastic'])
     if interval_to_record_elastic_properties:
