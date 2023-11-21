@@ -45,7 +45,6 @@ def mix_materials(traj_name: str, add_element: str, interval=10):
     for x in range(1, nr_of_atoms, interval):
         atoms_positions = original_symbols.copy()
         random_mix(atoms_positions, add_element, x)
-        print(atoms_positions)
         atoms.set_chemical_symbols(atoms_positions)
         # TODO: add scaling = optimize_scaling(atoms) here
         traj = Trajectory(traj_name+str(x)+".traj", "w")
@@ -77,3 +76,28 @@ def random_mix(chemical_symbols: list, add_element: str, amount: int):
         chemical_symbols[index] = add_element
 
     return chemical_symbols
+
+
+def create_mix_from_concentration(traj_name: str, add_element: str, concentration):
+    """Mix an element into existing structure from concentration.
+    
+    This creates one trajectory file by mixing add_element into the structure
+    in the input file with the given concentration.
+    
+    Args:
+        traj_name(str): Name of trajectory file of atoms object to mix
+                        with add_element.
+        add_element(str): Name of element to mix.
+        interval(int): The desired concentration of the add_element.
+    """
+    traj_path = os.path.dirname(os.path.abspath(__file__)) + \
+        '/../Input_trajectory_files/'
+    traj = Trajectory(traj_path+traj_name)
+    atoms = traj[0]
+    original_symbols = atoms.get_chemical_symbols().copy()
+    atoms.set_chemical_symbols(random_mix(original_symbols, add_element,
+                               int(concentration*len(atoms))))
+    # TODO: optimize_scaling here?
+    traj_name = traj_path + traj_name.split(".")[0] + "_" + add_element + "_" + str(concentration) + ".traj"
+    traj = Trajectory(traj_name, "w")
+    traj.write(atoms)
