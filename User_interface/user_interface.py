@@ -453,21 +453,7 @@ def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE'
     Returns:
         None
     """
-    messagebox.showinfo("Information", "Please Check the terminal")
-    api_key = get_api_key()
-    messagebox.showinfo("API key", f"Using API key: {api_key}")
-    try:
-        Gather_data.download_data.make_traj_from_material_id(materialID, api_key)
-    except:
-        messagebox.showerror("Invalid id", "Please enter a valid id")
-
-
-def visualise_2D(value_inside_output_data, value_inside_traj_data, ax_canvas):
-    """Visualize data in 3D.
-
-    Args:
-        At the time of writing not fully clear.
-    """
+    
     # Check if temperature is valid
     if temperature.isdigit():
         if int(temperature) <= 0:
@@ -568,6 +554,7 @@ def visualise_2D(value_inside_output_data, value_inside_traj_data, ax_canvas):
                 record_elastic)
 
 
+
 def send_mat_id_to_gather_data(materialID, cell_size):
     """Write user input data to config file.
 
@@ -578,12 +565,11 @@ def send_mat_id_to_gather_data(materialID, cell_size):
     Returns:
         None
     """
-    traj = Trajectory("../Trajectory_files/" + value_inside_traj_data)
-    atoms = traj[0]
-    atoms.calc = EMT()
-
+    messagebox.showinfo("Information", "Please Check the terminal")
+    api_key = get_api_key()
+    messagebox.showinfo("API key", f"Using API key: {api_key}")
     try:
-        Gather_data.download_data.make_traj_from_material_id(materialID, int(cell_size))
+        Gather_data.download_data.make_traj_from_material_id(materialID, api_key, int(cell_size))
     except:
         messagebox.showerror("Invalid id", "Please enter a valid id")
 
