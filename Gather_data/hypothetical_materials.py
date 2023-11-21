@@ -88,7 +88,8 @@ def create_mix_from_concentration(traj_name: str, add_element: str, concentratio
         traj_name(str): Name of trajectory file of atoms object to mix
                         with add_element.
         add_element(str): Name of element to mix.
-        interval(int): The desired concentration of the add_element.
+        concentration(float): The desired concentration of add_element.
+                              Should be between 0 and 1.
     """
     traj_path = os.path.dirname(os.path.abspath(__file__)) + \
         '/../Input_trajectory_files/'
