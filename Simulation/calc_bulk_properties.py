@@ -12,6 +12,7 @@ from ase.units import kJ
 from elastic import get_pressure, BMEOS, get_strain
 from elastic import get_elementary_deformations, scan_volumes
 from elastic import get_BM_EOS, get_elastic_tensor
+from elastic.elastic import get_cij_order
 import ase.units as units
 
 
@@ -44,6 +45,7 @@ def calc_bulk_modulus(atoms: Atoms, output_dict={'bulk_modulus': []}):
     B = B / kJ * 1.0e24
     # print(B, "GPa")
     output_dict['bulk_modulus'].append(B)
+    print(B)
     return B
 
 
@@ -93,6 +95,9 @@ def calculate_cohesive_energy(atoms, output_dict={'cohesive_energy': []}):
 def calc_elastic(atoms: Atoms, output_dict={'elastic_tensor': []}):
     """Calculate the elastic tensor C11.
 
+    This is somewhat computationally heavy for large systems. Computational
+    cost increases exponentially with the size of the system.
+
     Args:
         atoms(ase atoms object): Atoms object to calculate the tensor for.
         output_dict(dict): Dictionary to append the result to.
@@ -102,6 +107,22 @@ def calc_elastic(atoms: Atoms, output_dict={'elastic_tensor': []}):
 
     """
     systems = get_elementary_deformations(atoms, n=5, d=0.33)
+
+    # Here we should run stress calculations on each deformed system
+
     Cij, Bij = get_elastic_tensor(atoms, systems)
+    cij_order = get_cij_order(atoms)
+
+    # After the program is restructured we can look at the following properties with the help of the elastic tensor:
+    # (For the numbers to make sense, we might want to convert them to GPa by calculating 'number/units.GPa')
+    #bulk_modulus = (Cij[cij_order.index('C_11')] + 2*Cij[cij_order.index('C_12')])/3
+    #shear_modulus = (3*Cij[cij_order.index('C_44')]+Cij[cij_order.index('C_11')]-Cij[cij_order.index('C_12')])/5
+    #youngs_modulus = 9*bulk_modulus*shear_modulus/(3*bulk_modulus+shear_modulus)
+    #poisson_ratio = 1/2-youngs_modulus/(6*bulk_modulus)
+
+    # We have compared the bulk modulus here with the one implemented the 'normal' way, and we got similar numbers at the start of 
+    # the simulation, however when the energy freaks out in the NVE simulations, the bulk modulus here also freaks out, but the
+    # one Issa implemented still looks good when it goes crazy. Or maybe not after further investigation.
+
     output_dict['elastic_tensor'].append(Cij[0]/units.GPa)
     return Cij/units.GPa
