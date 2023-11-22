@@ -60,10 +60,10 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
         MaxwellBoltzmannDistribution(atoms, temperature_K=int(simulation_settings['temperature']))
         dyn = VelocityVerlet(atoms, int(simulation_settings['time_step'])*units.fs)
     elif ensemble == "NVT":
-        dyn = Langevin(atoms, timestep=simulation_settings['time_step']*units.fs,
-                       temperature_K=simulation_settings['temperature'],
-                       friction=(simulation_settings['friction'] or 0.005))
-        MaxwellBoltzmannDistribution(atoms, temperature_K=simulation_settings['temperature'])
+        dyn = Langevin(atoms, timestep=int(simulation_settings['time_step'])*units.fs,
+                       temperature_K=int(simulation_settings['temperature']),
+                       friction=(float(simulation_settings['friction']) or 0.005))
+        MaxwellBoltzmannDistribution(atoms, temperature_K=int(simulation_settings['temperature']))
     else:
         # TODO: implement other ensembles
         raise Exception("Running calculations with ensemble '" + ensemble + "' is not implemented yet.")
