@@ -17,7 +17,7 @@ def save_any_atoms(file_name, target_number_of_atoms=300, *args, **kwargs):
 
     Args:
         file_name(string): Name of the .traj file that will be created
-        target_number_of_atons(int): Determines size of the created super cell
+        target_number_of_atoms(int): Determines size of the created super cell
         *args: An arbitary number of arguments which will be passed forward to the
             Atoms class initializer
         **kwargs: An arbitary number of keyword arguments which will be passed forward
@@ -45,7 +45,7 @@ def create_view_and_save_crystal_guided():
     number_atoms_primitive = primitive_cell.get_number_of_atoms()
     print("This is the primitive cell you've created")
     view(primitive_cell, block=False)
-    target_number_of_atoms = input("Input the target number of atoms the supercell: ")
+    target_number_of_atoms = input("Input the target number of atoms in the supercell: ")
     input_error_message = "Must be an integer bigger above " + str(primitive_cell.get_number_of_atoms()) + ": "
     while True:
         if target_number_of_atoms.isdigit():
@@ -80,27 +80,27 @@ def create_crystal_guided():
     crystal_system = int(crystal_system)
     if crystal_system == 1:
         lengths_and_angles = {}
-        lengths_and_angles['a'] = float(input("Input lengths of the first lattice translation vector: "))
-        lengths_and_angles['b'] = float(input("Input lengths of the second lattice translation vector: "))
-        lengths_and_angles['c'] = float(input("Input lengths of the third lattice translation vector: "))
-        lengths_and_angles['alpha'] = float(input("Input angle between the first and second translation vector: "))
-        lengths_and_angles['beta'] = float(input("Input angle between the first and third translation vector: "))
-        lengths_and_angles['gamma'] = float(input("Input angle between the second and third translation vector: "))
-        element = input("Input one element in chemical notation: ")
+        lengths_and_angles['a'] = float(input("Input length in of the first lattice translation vector in Å: "))
+        lengths_and_angles['b'] = float(input("Input length of the second lattice translation vector in Å: "))
+        lengths_and_angles['c'] = float(input("Input length of the third lattice translation vector in Å: "))
+        lengths_and_angles['alpha'] = float(input("Input angle between the first and second translation vector in degrees: "))
+        lengths_and_angles['beta'] = float(input("Input angle between the first and third translation vector in degrees: "))
+        lengths_and_angles['gamma'] = float(input("Input angle between the second and third translation vector in degrees: "))
+        element = input("Input the chemical symbol for the base atom: ")
         return Triclinic(symbol=element, latticeconstant=lengths_and_angles)
 
     if crystal_system == 2:
-        print("Choose subsystem of the orthorhombic cell\n",
-              "1 - Simple monoclinic\n",
+        print("Choose subsystem of the monoclinic cell\n",
+              "1 - Simple monoclinic (also known as primitive monoclinic)\n",
               "2 - Base centered monoclinic")
         monoclinic_system = ("Input number of choosen monoclinic subsystem: ")
         while not (int(crystal_system) in range(1, 3)):
             cubic_system = input("Invalid input, enter an integer between 1 and 2: ")
         if monoclinic_system == 1:
             lengths_and_angles = {}
-            lengths_and_angles['a'] = float(input("Input lengths of the first lattice translation vector: "))
-            lengths_and_angles['b'] = float(input("Input lengths of the second lattice translation vector: "))
-            lengths_and_angles['c'] = float(input("Input lengths of the third lattice translation vector: "))
+            lengths_and_angles['a'] = float(input("Input length of the first lattice translation vector in Å: "))
+            lengths_and_angles['b'] = float(input("Input length of the second lattice translation vector in Å: "))
+            lengths_and_angles['c'] = float(input("Input length of the third lattice translation vector in Å: "))
             print("First and second translation vectors are orthagonal")
             lengths_and_angles['beta'] = float(input("Input angle between the first and third translation vector: "))
             lengths_and_angles['gamma'] = float(input("Input angle between the second and third translation vector: "))
@@ -115,7 +115,7 @@ def create_crystal_guided():
             print("First and second translation vectors are orthagonal")
             lengths_and_angles['beta'] = float(input("Input angle between the first and third translation vector: "))
             lengths_and_angles['gamma'] = float(input("Input angle between the second and third translation vector: "))
-            elements = input("Input two elements in chemical notation separated by space: ")
+            elements = input("Input the chemical symbols for the two base atoms separated by space: ")
             elements = elements.split()
             atoms = BaseCenteredMonoclinic(symbol=elements[0], latticeconstant=lengths_and_angles)
             atoms.set_chemical_symbols(elements)
@@ -123,7 +123,7 @@ def create_crystal_guided():
 
     if crystal_system == 3:
         print("Choose subsystem of the orthorhombic cell\n",
-              "1 - Simple orthorhomic\n",
+              "1 - Simple orthorhomic (also known as primitive orthorhombic)\n",
               "2 - Base centered orthorhomic\n"
               "3 - Body centered orthorhomic\n",
               "4 - Face centered orthorhomic")
@@ -136,14 +136,14 @@ def create_crystal_guided():
             lattice_constants['a'] = float(input("Input x-direction lattice constant in Ångström: "))
             lattice_constants['b'] = float(input("Input y-direction lattice constant in Ångström: "))
             lattice_constants['c'] = float(input("Input z-direction lattice constant in Ångström: "))
-            element = input("Input one element in chemical notation: ")
+            element = input("Input the chemical symbol for the base atom: ")
             return SimpleOrthorhombic(symbol=element, latticeconstant=lattice_constants)
         if cubic_system == 2:
             lattice_constants = {}
             lattice_constants['a'] = float(input("Input x-direction lattice constant in Ångström: "))
             lattice_constants['b'] = float(input("Input y-direction lattice constant in Ångström: "))
             lattice_constants['c'] = float(input("Input z-direction lattice constant in Ångström: "))
-            elements = input("Input two elements in chemical notation separated by space: ")
+            elements = input("Input the chemical symbols for the two base atoms separated by space: ")
             elements = elements.split()
             atoms = BaseCenteredOrthorhombic(symbol=elements[0], latticeconstant=lattice_constants)
             atoms.set_chemical_symbols(elements)
@@ -153,7 +153,7 @@ def create_crystal_guided():
             lattice_constants['a'] = float(input("Input x-direction lattice constant in Ångström: "))
             lattice_constants['b'] = float(input("Input y-direction lattice constant in Ångström: "))
             lattice_constants['c'] = float(input("Input z-direction lattice constant in Ångström: "))
-            elements = input("Input two elements in chemical notation separated by space: ")
+            elements = input("Input the chemical symbols for the two base atoms separated by space: ")
             elements = elements.split()
             atoms = BodyCenteredOrthorhombic(symbol=elements[0], latticeconstant=lattice_constants)
             atoms.set_chemical_symbols(elements)
@@ -163,14 +163,14 @@ def create_crystal_guided():
             lattice_constants['a'] = float(input("Input x-direction lattice constant in Ångström: "))
             lattice_constants['b'] = float(input("Input y-direction lattice constant in Ångström: "))
             lattice_constants['c'] = float(input("Input z-direction lattice constant in Ångström: "))
-            element = input("Input one element in chemical notation: ")
+            element = input("Input the chemical symbol for the base atom: ")
             atoms = FaceCenteredOrthorhombic(symbol=element, latticeconstant=lattice_constants)
             return atoms
 
     if crystal_system == 4:
         print("Choose subsystem of the tetragonal cell\n",
               "1 - Simple tetragonal\n",
-              "2 - Centered tetragonal")
+              "2 - Centered tetragonal (also known as body centered tetragonal)")
         tetragonal_system = input("Input number of choosen tetragonal subsystem: ")
         while not (tetragonal_system in ['1', '2']):
             tetragonal_system = input("Invalid input, enter an integer between 1 and 2: ")
@@ -179,13 +179,13 @@ def create_crystal_guided():
             lattice_constants = []
             lattice_constants.append(float(input("Input x-, y-direction lattice constant in Ångström: ")))
             lattice_constants.append(float(input("Input z-direction lattice constant in Ångström: ")))
-            element = input("Input one element in chemical notation: ")
+            element = input("Input the chemical symbol for the base atom: ")
             return SimpleTetragonal(symbol=element, latticeconstant=lattice_constants)
         if tetragonal_system == 2:
             lattice_constants = []
             lattice_constants.append(float(input("Input x-, y-direction lattice constant in Ångström: ")))
             lattice_constants.append(float(input("Input z-direction lattice constant in Ångström: ")))
-            elements = input("Input two elements in chemical notation separated by space: ")
+            elements = input("Input the chemical symbols for the two base atoms separated by space: ")
             elements = elements.split()
             atoms = CenteredTetragonal(symbol=elements[0], latticeconstant=lattice_constants)
             atoms.set_chemical_symbols(elements)
@@ -206,14 +206,14 @@ def create_crystal_guided():
             return SimpleCubic(symbol=element, latticeconstant=lattice_constant)
         if cubic_system == 2:
             lattice_constant = float(input("Input lattice constant in Ångström: "))
-            elements = input("Input two elements in chemical notation separated by space: ")
+            elements = input("Input the chemical symbols for the two base atoms separated by space: ")
             elements = elements.split()
             atoms = BodyCenteredCubic(symbol=element, latticeconstant=lattice_constant)
             atoms.set_chemical_symbols(elements)
             return atoms
         if cubic_system == 3:
             lattice_constant = float(input("Input lattice constant in Ångström: "))
-            elements = input("Input four elements in chemical notation separated by space: ")
+            elements = input("Input the chemical symbols for the four base atoms separated by space: ")
             elements = elements.split()
             atoms = FaceCenteredCubic(symbol=elements[0], latticeconstant=lattice_constant)
             atoms.set_chemical_symbols(elements)
