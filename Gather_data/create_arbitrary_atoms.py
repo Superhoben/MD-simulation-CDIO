@@ -27,7 +27,7 @@ def save_any_atoms(file_name, target_number_of_atoms=300, *args, **kwargs):
         None
     """
     primitive_cell = Atoms(args, kwargs)
-    number_atoms_primitive = primitive_cell.get_number_of_atoms()
+    number_atoms_primitive = len(primitive_cell)
     n = floor(cbrt(target_number_of_atoms/number_atoms_primitive))
     M = [[n, 0, 0], [0, n, 0], [0, 0, n]]
     atoms = make_supercell(primitive_cell, M)
@@ -42,15 +42,15 @@ def create_view_and_save_crystal_guided():
     """Guide the user through creating a crystal .traj input file through the terminal
     """
     primitive_cell = create_crystal_guided()
-    number_atoms_primitive = primitive_cell.get_number_of_atoms()
+    number_atoms_primitive = len(primitive_cell)
     print("This is the primitive cell you've created")
     view(primitive_cell, block=False)
     target_number_of_atoms = input("Input the target number of atoms in the supercell: ")
-    input_error_message = "Must be an integer bigger above " + str(primitive_cell.get_number_of_atoms()) + ": "
+    input_error_message = "Must be an integer bigger above " + str(len(primitive_cell)) + ": "
     while True:
         if target_number_of_atoms.isdigit():
             target_number_of_atoms = int(target_number_of_atoms)
-            if target_number_of_atoms > primitive_cell.get_number_of_atoms():
+            if target_number_of_atoms > len(primitive_cell):
                 break
         target_number_of_atoms = input(input_error_message)
     file_name = input("Input of the name .traj file that will contain the material: ")
@@ -75,12 +75,12 @@ def create_crystal_guided():
           "6 - Hexagonal, not yet implemented \n",
           "7 - Cubic, equal lenghts and all vectors are orthagonal")
     crystal_system = input("Input number of choosen crystal system: ")
-    while not (crystal_system in ['0', '1', '2', '3', '4', '7']):
+    while not (crystal_system in ['1', '2', '3', '4', '7']):
         crystal_system = input("Invalid input, enter an integer between 1 and 7 except 5 and 6: ")
     crystal_system = int(crystal_system)
     if crystal_system == 1:
         lengths_and_angles = {}
-        lengths_and_angles['a'] = float(input("Input length in of the first lattice translation vector in Å: "))
+        lengths_and_angles['a'] = float(input("Input length of the first lattice translation vector in Å: "))
         lengths_and_angles['b'] = float(input("Input length of the second lattice translation vector in Å: "))
         lengths_and_angles['c'] = float(input("Input length of the third lattice translation vector in Å: "))
         lengths_and_angles['alpha'] = float(input("Input angle between the first and second translation vector in degrees: "))
@@ -93,7 +93,7 @@ def create_crystal_guided():
         print("Choose subsystem of the monoclinic cell\n",
               "1 - Simple monoclinic (also known as primitive monoclinic)\n",
               "2 - Base centered monoclinic")
-        monoclinic_system = ("Input number of choosen monoclinic subsystem: ")
+        monoclinic_system = input("Input number of choosen monoclinic subsystem: ")
         while not (int(crystal_system) in range(1, 3)):
             cubic_system = input("Invalid input, enter an integer between 1 and 2: ")
         if monoclinic_system == 1:
