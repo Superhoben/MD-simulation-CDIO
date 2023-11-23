@@ -81,7 +81,7 @@ def calc_mean_square_displacement(atoms: Atoms, output_dict={'mean_square_displa
     position of atom i at time t_n and N is the number of atoms
 
     Args:
-        atoms(ase atom object): the system to calculate the pressure for
+        atoms(ase atom object): the system to calculate the mean square displacement for
         external_field(function(Atoms)->np.array): A function which takes an ase Atom object
             and returns the force on each atom as an array in the same format as Atoms.force
             function would but converted to an np.array. For N atoms in 3 dimensions:
@@ -113,7 +113,7 @@ def lindemann_criterion(atoms: Atoms, output_dict={'lindemann_criterion': []}, d
     The formula used is L = 1/d*(MSD)^(1/2).
 
     Args:
-        atoms(ase atom object): the system to calculate the pressure for
+        atoms(ase atom object): the system to calculate the lindemann criterion for
         external_field(function(Atoms)->np.array): A function which takes an ase Atom object
             and returns the force on each atom as an array in the same format as Atoms.force
             function would but converted to an np.array. For N atoms in 3 dimensions:
@@ -139,7 +139,7 @@ def self_diffusion_coefficent(atoms: Atoms, output_dict={'lindemann_criterion': 
     The formula used is D = 1/(6*t)*MSD where t is time elapsed at a certian iteration
 
     Args:
-        atoms(ase atom object): the system to calculate the pressure for
+        atoms(ase atom object): the system to calculate the self-diffusion coefficient for
         external_field(function(Atoms)->np.array): A function which takes an ase Atom object
             and returns the force on each atom as an array in the same format as Atoms.force
             function would but converted to an np.array. For N atoms in 3 dimensions:
