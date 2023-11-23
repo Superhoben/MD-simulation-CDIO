@@ -34,18 +34,19 @@ def calc_bulk_modulus(atoms: Atoms, output_dict={'bulk_modulus': []}):
     cell = atoms.get_cell()
     volumes = []
     energies = []
+    atoms_copy = atoms.copy()
+    atoms_copy.calc = atoms.get_calculator()
     # Create for example only 10 differnet configuration for different lattice constant
     for element in np.linspace(0.999, 1.001, 10):
-        atoms.set_cell(cell * element, scale_atoms=True)
-        volumes.append(atoms.get_volume())
-        energies.append(atoms.get_potential_energy())
+        atoms_copy.set_cell(cell * element, scale_atoms=True)
+        volumes.append(atoms_copy.get_volume())
+        energies.append(atoms_copy.get_potential_energy())
     # Equation of state
     eos = EquationOfState(volumes, energies)
     v0, e0, B = eos.fit()
     B = B / kJ * 1.0e24
     # print(B, "GPa")
     output_dict['bulk_modulus'].append(B)
-    print(B)
     return B
 
 
