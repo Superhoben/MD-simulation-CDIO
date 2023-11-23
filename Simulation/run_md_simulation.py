@@ -14,9 +14,14 @@ import json
 from Simulation import calc_properties, calc_bulk_properties, lattice_constant
 from parcalc import ParCalculate
 from elastic import get_elastic_tensor
+from ase.md.velocitydistribution import Stationary
 
 import numpy as np
 from scipy.spatial.distance import cdist
+
+def print_and_increase_progress(progress):
+    print("Progress "+str(progress[0])+"%")
+    progress[0] += 10
 
 def run_single_md_simulation(config_file: str, traj_file: str, output_name: str):
     """Run md simulation for a single trajectory file, with parameters specified in config
@@ -60,12 +65,14 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
     ensemble = simulation_settings['ensemble']
     if ensemble == "NVE":
         MaxwellBoltzmannDistribution(atoms, temperature_K=int(simulation_settings['temperature']))
+        Stationary(atoms)
         dyn = VelocityVerlet(atoms, int(simulation_settings['time_step'])*units.fs)
     elif ensemble == "NVT":
         dyn = Langevin(atoms, timestep=int(simulation_settings['time_step'])*units.fs,
                        temperature_K=int(simulation_settings['temperature']),
                        friction=(float(simulation_settings['friction']) or 0.005))
         MaxwellBoltzmannDistribution(atoms, temperature_K=int(simulation_settings['temperature']))
+        Stationary(atoms)
     else:
         # TODO: implement other ensembles
         raise Exception("Running calculations with ensemble '" + ensemble + "' is not implemented yet.")
@@ -76,10 +83,10 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
     distances_between_atoms = cdist(positions, positions)
     # Finds distance d between the two closest atoms and is used to calculate the Lindemann criterion
     d = np.min(distances_between_atoms[np.nonzero(distances_between_atoms)])
-    
+
     output_dict = {}
     output_dict["config_file"] = config_file
-    
+
     # Attach recorders that calculate a certain property and store in the output_dict
     interval_to_record_energy = int(recording_intervals['record_energy'])
     if interval_to_record_energy:
@@ -134,22 +141,27 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
     if interval_to_record_lindemann_criterion:
         output_dict['self_diffusion_coefficient'] = []
         dyn.attach(calc_properties.self_diffusion_coefficent, interval_to_record_self_diffusion_coefficient, atoms, output_dict, interval_to_record_self_diffusion_coefficient*int(config_data['SimulationSettings']['time_step']))
+
+    progress = [0]
+    ten_percent_interval = int(0.1 * float(config_data['SimulationSettings']['step_number']))
+    dyn.attach(print_and_increase_progress, ten_percent_interval, progress)
     
     # Run simulation with the attached recorders
-
     dyn.run(int(config_data['SimulationSettings']['step_number']))
     
-    output_dict['mean_square_displacement'][0] = 0
-    time_avg_MSD = 0
-    for MSD in output_dict['mean_square_displacement']:
-        time_avg_MSD = time_avg_MSD + MSD
-    output_dict["avg_MSD"] = time_avg_MSD/int(config_data['SimulationSettings']['step_number'])
+    if int(config_data['RecordingIntervals']['record_mean_square_displacement']):
+        output_dict['mean_square_displacement'][0] = 0
+        time_avg_MSD = 0
+        for MSD in output_dict['mean_square_displacement']:
+            time_avg_MSD = time_avg_MSD + MSD
+        output_dict["avg_MSD"] = time_avg_MSD/int(config_data['SimulationSettings']['step_number'])
 
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/'
     with open(path + output_name + '.txt', 'w') as file:
         file.seek(0)
         json.dump(output_dict, file)
 
+    print("Simulation finished!")
     return atoms
 
 
@@ -173,4 +185,4 @@ def run_md_simulation(config_file_list, trajectory_file_list):
 
 
 if __name__ == "__main__":
-    run_single_md_simulation("example_config.ini", 'mp-30.traj', 'out_put1')
+    run_single_md_simulation("example_config.ini", '1728_atoms_of_mp-30.traj', 'out_put1')
