@@ -1,6 +1,7 @@
 """This runs MD simulations."""
 import os
 import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.md.verlet import VelocityVerlet
 from ase import units
@@ -13,8 +14,9 @@ import json
 from Simulation import calc_properties, calc_bulk_properties, lattice_constant
 from parcalc import ParCalculate
 from elastic import get_elastic_tensor
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 
+import numpy as np
+from scipy.spatial.distance import cdist
 
 def run_single_md_simulation(config_file: str, traj_file: str, output_name: str):
     """Run md simulation for a single trajectory file, with parameters specified in config
@@ -69,8 +71,15 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
         raise Exception("Running calculations with ensemble '" + ensemble + "' is not implemented yet.")
 
     # This dict will contain output data of the simulation to be written into the output text file
+    
+    positions = np.array(atoms.get_positions())
+    distances_between_atoms = cdist(positions, positions)
+    # Finds distance d between the two closest atoms and is used to calculate the Lindemann criterion
+    d = np.min(distances_between_atoms[np.nonzero(distances_between_atoms)])
+    
     output_dict = {}
     output_dict["config_file"] = config_file
+    
     # Attach recorders that calculate a certain property and store in the output_dict
     interval_to_record_energy = int(recording_intervals['record_energy'])
     if interval_to_record_energy:
@@ -110,9 +119,31 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
     if interval_to_record_elastic_properties:
         output_dict['elastic_tensor'] = []
         dyn.attach(calc_bulk_properties.calc_elastic, interval_to_record_elastic_properties, atoms, output_dict)
+    
+    interval_to_record_mean_square_displacement = int(config_data['RecordingIntervals']['record_mean_square_displacement'])
+    if interval_to_record_mean_square_displacement:
+        output_dict['mean_square_displacement'] = []
+        dyn.attach(calc_properties.calc_mean_square_displacement, interval_to_record_mean_square_displacement, atoms, output_dict)
 
+    interval_to_record_lindemann_criterion = int(config_data['RecordingIntervals']['record_lindemann_criterion'])
+    if interval_to_record_lindemann_criterion:
+        output_dict['lindemann_criterion'] = []
+        dyn.attach(calc_properties.lindemann_criterion, interval_to_record_lindemann_criterion, atoms, output_dict, d)
+        
+    interval_to_record_self_diffusion_coefficient = int(config_data['RecordingIntervals']['record_self_diffusion_coefficient'])
+    if interval_to_record_lindemann_criterion:
+        output_dict['self_diffusion_coefficient'] = []
+        dyn.attach(calc_properties.self_diffusion_coefficent, interval_to_record_self_diffusion_coefficient, atoms, output_dict, interval_to_record_self_diffusion_coefficient*int(config_data['SimulationSettings']['time_step']))
+    
     # Run simulation with the attached recorders
-    dyn.run(int(simulation_settings['step_number']))
+
+    dyn.run(int(config_data['SimulationSettings']['step_number']))
+    
+    output_dict['mean_square_displacement'][0] = 0
+    time_avg_MSD = 0
+    for MSD in output_dict['mean_square_displacement']:
+        time_avg_MSD = time_avg_MSD + MSD
+    output_dict["avg_MSD"] = time_avg_MSD/int(config_data['SimulationSettings']['step_number'])
 
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/'
     with open(path + output_name + '.txt', 'w') as file:

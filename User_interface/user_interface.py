@@ -171,6 +171,24 @@ def initiate_gui():
     rec_elastic_label.grid(row=rownumber, column=0)
     rec_elastic_entry = Entry(data_frame)
     rec_elastic_entry.grid(row=rownumber, column=2)
+    
+    rownumber += 1
+    rec_mean_square_displacement_label = Label(data_frame, text="Mean square displacement", width=20)
+    rec_mean_square_displacement_label.grid(row=rownumber, column=0)
+    rec_mean_square_displacement_entry = Entry(data_frame)
+    rec_mean_square_displacement_entry.grid(row=rownumber, column=2)
+
+    rownumber += 1
+    rec_lindemann_criterion_label = Label(data_frame, text="Lindemann Criterion", width=20)
+    rec_lindemann_criterion_label.grid(row=rownumber, column=0)
+    rec_lindemann_criterion_entry = Entry(data_frame)
+    rec_lindemann_criterion_entry.grid(row=rownumber, column=2)
+    
+    rownumber += 1
+    rec_self_diffusion_coefficient_label = Label(data_frame, text="Self Diffusion Coefficient", width=20)
+    rec_self_diffusion_coefficient_label.grid(row=rownumber, column=0)
+    rec_self_diffusion_coefficient_entry = Entry(data_frame)
+    rec_self_diffusion_coefficient_entry.grid(row=rownumber, column=2)
 
     rownumber += 1
     config_name_label = Label(data_frame, text="Config file name", width=20)
@@ -195,7 +213,10 @@ def initiate_gui():
                                rec_config_entry.get() or "0",
                                rec_bulk_entry.get() or "0",
                                rec_scaling_entry.get() or "0",
-                               rec_elastic_entry.get() or "0"
+                               rec_elastic_entry.get() or "0",
+                               rec_mean_square_displacement_entry.get() or "0",
+                               rec_lindemann_criterion_entry.get() or "0",
+                               rec_self_diffusion_coefficient_entry.get() or "0"
                                )
                            )
     config_button.grid(row=rownumber, column=1, pady=10)
@@ -291,7 +312,8 @@ def initiate_gui():
     rownumber += 1
     plottable_attributes = ["Total Energy", "Kinetic Energy", "Potential Energy", 
                             "Temperature", "Pressure", "Bulk Modulus",
-                            "Optimal Scaling", "Elastic Tensor"]
+                            "Optimal Scaling", "Elastic Tensor", "Mean Square Displacement",
+                            "Lindemann Criterion", "Self Diffusion Coefficient"]
 
     value_inside_plottable_list = StringVar(gui)
     value_inside_plottable_list.set("Attribute to plot")
@@ -314,8 +336,6 @@ def initiate_gui():
     output_data_menu.bind('<Button-1>', output_data_handler)  
 
     output_data_menu.grid(row=rownumber, column=2)
-    
-
 
     # Visualise results button
     plot_button = Button(data_frame, text='Plot data',
@@ -454,7 +474,8 @@ def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE'
                 steps=5000, time_steps=5, friction=0.005, rec_energy = 0,
                 rec_coh_e = 0, rec_temp = 0, rec_pressure = 0, 
                 rec_config = 0, rec_bulk = 0, rec_scaling = 0,
-                record_elastic = 0):
+                record_elastic = 0, rec_MSD = 0, rec_lindemann = 0,
+                rec_diffusion_coef = 0):
     """Create the configuration file
 
     Args:
@@ -575,7 +596,7 @@ def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE'
                 steps, time_steps, friction, rec_energy,
                 rec_coh_e, rec_temp, rec_pressure, 
                 rec_config, rec_bulk, rec_scaling,
-                record_elastic)
+                record_elastic, rec_MSD, rec_lindemann, rec_diffusion_coef)
 
 
 
@@ -608,7 +629,9 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
     Returns:
         None
     """
+
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/' + file_to_plot
+
     if attribute_to_plot == "Attribute to plot":
         messagebox.showerror("Missing attribute", "Choose attribute")
 
@@ -634,22 +657,8 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
     config_friction = config_data['SimulationSettings']['friction']
 
     attribute = attribute_to_plot.lower()
-
-    if attribute == "bulk modulus":
-        attribute = "bulk_modulus"
-    elif attribute == "cohesive energy":
-        attribute = "cohesive_energy"
-    elif attribute == "optimal scaling":
-        attribute = "optimal_scaling"
-    elif attribute == "elastic tensor":
-        attribute = "elastic_tensor"
-    elif attribute == "total energy":
-        attribute = "total_energy"
-    elif attribute == "kinetic energy":
-        attribute = "kinetic_energy"
-    elif attribute == "potential energy":
-        attribute = "potential_energy"
-
+    attribute = attribute.replace(" ", "_")
+    
     try:
         material_data_dict[attribute]
     except KeyError:
@@ -660,6 +669,7 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
     max_attribute = round(max(material_data_dict[attribute]),4)
     min_attribute = round(min(material_data_dict[attribute]),4)
     data_points = len(material_data_dict[attribute])
+    avg_MSD = material_data_dict["avg_MSD"]
     
     message = f"""
     Simulation inputs:
@@ -675,7 +685,8 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
         Average {attribute}: {average_attribute}
         Max {attribute}: {max_attribute}
         Min {attribute}: {min_attribute}
-        Data points: {data_points}"""
+        Data points: {data_points}
+        Average MSD: {avg_MSD}"""
     
     text_box.config(state="normal")
     text_box.delete('1.0', END)
