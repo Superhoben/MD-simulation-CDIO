@@ -23,7 +23,7 @@ from os import listdir
 from os.path import isfile
 from User_API_key.start_program import get_api_key
 import json
-
+from idlelib.tooltip import Hovertip
 
 
 def initiate_gui():
@@ -131,64 +131,37 @@ def initiate_gui():
     rec_cohesive_label.grid(row=rownumber, column=1)
 
     rownumber += 1    
-    rec_energy_label = Label(data_frame, text="Energy", width=20)
-    rec_energy_label.grid(row=rownumber, column=0)
-    rec_energy_entry = Entry(data_frame)
-    rec_energy_entry.grid(row=rownumber, column=2)
-
-    rownumber += 1    
-    rec_temp_label = Label(data_frame, text="Temperature", width=20)
-    rec_temp_label.grid(row=rownumber, column=0)
-    rec_temp_entry = Entry(data_frame)
-    rec_temp_entry.grid(row=rownumber, column=2)
-
-    rownumber += 1    
-    rec_pressure_label = Label(data_frame, text="Pressure", width=20)
-    rec_pressure_label.grid(row=rownumber, column=0)
-    rec_pressure_entry = Entry(data_frame)
-    rec_pressure_entry.grid(row=rownumber, column=2)
+    rec_basic_properties_label = Label(data_frame, text="Basic Properties", width=20)
+    rec_basic_properties_label.grid(row=rownumber, column=0)
+    rec_basic_properties_entry = Entry(data_frame)
+    rec_basic_properties_entry.grid(row=rownumber, column=2)
+    Hovertip(rec_basic_properties_label, "Energy\nTemperature\nPressure", hover_delay=0)
+    
+    rownumber += 1
+    rec_physical_properties_label = Label(data_frame, text="Physical Properties", width=20)
+    rec_physical_properties_label.grid(row=rownumber, column=0)
+    rec_physical_properties_entry = Entry(data_frame)
+    rec_physical_properties_entry.grid(row=rownumber, column=2)
+    Hovertip(rec_physical_properties_label, "Mean Square Displacement\nLindemann criterion\nSelf-diffusion coefficient", hover_delay=0)
+    
+    rownumber += 1
+    rec_elasticbulk_label = Label(data_frame, text="Elastic/bulk", width=20)
+    rec_elasticbulk_label.grid(row=rownumber, column=0)
+    rec_elasticbulk_entry = Entry(data_frame)
+    rec_elasticbulk_entry.grid(row=rownumber, column=2)
+    Hovertip(rec_elasticbulk_label, "Elastic tensor\nBulk modulus", hover_delay=0)
 
     rownumber += 1
-    rec_config_label = Label(data_frame, text="Configuration", width=20)
-    rec_config_label.grid(row=rownumber, column=0)
-    rec_config_entry = Entry(data_frame)
-    rec_config_entry.grid(row=rownumber, column=2)
-
-    rownumber += 1
-    rec_bulk_label = Label(data_frame, text="Bulk modulus", width=20)
-    rec_bulk_label.grid(row=rownumber, column=0)
-    rec_bulk_entry = Entry(data_frame)
-    rec_bulk_entry.grid(row=rownumber, column=2)
+    rec_configuration_label = Label(data_frame, text="Configuration", width=20)
+    rec_configuration_label.grid(row=rownumber, column=0)
+    rec_configuration_entry = Entry(data_frame)
+    rec_configuration_entry.grid(row=rownumber, column=2)
 
     rownumber += 1
     rec_scaling_label = Label(data_frame, text="Optimal scaling", width=20)
     rec_scaling_label.grid(row=rownumber, column=0)
     rec_scaling_entry = Entry(data_frame)
     rec_scaling_entry.grid(row=rownumber, column=2)
-    
-    rownumber += 1
-    rec_elastic_label = Label(data_frame, text="Elastic tensor", width=20)
-    rec_elastic_label.grid(row=rownumber, column=0)
-    rec_elastic_entry = Entry(data_frame)
-    rec_elastic_entry.grid(row=rownumber, column=2)
-    
-    rownumber += 1
-    rec_mean_square_displacement_label = Label(data_frame, text="Mean square displacement", width=20)
-    rec_mean_square_displacement_label.grid(row=rownumber, column=0)
-    rec_mean_square_displacement_entry = Entry(data_frame)
-    rec_mean_square_displacement_entry.grid(row=rownumber, column=2)
-
-    rownumber += 1
-    rec_lindemann_criterion_label = Label(data_frame, text="Lindemann Criterion", width=20)
-    rec_lindemann_criterion_label.grid(row=rownumber, column=0)
-    rec_lindemann_criterion_entry = Entry(data_frame)
-    rec_lindemann_criterion_entry.grid(row=rownumber, column=2)
-    
-    rownumber += 1
-    rec_self_diffusion_coefficient_label = Label(data_frame, text="Self Diffusion Coefficient", width=20)
-    rec_self_diffusion_coefficient_label.grid(row=rownumber, column=0)
-    rec_self_diffusion_coefficient_entry = Entry(data_frame)
-    rec_self_diffusion_coefficient_entry.grid(row=rownumber, column=2)
 
     rownumber += 1
     config_name_label = Label(data_frame, text="Config file name", width=20)
@@ -206,17 +179,12 @@ def initiate_gui():
                                steps_entry.get() or "5000",
                                time_steps_entry.get() or "5",
                                friction_entry.get() or "0.005",
-                               rec_energy_entry.get() or "0",
+                               rec_basic_properties_entry.get() or "0",
+                               rec_physical_properties_entry.get() or "0",
+                               rec_elasticbulk_entry.get() or "0",
                                "0",
-                               rec_temp_entry.get() or "0",
-                               rec_pressure_entry.get() or "0",
-                               rec_config_entry.get() or "0",
-                               rec_bulk_entry.get() or "0",
-                               rec_scaling_entry.get() or "0",
-                               rec_elastic_entry.get() or "0",
-                               rec_mean_square_displacement_entry.get() or "0",
-                               rec_lindemann_criterion_entry.get() or "0",
-                               rec_self_diffusion_coefficient_entry.get() or "0"
+                               rec_configuration_entry.get() or "0",
+                               rec_scaling_entry.get() or "0"
                                )
                            )
     config_button.grid(row=rownumber, column=1, pady=10)
@@ -471,11 +439,9 @@ def update_output_traj_list(event, traj_menu, value_inside_traj_list):
 
 
 def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE', temperature=500, value_inside_potential_list='EMT',
-                steps=5000, time_steps=5, friction=0.005, rec_energy = 0,
-                rec_coh_e = 0, rec_temp = 0, rec_pressure = 0, 
-                rec_config = 0, rec_bulk = 0, rec_scaling = 0,
-                record_elastic = 0, rec_MSD = 0, rec_lindemann = 0,
-                rec_diffusion_coef = 0):
+                steps=5000, time_steps=5, friction=0.005, rec_basic_properties = 0,
+                rec_physical_properties = 0, rec_elastic_bulk = 0, rec_cohesive_energy = 0,
+                rec_configuration = 0, rec_scaling = 0):
     """Create the configuration file
 
     Args:
@@ -529,60 +495,42 @@ def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE'
         messagebox.showerror("Value error", "Invalid time step") 
         return None
     
-    # Check if cohesive energy step is valid
-    if rec_coh_e.isdigit():
-        if (0 < int(rec_coh_e) < int(steps)):
-            messagebox.showerror("Value error", "Invalid cohesive energy step") 
+    # Check if basic properties step is valid
+    if rec_basic_properties.isdigit():
+        if int(rec_basic_properties) < 0 or int(rec_basic_properties) > int(steps):
+            messagebox.showerror("Value error", "Invalid basic properies step") 
             return None
     else:
-        messagebox.showerror("Value error", "Invalid cohesive energy step") 
+        messagebox.showerror("Value error", "Invalid basic properties step") 
         return None
     
-    # Check if energy step is valid
-    if rec_energy.isdigit():
-        if int(rec_energy) < 0 or int(rec_energy) > int(steps):
-            messagebox.showerror("Value error", "Invalid energy step") 
+    # Check if physical properties step is valid
+    if rec_physical_properties.isdigit():
+        if int(rec_physical_properties) < 0 or int(rec_physical_properties) > int(steps):
+            messagebox.showerror("Value error", "Invalid physical properies step") 
             return None
     else:
-        messagebox.showerror("Value error", "Invalid energy step") 
+        messagebox.showerror("Value error", "Invalid physical properties step") 
         return None
     
-    # Check if temperature step is valid
-    if rec_temp.isdigit():
-        if int(rec_temp) < 0 or int(rec_temp) > int(steps):
-            messagebox.showerror("Value error", "Invalid temperature step") 
+    # Check if elastic/bulk step is valid
+    if rec_elastic_bulk.isdigit():
+        if int(rec_elastic_bulk) < 0 or int(rec_elastic_bulk) > int(steps):
+            messagebox.showerror("Value error", "Invalid elastic/bulk step") 
             return None
     else:
-        messagebox.showerror("Value error", "Invalid temperature step") 
-        return None
-    
-    # Check if pressure step is valid
-    if rec_pressure.isdigit():
-        if int(rec_pressure) < 0 or int(rec_pressure) > int(steps):
-            messagebox.showerror("Value error", "Invalid pressure step") 
-            return None
-    else:
-        messagebox.showerror("Value error", "Invalid pressure step") 
+        messagebox.showerror("Value error", "Invalid elastic/bulk step") 
         return None
     
     # Check if configuration step is valid
-    if rec_config.isdigit():
-        if int(rec_config) < 0 or int(rec_config) > int(steps):
+    if rec_configuration.isdigit():
+        if int(rec_configuration) < 0 or int(rec_configuration) > int(steps):
             messagebox.showerror("Value error", "Invalid configuration step") 
             return None
     else:
         messagebox.showerror("Value error", "Invalid configuration step") 
-        return None
-    
-    # Check if bulk step is valid
-    if rec_bulk.isdigit():
-        if int(rec_bulk) < 0 or int(rec_bulk) > int(steps):
-            messagebox.showerror("Value error", "Invalid bulk step") 
-            return None
-    else:
-        messagebox.showerror("Value error", "Invalid bulk step") 
-        return None
-    
+        return None    
+
     # Check if scaling step is valid
     if rec_scaling.isdigit():
         if int(rec_scaling) < 0 or int(rec_scaling) > int(steps):
@@ -593,10 +541,9 @@ def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE'
         return None
     
     cfs.config_file(file_name, value_inside_ensemble_list, temperature, value_inside_potential_list,
-                steps, time_steps, friction, rec_energy,
-                rec_coh_e, rec_temp, rec_pressure, 
-                rec_config, rec_bulk, rec_scaling,
-                record_elastic, rec_MSD, rec_lindemann, rec_diffusion_coef)
+                steps, time_steps, friction, rec_basic_properties,
+                rec_physical_properties, rec_elastic_bulk, "0", rec_configuration,
+                rec_scaling)
 
 
 
