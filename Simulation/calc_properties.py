@@ -110,18 +110,15 @@ def calculate_specific_heat(atoms, config_file, output_dict):
         # Calculate the variance of the kinetic energies
         var_kinetic_energies = np.var(kinetic_energies_array_joule)
 
-        print("var of kinetic energy " + str(var_kinetic_energies))
-
         # Formula from lecture 4 slide 49
         first_term = (3 * len(atoms) * kB) / 2
         second_term = 1 / (1 - (2 * var_kinetic_energies / (3 * kB**2 * initial_temperature**2)))
         heat_capacity = first_term * second_term
 
-        print("Heat Capacity: ", heat_capacity)
+        # print("Heat Capacity: ", heat_capacity)
         # Formula from physics handbook F-2.3 c = C/m where c: specific heat capacity and C: heat capacity
         specific_heat_capacity = heat_capacity / (sum(atoms.get_masses()) * AtomicMass_to_Kg)
-        print("sum of atomic mass: "+str(sum(atoms.get_masses())))
-        print("specific_heat_capacity: " + str(specific_heat_capacity))
+        # print("specific_heat_capacity: " + str(specific_heat_capacity))
 
     elif config_data['SimulationSettings']['ensemble'] == "NVT":
         total_energies = output_dict["total_energy"]
@@ -134,9 +131,7 @@ def calculate_specific_heat(atoms, config_file, output_dict):
         # Formula from lecture 4 slide 49
         heat_capacity = var_total_energies / (kB * initial_temperature**2)
 
-        print("Heat Capacity:", heat_capacity)
         # Formula from physics handbook F-2.3 c = C/m where c: specific heat capacity and C: heat capacity
         specific_heat_capacity = heat_capacity / sum(atoms.get_masses() * AtomicMass_to_Kg)
-        print("Specific Heat Capacity:", specific_heat_capacity)
 
     return specific_heat_capacity
