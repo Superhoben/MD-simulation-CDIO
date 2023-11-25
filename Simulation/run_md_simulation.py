@@ -113,6 +113,7 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
 
     # Run simulation with the attached recorders
     dyn.run(int(config_data['SimulationSettings']['step_number']))
+    output_dict['specific_heat_capacity'] = [calc_properties.calculate_specific_heat(atoms,config_file, output_dict)]
 
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/'
     with open(path + output_name + '.txt', 'w') as file:
