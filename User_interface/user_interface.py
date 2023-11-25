@@ -17,10 +17,13 @@ from User_interface.plot_in_gui import *
 import Gather_data.configuration_file_script as cfs
 import Gather_data.download_data 
 from Simulation.run_md_simulation import run_single_md_simulation
+#from User_API_key.start_program import *
 from configparser import ConfigParser
 from os import listdir
 from os.path import isfile
+from User_API_key.start_program import get_api_key
 import json
+
 
 
 def initiate_gui():
@@ -168,6 +171,24 @@ def initiate_gui():
     rec_elastic_label.grid(row=rownumber, column=0)
     rec_elastic_entry = Entry(data_frame)
     rec_elastic_entry.grid(row=rownumber, column=2)
+    
+    rownumber += 1
+    rec_mean_square_displacement_label = Label(data_frame, text="Mean square displacement", width=20)
+    rec_mean_square_displacement_label.grid(row=rownumber, column=0)
+    rec_mean_square_displacement_entry = Entry(data_frame)
+    rec_mean_square_displacement_entry.grid(row=rownumber, column=2)
+
+    rownumber += 1
+    rec_lindemann_criterion_label = Label(data_frame, text="Lindemann Criterion", width=20)
+    rec_lindemann_criterion_label.grid(row=rownumber, column=0)
+    rec_lindemann_criterion_entry = Entry(data_frame)
+    rec_lindemann_criterion_entry.grid(row=rownumber, column=2)
+    
+    rownumber += 1
+    rec_self_diffusion_coefficient_label = Label(data_frame, text="Self Diffusion Coefficient", width=20)
+    rec_self_diffusion_coefficient_label.grid(row=rownumber, column=0)
+    rec_self_diffusion_coefficient_entry = Entry(data_frame)
+    rec_self_diffusion_coefficient_entry.grid(row=rownumber, column=2)
 
     rownumber += 1
     config_name_label = Label(data_frame, text="Config file name", width=20)
@@ -192,7 +213,10 @@ def initiate_gui():
                                rec_config_entry.get() or "0",
                                rec_bulk_entry.get() or "0",
                                rec_scaling_entry.get() or "0",
-                               rec_elastic_entry.get() or "0"
+                               rec_elastic_entry.get() or "0",
+                               rec_mean_square_displacement_entry.get() or "0",
+                               rec_lindemann_criterion_entry.get() or "0",
+                               rec_self_diffusion_coefficient_entry.get() or "0"
                                )
                            )
     config_button.grid(row=rownumber, column=1, pady=10)
@@ -286,6 +310,20 @@ def initiate_gui():
     sep_label3.grid(row=rownumber, column = 0, columnspan = 3)
 
     rownumber += 1
+    plottable_attributes = ["Total Energy", "Kinetic Energy", "Potential Energy", 
+                            "Temperature", "Pressure", "Bulk Modulus",
+                            "Optimal Scaling", "Elastic Tensor", "Mean Square Displacement",
+                            "Lindemann Criterion", "Self Diffusion Coefficient"]
+
+    value_inside_plottable_list = StringVar(gui)
+    value_inside_plottable_list.set("Attribute to plot")
+
+    attributes_menu = OptionMenu(data_frame, value_inside_plottable_list,
+                                *plottable_attributes)
+    
+    #rownumber += 1
+    attributes_menu.grid(row=rownumber, column=0)
+
     output_data = [file for file in listdir() if isfile(file)]
     value_inside_output_data = StringVar(gui)
     value_inside_output_data.set("Select an output file")
@@ -298,20 +336,6 @@ def initiate_gui():
     output_data_menu.bind('<Button-1>', output_data_handler)  
 
     output_data_menu.grid(row=rownumber, column=2)
-    
-    plottable_attributes = ["Total Energy", "Kinetic Energy", "Potential Energy", 
-                            "Temperature", "Pressure", "Bulk Modulus",
-                            "Optimal Scaling", "Elastic Tensor"]
-
-    value_inside_plottable_list = StringVar(gui)
-    value_inside_plottable_list.set("Attribute to plot")
-
-    attributes_menu = OptionMenu(data_frame, value_inside_plottable_list,
-                                *plottable_attributes)
-    
-    #rownumber += 1
-    attributes_menu.grid(row=rownumber, column=0)
-    
 
     # Visualise results button
     plot_button = Button(data_frame, text='Plot data',
@@ -323,9 +347,31 @@ def initiate_gui():
     rownumber += 1
     Button(data_frame, text="Open plot in new window", command=lambda: visualise_2D(value_inside_plottable_list.get(), value_inside_output_data.get(), ax_canvas, text_box, tabframe1, True, plot_title="Attribute")).grid(row=rownumber,column=1,pady=10)
 
+    rownumber += 1
+
+    output_traj_files = [file for file in listdir() if isfile(file)]
+    value_inside_trajoutput_data = StringVar(gui)
+    value_inside_trajoutput_data.set("Select a trajectory file")
+
+    output_traj_menu = OptionMenu(data_frame, value_inside_trajoutput_data,
+                               *output_traj_files)
+
+    def output_traj_handler(event, output_traj_menu=output_traj_menu, value_inside_trajoutput_data=value_inside_trajoutput_data):   
+        return update_output_traj_list(event, output_traj_menu, value_inside_trajoutput_data)
+    output_traj_menu.bind('<Button-1>', output_traj_handler)  
+
+    output_traj_menu.grid(row=rownumber, column=0)
+    
+
+
+    trajbutton = Button(data_frame, text="Look at trajectory", command=lambda: animate_traj(value_inside_trajoutput_data.get()))
+    trajbutton.grid(row=rownumber, column=2)
+    
+    
     # Quit
     quit_button = Button(data_frame, text="Exit Program", command=gui.quit)
-    quit_button.grid(pady=10)
+    quit_button.grid(pady=50)
+
 
     Button(tabframe1, text="Clear Graph", command=lambda: clear_canvas(ax_canvas[0], ax_canvas[1], plot_title)).pack(pady=10)
 
@@ -428,22 +474,31 @@ def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE'
                 steps=5000, time_steps=5, friction=0.005, rec_energy = 0,
                 rec_coh_e = 0, rec_temp = 0, rec_pressure = 0, 
                 rec_config = 0, rec_bulk = 0, rec_scaling = 0,
-                record_elastic = 0):
+                record_elastic = 0, rec_MSD = 0, rec_lindemann = 0,
+                rec_diffusion_coef = 0):
     """Create the configuration file
 
     Args:
+    	file_name(string): Name of the file to create
         ensemble(string): Ensemble to use in simulation
         temperature(int): Initial temperature in simulation
         potential(string): Potential to use in simulation
         step_number(int): Number of steps to use in simulation
         time_step(int): Time step in fs to use in simulation
         friction(float): Friction for NVT simulation
-        interval(int): Interval for which to calculate properties
-        show_properties(bool): Show properties or not
+        record_energy(int): Interval to record energy in simulation
+        record_cohesive_energy(int): Interval to record cohesive energy in simulation
+        record_temperature(int): Interval to record temperature in simulation
+        record_pressure(int): Interval to record pressure in simulation
+        record_configuration(int): Interval to record configuration in simulation
+        record_bulk_modulus(int): Interval to record bulk modulus in simulation
+        record_optimal_scaling(int): Interval to record optimal scaling in simulation
+        record_elastic(int): Interval to record elastic properties in simulation
 
     Returns:
         None
     """
+    
     # Check if temperature is valid
     if temperature.isdigit():
         if int(temperature) <= 0:
@@ -541,7 +596,8 @@ def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE'
                 steps, time_steps, friction, rec_energy,
                 rec_coh_e, rec_temp, rec_pressure, 
                 rec_config, rec_bulk, rec_scaling,
-                record_elastic)
+                record_elastic, rec_MSD, rec_lindemann, rec_diffusion_coef)
+
 
 
 def send_mat_id_to_gather_data(materialID, cell_size):
@@ -550,14 +606,18 @@ def send_mat_id_to_gather_data(materialID, cell_size):
     Args:
         materialID(string): specifies which material is to be downloaded from database
 
+
     Returns:
         None
     """
+    messagebox.showinfo("Information", "Please Check the terminal")
+    api_key = get_api_key()
+    messagebox.showinfo("API key", f"Using API key: {api_key}")
+
     try:
-        Gather_data.download_data.make_traj_from_material_id(materialID, int(cell_size))
+        Gather_data.download_data.make_traj_from_material_id(materialID, api_key, int(cell_size))
     except:
         messagebox.showerror("Invalid id", "Please enter a valid id")
-
 
 
 def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, boolean, plot_title):
@@ -569,7 +629,9 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
     Returns:
         None
     """
+
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/' + file_to_plot
+
     if attribute_to_plot == "Attribute to plot":
         messagebox.showerror("Missing attribute", "Choose attribute")
 
@@ -595,22 +657,8 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
     config_friction = config_data['SimulationSettings']['friction']
 
     attribute = attribute_to_plot.lower()
-
-    if attribute == "bulk modulus":
-        attribute = "bulk_modulus"
-    elif attribute == "cohesive energy":
-        attribute = "cohesive_energy"
-    elif attribute == "optimal scaling":
-        attribute = "optimal_scaling"
-    elif attribute == "elastic tensor":
-        attribute = "elastic_tensor"
-    elif attribute == "total energy":
-        attribute = "total_energy"
-    elif attribute == "kinetic energy":
-        attribute = "kinetic_energy"
-    elif attribute == "potential energy":
-        attribute = "potential_energy"
-
+    attribute = attribute.replace(" ", "_")
+    
     try:
         material_data_dict[attribute]
     except KeyError:
@@ -621,6 +669,7 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
     max_attribute = round(max(material_data_dict[attribute]),4)
     min_attribute = round(min(material_data_dict[attribute]),4)
     data_points = len(material_data_dict[attribute])
+    avg_MSD = material_data_dict["avg_MSD"]
     
     message = f"""
     Simulation inputs:
@@ -636,7 +685,8 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
         Average {attribute}: {average_attribute}
         Max {attribute}: {max_attribute}
         Min {attribute}: {min_attribute}
-        Data points: {data_points}"""
+        Data points: {data_points}
+        Average MSD: {avg_MSD}"""
     
     text_box.config(state="normal")
     text_box.delete('1.0', END)
@@ -666,6 +716,10 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
         plot_title.config(text = "Plotted Attribute: \n" + attribute_to_plot)
         plot(ax_canvas[0],ax_canvas[1], x_values, material_data_dict[attribute], x_lim, attribute_to_plot)
 
+
+def animate_traj(traj_file):
+    path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files/'
+    os.system("ase gui" + " " + path + traj_file)
 
 if __name__ == "__main__":
     main_program = initiate_gui()

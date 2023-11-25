@@ -7,18 +7,26 @@ def config_file(file_name='default_config', ensemble='NVE', temperature=500, pot
                 step_number=5000, time_step=5, friction=0.005, record_energy = 0,
                 record_cohesive_energy = 0, record_temperature = 0, record_pressure = 0, 
                 record_configuration = 0, record_bulk_modulus = 0, record_optimal_scaling = 0,
-                record_elastic = 0):
+                record_elastic = 0, record_mean_square_displacement = 0, 
+                record_lindemann_criterion = 0, record_self_diffusion_coefficient = 0):
     """Create the configuration file
 
     Args:
+    	file_name(string): Name of the file to create
         ensemble(string): Ensemble to use in simulation
         temperature(int): Initial temperature in simulation
         potential(string): Potential to use in simulation
         step_number(int): Number of steps to use in simulation
         time_step(int): Time step in fs to use in simulation
         friction(float): Friction for NVT simulation
-        interval(int): Interval for which to calculate properties
-        show_properties(bool): Show properties or not
+        record_energy(int): Interval to record energy in simulation
+        record_cohesive_energy(int): Interval to record cohesive energy in simulation
+        record_temperature(int): Interval to record temperature in simulation
+        record_pressure(int): Interval to record pressure in simulation
+        record_configuration(int): Interval to record configuration in simulation
+        record_bulk_modulus(int): Interval to record bulk modulus in simulation
+        record_optimal_scaling(int): Interval to record optimal scaling in simulation
+        record_elastic(int): Interval to record elastic properties in simulation
 
     Returns:
         None
@@ -40,7 +48,10 @@ def config_file(file_name='default_config', ensemble='NVE', temperature=500, pot
                                     'record_configuration': record_configuration,
                                     'record_bulk_modulus': record_bulk_modulus,
                                     'record_optimal_scaling': record_optimal_scaling,
-                                    'record_elastic': record_elastic}
+                                    'record_elastic': record_elastic,
+                                    'record_mean_square_displacement': record_mean_square_displacement,
+                                    'record_lindemann_criterion': record_lindemann_criterion,
+                                    'record_self_diffusion_coefficient': record_self_diffusion_coefficient}
 
     # Write to config file
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Input_config_files/'
@@ -137,8 +148,6 @@ def material_id():
     Returns:
         (string): the material id
     """
-    # here it is better to call a file (cif file for example) which will be created from Gustav function some how
-    # which then fetch the data and store it into a seperate cif file, it was Rickard advice :/
     material_id = input("What is the Material ID?  (hint: mp-123456 or cif file)   \n")
     return material_id
 
