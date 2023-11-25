@@ -222,4 +222,4 @@ def run_md_simulations(config_file_name, trajectory_file_dir, output_dir_name):
 
 
 if __name__ == "__main__":
-    run_md_simulations("example_config.ini", 'test_dir', 'test_dir')
+    run_md_simulations("example_config.ini", 'Demo_multi_sim', 'Demo_multi_sim')
