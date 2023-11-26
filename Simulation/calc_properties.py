@@ -159,3 +159,38 @@ def self_diffusion_coefficent(atoms: Atoms, output_dict={'lindemann_criterion': 
     output_dict['self_diffusion_coefficient'].append(self_diffusion_coefficient)
 
     return self_diffusion_coefficient
+
+
+def time_average_of_debye_temperature(atoms: Atoms, output_dict={'debye_temperature': []}, time_elapsed_per_interval=1):
+    """Calculate the time average of debye temperature of an atoms object.
+
+    Args:
+        atoms(ase atom object): the system to calculate the time average of debye temperature for.
+        output_dict(dict): dictionary to append the result to.
+    Returns:
+        (float): the calculated time average of debye temperature
+    """
+    volume = atoms.get_volume()
+    num_atoms = len(atoms)
+
+    # Common constants
+    h_planck = 4.135667696e-15  # Planc constantin eV*s
+    kB = 8.617333262145e-5  # Boltzmann constant in eV/K
+
+
+    # Calculate Debye frequency, the formula can be found in "Introduction to Solid State Physics" 
+    # by Charles Kittel page 112
+    # Debye temperature can be found in Table 1 Page 116 in the same book.
+    debye_frequency = ((6 * np.pi**2 * num_atoms) / volume)**(1/3)
+
+    # Calculate Debye temperature, formula from wiki debye temp = h'/kB
+    debye_temperature = h_planck * debye_frequency / kB
+
+    # Append the calculated Debye temperature to the output dictionary
+    output_dict['debye_temperature'].append(debye_temperature)
+
+    # Calculate the time average
+    time_average_of_debye_temperature = np.mean(output_dict['debye_temperature'])
+    print(time_average_of_debye_temperature)
+
+    return time_average_of_debye_temperature
