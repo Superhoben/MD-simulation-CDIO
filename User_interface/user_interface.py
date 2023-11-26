@@ -422,7 +422,6 @@ ax.set_xlabel("Time [femto seconds]")
         None
     """
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/'
-    print(path)
     all_files = [file for file in listdir(path) if isfile(path+file)]
     output_files = [file for file in all_files if file[-4:] == ".txt"]
     menu = output_data_menu["menu"]
@@ -642,22 +641,8 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
     config_friction = config_data['SimulationSettings']['friction']
 
     attribute = attribute_to_plot.lower()
-
-    if attribute == "bulk modulus":
-        attribute = "bulk_modulus"
-    elif attribute == "cohesive energy":
-        attribute = "cohesive_energy"
-    elif attribute == "optimal scaling":
-        attribute = "optimal_scaling"
-    elif attribute == "elastic tensor":
-        attribute = "elastic_tensor"
-    elif attribute == "total energy":
-        attribute = "total_energy"
-    elif attribute == "kinetic energy":
-        attribute = "kinetic_energy"
-    elif attribute == "potential energy":
-        attribute = "potential_energy"
-
+    attribute = attribute.replace(" ", "_")
+    
     try:
         material_data_dict[attribute]
     except KeyError:
