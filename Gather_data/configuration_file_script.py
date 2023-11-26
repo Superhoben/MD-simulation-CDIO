@@ -4,11 +4,9 @@ from configparser import ConfigParser
 
 
 def config_file(file_name='default_config', ensemble='NVE', temperature=500, potential='EMT',
-                step_number=5000, time_step=5, friction=0.005, record_energy = 0,
-                record_cohesive_energy = 0, record_temperature = 0, record_pressure = 0, 
-                record_configuration = 0, record_bulk_modulus = 0, record_optimal_scaling = 0,
-                record_elastic = 0, record_mean_square_displacement = 0, 
-                record_lindemann_criterion = 0, record_self_diffusion_coefficient = 0):
+                step_number=5000, time_step=5, friction=0.005, record_basic_properties = 0,
+                record_physical_properties = 0, record_elastic_bulk = 0, record_cohesive_energy = 0,
+                record_configuration = 0, record_optimal_scaling = 0):
     """Create the configuration file
 
     Args:
@@ -41,17 +39,17 @@ def config_file(file_name='default_config', ensemble='NVE', temperature=500, pot
                                     'potential': potential, 'step_number': step_number,
                                     'time_step': time_step, 'friction': friction}
 
-    config['RecordingIntervals'] = {'record_energy': record_energy,
-    				    'record_cohesive_energy': record_cohesive_energy,
-                                    'record_temperature': record_temperature,
-                                    'record_pressure': record_pressure,
-                                    'record_configuration': record_configuration,
-                                    'record_bulk_modulus': record_bulk_modulus,
-                                    'record_optimal_scaling': record_optimal_scaling,
-                                    'record_elastic': record_elastic,
-                                    'record_mean_square_displacement': record_mean_square_displacement,
-                                    'record_lindemann_criterion': record_lindemann_criterion,
-                                    'record_self_diffusion_coefficient': record_self_diffusion_coefficient}
+    config['RecordingIntervals'] = {'record_energy': record_basic_properties,
+                        'record_temperature': record_basic_properties,
+                        'record_pressure': record_basic_properties,
+                        'record_mean_square_displacement': record_physical_properties,
+                        'record_lindemann_criterion': record_physical_properties,
+                        'record_self_diffusion_coefficient': record_physical_properties,
+                        'record_elastic': record_elastic_bulk,
+                        'record_bulk_modulus': record_elastic_bulk,
+                        'record_cohesive_energy': record_cohesive_energy,
+                        'record_configuration': record_configuration,
+                        'record_optimal_scaling': record_optimal_scaling}
 
     # Write to config file
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Input_config_files/'

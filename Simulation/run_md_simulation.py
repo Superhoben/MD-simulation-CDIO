@@ -1,6 +1,7 @@
 """This runs MD simulations."""
 import os
 import sys
+import shutil
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.md.verlet import VelocityVerlet
@@ -15,15 +16,17 @@ from Simulation import calc_properties, calc_bulk_properties, lattice_constant
 from parcalc import ParCalculate
 from elastic import get_elastic_tensor
 from ase.md.velocitydistribution import Stationary
-
 import numpy as np
 from scipy.spatial.distance import cdist
+from multiprocessing import Process
 
-def print_and_increase_progress(progress):
+def print_and_increase_progress(progress, sim_number):
+    if sim_number:
+        print("Simulation ", sim_number, ": Progress "+str(progress[0])+"%")
     print("Progress "+str(progress[0])+"%")
     progress[0] += 10
 
-def run_single_md_simulation(config_file: str, traj_file: str, output_name: str):
+def run_single_md_simulation(config_file: str, traj_file: str, output_name: str, sim_number=0):
     """Run md simulation for a single trajectory file, with parameters specified in config
 
     Args:
@@ -53,8 +56,13 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
     # Set potential for simulation
     potential = simulation_settings['potential']
     if potential == "EMT":
+        # EMT needs parameter values as input arguments for all materials except
+        # Ni, Cu, Pd, Ag, Pt and Au. Note that we don't know if it works with mixed
+        # materials or if it will make incorrect assumptions
         atoms.calc = EMT()
     elif potential == "LennardJones":
+        # Lennard Jones is generally valid for gases and liquid but rarely solids
+        # and not metals as far as I understand it //Gustav
         atoms.calc = LennardJones()
     else:
         # TODO: implement running with other potentials, e.g.,:
@@ -78,7 +86,7 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
         raise Exception("Running calculations with ensemble '" + ensemble + "' is not implemented yet.")
 
     # This dict will contain output data of the simulation to be written into the output text file
-    
+
     positions = np.array(atoms.get_positions())
     distances_between_atoms = cdist(positions, positions)
     # Finds distance d between the two closest atoms and is used to calculate the Lindemann criterion
@@ -126,7 +134,7 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
     if interval_to_record_elastic_properties:
         output_dict['elastic_tensor'] = []
         dyn.attach(calc_bulk_properties.calc_elastic, interval_to_record_elastic_properties, atoms, output_dict)
-    
+
     interval_to_record_mean_square_displacement = int(config_data['RecordingIntervals']['record_mean_square_displacement'])
     if interval_to_record_mean_square_displacement:
         output_dict['mean_square_displacement'] = []
@@ -136,7 +144,7 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
     if interval_to_record_lindemann_criterion:
         output_dict['lindemann_criterion'] = []
         dyn.attach(calc_properties.lindemann_criterion, interval_to_record_lindemann_criterion, atoms, output_dict, d)
-        
+
     interval_to_record_self_diffusion_coefficient = int(config_data['RecordingIntervals']['record_self_diffusion_coefficient'])
     if interval_to_record_lindemann_criterion:
         output_dict['self_diffusion_coefficient'] = []
@@ -144,13 +152,17 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
 
     progress = [0]
     ten_percent_interval = int(0.1 * float(config_data['SimulationSettings']['step_number']))
-    dyn.attach(print_and_increase_progress, ten_percent_interval, progress)
-    
+    dyn.attach(print_and_increase_progress, ten_percent_interval, progress, sim_number)
+
     # Run simulation with the attached recorders
+    if sim_number:
+        print("Simulation ", sim_number, " started")
+    else:
+        print("Simulation started")
     dyn.run(int(config_data['SimulationSettings']['step_number']))
     output_dict['specific_heat_capacity'] = [calc_properties.calculate_specific_heat(atoms,config_file, output_dict)]
 
-    
+  
     if int(config_data['RecordingIntervals']['record_mean_square_displacement']):
         output_dict['mean_square_displacement'][0] = 0
         time_avg_MSD = 0
@@ -163,11 +175,14 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
         file.seek(0)
         json.dump(output_dict, file)
 
-    print("Simulation finished!")
+    if sim_number:
+        print("Simulation ", sim_number, " finished!")
+    else:
+        print("Simulation finished!")
     return atoms
 
 
-def run_md_simulation(config_file_list, trajectory_file_list):
+def run_md_simulations(config_file_name, trajectory_file_dir, output_dir_name):
     """Run md simulations for multiple configs and trajectory files.
 
     Args:
@@ -178,13 +193,35 @@ def run_md_simulation(config_file_list, trajectory_file_list):
 
     Returns:
         None
-
     """
-    i = 0
-    for traj_file in trajectory_file_list:
-        i = i+1
-        run_single_md_simulation(config_file_list[0], traj_file, 'output'+str(i))
+    base_path = os.path.dirname(os.path.abspath(__file__)) + '/../'
+    path_new_output_txt_dir = base_path + 'Output_text_files/' + output_dir_name
+    path_new_output_traj_dir = base_path + 'Output_trajectory_files/' + output_dir_name
+    if os.path.exists(path_new_output_txt_dir):
+        shutil.rmtree(path_new_output_txt_dir)
+    if os.path.exists(path_new_output_traj_dir):
+        shutil.rmtree(path_new_output_traj_dir)
+    os.mkdir(base_path + 'Output_text_files/' + output_dir_name)
+    os.mkdir(base_path + 'Output_trajectory_files/' + output_dir_name)
+    traj_files_full_path = base_path + 'Input_trajectory_files/' + trajectory_file_dir
+    traj_file_names = os.listdir(traj_files_full_path)
+    process_list = []
+    sim_number = 1
+    for traj_file_name in traj_file_names:
+        os.path.dirname(os.path.abspath(__file__))
+        dir_and_traj_file_name = trajectory_file_dir + '/' + traj_file_name
+        output_dir_and_file_name = output_dir_name + traj_file_name
+        simulation_args = [config_file_name, dir_and_traj_file_name, output_dir_and_file_name, sim_number]
+        process_list.append(Process(target=run_single_md_simulation, args=simulation_args))
+        sim_number += 1
+
+    for process in process_list:
+        process.start()
+    for process in process_list:
+        process.join()
+
+    print("All simulations finished!")
 
 
 if __name__ == "__main__":
-    run_single_md_simulation("example_config.ini", '1728_atoms_of_mp-30.traj', 'out_put1')
+    run_md_simulations("example_config.ini", 'Demo_multi_sim', 'Demo_multi_sim')
