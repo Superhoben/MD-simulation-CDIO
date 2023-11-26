@@ -162,7 +162,6 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
     dyn.run(int(config_data['SimulationSettings']['step_number']))
     output_dict['specific_heat_capacity'] = [calc_properties.calculate_specific_heat(atoms,config_file, output_dict)]
 
-  
     if int(config_data['RecordingIntervals']['record_mean_square_displacement']):
         output_dict['mean_square_displacement'][0] = 0
         time_avg_MSD = 0

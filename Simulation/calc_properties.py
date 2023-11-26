@@ -1,14 +1,16 @@
+"""This script calculated the intesive and extensive properties."""
 from ase import Atoms
 import numpy as np
 from configparser import ConfigParser
-import os, sys
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
+import os
+import sys
 from numpy import linalg as LA
 from ase import units
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 
 
 def calc_temp(atoms: Atoms, output_dict={'temperature': []}):
-    """Calculate the temperature of atoms object
+    """Calculate the temperature of atoms object.
 
     Args:
         atoms(ase atom object): The system to calculate the temperature for.
@@ -23,7 +25,7 @@ def calc_temp(atoms: Atoms, output_dict={'temperature': []}):
 
 
 def calc_energy(atoms: Atoms, output_dict={'total_energy': [], 'kinetic_energy': [], 'potential_energy': []}):
-    """ Calculate the total, kinetic, and potential energy of atoms object
+    """Calculate the total, kinetic, and potential energy of atoms object.
 
     Args:
         atoms(ase atom object): The system to calculate the energy for.
@@ -76,9 +78,9 @@ def calc_pressure(atoms: Atoms, output_dict={'pressure': []}, external_field=Non
         return pressure_in_eV_per_Å3*160.21766208
 
 
-
 def calculate_specific_heat(atoms, config_file, output_dict):
     """Calculate specific heat capacity of atoms object.
+
     The two formulas used are from lecture 4 slide 49.
 
     Args:
@@ -86,11 +88,9 @@ def calculate_specific_heat(atoms, config_file, output_dict):
         config_file(str): Name of the file with user's parameters.
         output_dict(dict): dictionary to append the result to.
 
-
     Returns:
-        (float): the calculated specific heat capacity in Joule/Kilogram * Kelvin (J/Kg*K)
+        Specific heat capacity(float): the calculated specific heat capacity in Joule/Kilogram * Kelvin (J/Kg*K)
     """
-
     # Define the Boltzmann constant (kB)
     kB = 1.380649e-23  # Boltzmann constant in J/K
 
@@ -103,11 +103,13 @@ def calculate_specific_heat(atoms, config_file, output_dict):
     config_data = ConfigParser()
     config_data.read(config_path+config_file)
 
-    # Get the initial temperature
-    initial_temperature = float(config_data['SimulationSettings']['temperature'])
+    # Get the average of the instantaneous temperatures
+    # Ignoring the first 10 unstable values at the begining of the simulation
+    average_temperature = np.mean(output_dict["temperature"][10:])
 
     if config_data['SimulationSettings']['ensemble'] == "NVE":
-        kinetic_energies = output_dict["kinetic_energy"]
+        # Ignoring the first 10 unstable values at the begining of the simulation
+        kinetic_energies = output_dict["kinetic_energy"][10:]
         kinetic_energies_array = np.array(kinetic_energies)
         # Unit change from eV to J
         kinetic_energies_array_joule = kinetic_energies_array * eV_to_Joules
@@ -116,7 +118,7 @@ def calculate_specific_heat(atoms, config_file, output_dict):
 
         # Formula from lecture 4 slide 49
         first_term = (3 * len(atoms) * kB) / 2
-        second_term = 1 / (1 - (2 * var_kinetic_energies / (3 * kB**2 * initial_temperature**2)))
+        second_term = 1 / (1 - ((2 * var_kinetic_energies / len(atoms)**2) / (3 * kB**2 * average_temperature**2))) * 2
         heat_capacity = first_term * second_term
 
         # print("Heat Capacity: ", heat_capacity)
@@ -125,7 +127,8 @@ def calculate_specific_heat(atoms, config_file, output_dict):
         # print("specific_heat_capacity: " + str(specific_heat_capacity))
 
     elif config_data['SimulationSettings']['ensemble'] == "NVT":
-        total_energies = output_dict["total_energy"]
+        # Ignoring the first 10 unstable values at the begining of the simulation
+        total_energies = output_dict["total_energy"][10:]
         total_energies_array = np.array(total_energies)
         # Unit change from eV to J
         total_energies_array_joule = total_energies_array * eV_to_Joules
@@ -133,19 +136,17 @@ def calculate_specific_heat(atoms, config_file, output_dict):
         var_total_energies = np.var(total_energies_array_joule)
 
         # Formula from lecture 4 slide 49
-        heat_capacity = var_total_energies / (kB * initial_temperature**2)
-
+        heat_capacity = (var_total_energies / len(atoms)**2) / (kB * average_temperature**2)
         # Formula from physics handbook F-2.3 c = C/m where c: specific heat capacity and C: heat capacity
-        specific_heat_capacity = heat_capacity / sum(atoms.get_masses() * AtomicMass_to_Kg)
+        specific_heat_capacity = heat_capacity / (sum(atoms.get_masses()) * AtomicMass_to_Kg)
 
     return specific_heat_capacity
 
-    
 
 def calc_mean_square_displacement(atoms: Atoms, output_dict={'mean_square_displacement': []}):
     """Calculate the mean square displacement of atoms object.
 
-    The formula used is MSD=1/N*sum{(r_i(t_n)-r_i(t_0))^2 where r_i is the 
+    The formula used is MSD=1/N*sum{(r_i(t_n)-r_i(t_0))^2 where r_i is the
     position of atom i at time t_n and N is the number of atoms
 
     Args:
@@ -156,9 +157,9 @@ def calc_mean_square_displacement(atoms: Atoms, output_dict={'mean_square_displa
             [[f_x_atom1, f_y_atom1, f_z_atom1], ..., [f_x_atomN, f_y_atomN, f_z_atomN]]
 
     Returns:
-        (float): the calculated mean square displacement 
+        (float): the calculated mean square displacement
     """
-    positions = np.array(atoms.get_positions()) 
+    positions = np.array(atoms.get_positions())
     MSD = 0
 
     if output_dict['mean_square_displacement'] == []:
@@ -167,7 +168,7 @@ def calc_mean_square_displacement(atoms: Atoms, output_dict={'mean_square_displa
     else:
         atom_pos_diffs = positions-output_dict['mean_square_displacement'][0]
         MSD_sum = 0
-        for atom in atom_pos_diffs:   
+        for atom in atom_pos_diffs:
             MSD_sum += LA.norm(atom)**2
         MSD = MSD_sum/len(positions)
         output_dict['mean_square_displacement'].append(MSD)
@@ -192,10 +193,10 @@ def lindemann_criterion(atoms: Atoms, output_dict={'lindemann_criterion': []}, d
         (float): the calculated Lindemann criterion
     """
     lindemann = 0
-    
+
     if output_dict['lindemann_criterion'] != []:
         lindemann = np.sqrt(output_dict['mean_square_displacement'][-1])/d
-        
+
     output_dict['lindemann_criterion'].append(lindemann)
 
     return lindemann
@@ -218,13 +219,12 @@ def self_diffusion_coefficent(atoms: Atoms, output_dict={'lindemann_criterion': 
         (float): the calculated self-diffusion coefficient
     """
     self_diffusion_coefficient = 0
-    
+
     if output_dict['self_diffusion_coefficient'] != []:
         # t is calculated by using how many calculations of calc_self_diffusion_coefficient have
         # been performed, and multiplying this by how long the intervals are.
         self_diffusion_coefficient = output_dict['mean_square_displacement'][-1]/(6*time_elapsed_per_interval*(len(output_dict['mean_square_displacement']) - 1)*units.fs)
-        
+
     output_dict['self_diffusion_coefficient'].append(self_diffusion_coefficient)
 
     return self_diffusion_coefficient
-
