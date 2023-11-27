@@ -81,7 +81,10 @@ def calc_pressure(atoms: Atoms, output_dict={'pressure': []}, external_field=Non
 def calculate_specific_heat(atoms, config_file, output_dict):
     """Calculate specific heat capacity of atoms object.
 
-    The two formulas used are from lecture 4 slide 49.
+    Two formulas are used here, for NVE or NVT ensemble:
+    1. For NVE: heat capacity = 3*N*kB / 2*(1-(2*variance of the kinetic energy/Number of atoms^2)/3*kB^2*T^2)
+    2. For NVT: heat capacity = (variance of the total energy/Number of atoms^2) /kB * T^2
+    Finally the specific heat capacity = Heat capactiy / sum of the atoms masses
 
     Args:
         atoms(ase atom object): The system to calculate the specific heat capacity for.
