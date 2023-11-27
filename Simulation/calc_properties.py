@@ -165,42 +165,45 @@ def self_diffusion_coefficent(atoms: Atoms, output_dict={'lindemann_criterion': 
 def time_average_of_debye_temperature(atoms: Atoms, output_dict={'debye_temperature': []}):
     """Calculate the time average of debye temperature of an atoms object.
 
+    The formula which is used: Debye temperature = (Planck constant * Debye frequency) / Boltzmann constant
+    where Debye frequency = velocity of sound * ((6 * pi^2 * N) / volume)^(1/3)).
+
     Args:
         atoms(ase atom object): The system to calculate the time average of debye temperature for.
         output_dict(dict): Dictionary to append the result to.
     Returns:
         (float): The calculated time average of debye temperature
     """
-    volume_angstrom = atoms.get_volume() # in Å^3
-    volume = volume_angstrom * 1e-30 # in m^3
+    # From physics handbook CU-1.1
+    hbar = 6.5821196e-16  # Planck constant in eV*s
+
+    # Constant for unit conversion Physics handbook CU-2.4
+    AtomicMass_to_Kg = 1.660539e-27     # Conversion factor from atomic
+
+    volume_angstrom = atoms.get_volume()    # in Å^3
+    volume = volume_angstrom * 1e-30    # in m^3
     num_atoms = len(atoms)
 
-    # From physics handbook CU-1.1
-    hbar = 6.5821196e-16  # Planck constant in eV*s 
-    speed_of_sound_copper = 3750  # T-4.1 in m/s
+    # Density in Kg/m^3
+    density = (sum(atoms.get_masses()) * AtomicMass_to_Kg) / volume
+
+    # Calculating the velocity of sound in m/s
+    # Velocity of sound values can be found in Physics handbook T-4.1
+    velocity_of_sound = np.sqrt(((output_dict["bulk_modulus"][-1]) * 1e9) / density)  # in m/s
 
     # Calculate Debye frequency w_D, the formula can be found in three different places:
     # 1. In "Introduction to Solid State Physics" by Charles Kittel page 112
     # 2. Physics handbook F-10.4
     # 3.wiki: https://en.wikipedia.org/wiki/Debye_model#Debye_frequency
     # Debye temperature values can be found in Table 1 Page 116 in the same book above.
-    w_D = speed_of_sound_copper * ((6 * np.pi**2 * num_atoms) / volume)**(1/3)
-    print("w_D :", w_D)
+    w_D = velocity_of_sound * ((6 * np.pi**2 * num_atoms) / volume)**(1/3)
 
     # Calculate Debye temperature, formula from wiki debye temp = h_bar/kB * debye_frequency
     debye_temperature = (hbar * w_D) / units.kB
-    print("debye_temperature :", debye_temperature)
 
     # Append the calculated Debye temperature to the output dictionary
     output_dict['debye_temperature'].append(debye_temperature)
 
     # Calculate the time average, usless line of code
-    time_average_of_debye_temperature = np.mean(output_dict['debye_temperature'])
-    return time_average_of_debye_temperature
-
-
-if __name__ == "__main__":
-    copper_atoms = bulk('Cu')
-    output_dict = {'debye_temperature': []}
-    time_avg_debye_temp = time_average_of_debye_temperature(copper_atoms, output_dict)
-    print("Time-averaged Debye temperature: ", time_avg_debye_temp)
+    # time_average_of_debye_temperature = np.mean(output_dict['debye_temperature'])
+    return debye_temperature
