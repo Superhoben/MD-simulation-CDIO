@@ -25,7 +25,6 @@ def approx_lattice_constant(atoms):
     lattice_contributions = 0
     for element in distances_between_atoms:
         # Since 0 is always present for each atom, we calculate the 5 nearest distances
-        print(nsmallest(5,element))
         lattice_contributions += sum(nsmallest(5,element))
     
     return lattice_contributions/(4 * len(positions))
