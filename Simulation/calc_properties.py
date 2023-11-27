@@ -2,6 +2,7 @@ from ase import Atoms
 import numpy as np
 from numpy import linalg as LA
 from ase import units
+from ase.build import bulk
 
 
 def calc_temp(atoms: Atoms, output_dict={'temperature': []}):
@@ -161,36 +162,45 @@ def self_diffusion_coefficent(atoms: Atoms, output_dict={'lindemann_criterion': 
     return self_diffusion_coefficient
 
 
-def time_average_of_debye_temperature(atoms: Atoms, output_dict={'debye_temperature': []}, time_elapsed_per_interval=1):
+def time_average_of_debye_temperature(atoms: Atoms, output_dict={'debye_temperature': []}):
     """Calculate the time average of debye temperature of an atoms object.
 
     Args:
-        atoms(ase atom object): the system to calculate the time average of debye temperature for.
-        output_dict(dict): dictionary to append the result to.
+        atoms(ase atom object): The system to calculate the time average of debye temperature for.
+        output_dict(dict): Dictionary to append the result to.
     Returns:
-        (float): the calculated time average of debye temperature
+        (float): The calculated time average of debye temperature
     """
-    volume = atoms.get_volume()
+    volume_angstrom = atoms.get_volume() # in Å^3
+    volume = volume_angstrom * 1e-30 # in m^3
     num_atoms = len(atoms)
 
-    # Common constants
-    h_planck = 4.135667696e-15  # Planc constantin eV*s
-    kB = 8.617333262145e-5  # Boltzmann constant in eV/K
+    # From physics handbook CU-1.1
+    hbar = 6.5821196e-16  # Planck constant in eV*s 
+    speed_of_sound_copper = 3750  # T-4.1 in m/s
 
+    # Calculate Debye frequency w_D, the formula can be found in three different places:
+    # 1. In "Introduction to Solid State Physics" by Charles Kittel page 112
+    # 2. Physics handbook F-10.4
+    # 3.wiki: https://en.wikipedia.org/wiki/Debye_model#Debye_frequency
+    # Debye temperature values can be found in Table 1 Page 116 in the same book above.
+    w_D = speed_of_sound_copper * ((6 * np.pi**2 * num_atoms) / volume)**(1/3)
+    print("w_D :", w_D)
 
-    # Calculate Debye frequency, the formula can be found in "Introduction to Solid State Physics" 
-    # by Charles Kittel page 112
-    # Debye temperature can be found in Table 1 Page 116 in the same book.
-    debye_frequency = ((6 * np.pi**2 * num_atoms) / volume)**(1/3)
-
-    # Calculate Debye temperature, formula from wiki debye temp = h'/kB
-    debye_temperature = h_planck * debye_frequency / kB
+    # Calculate Debye temperature, formula from wiki debye temp = h_bar/kB * debye_frequency
+    debye_temperature = (hbar * w_D) / units.kB
+    print("debye_temperature :", debye_temperature)
 
     # Append the calculated Debye temperature to the output dictionary
     output_dict['debye_temperature'].append(debye_temperature)
 
-    # Calculate the time average
+    # Calculate the time average, usless line of code
     time_average_of_debye_temperature = np.mean(output_dict['debye_temperature'])
-    print(time_average_of_debye_temperature)
-
     return time_average_of_debye_temperature
+
+
+if __name__ == "__main__":
+    copper_atoms = bulk('Cu')
+    output_dict = {'debye_temperature': []}
+    time_avg_debye_temp = time_average_of_debye_temperature(copper_atoms, output_dict)
+    print("Time-averaged Debye temperature: ", time_avg_debye_temp)
