@@ -124,16 +124,15 @@ def lindemann_criterion(output_dict={'lindemann_criterion': []}, d = 1):
         (float): the calculated Lindemann criterion
     """
     lindemann = 0
-    
     if output_dict['lindemann_criterion'] != []:
         lindemann = np.sqrt(output_dict['mean_square_displacement'][-1])/d
-        
+
     output_dict['lindemann_criterion'].append(lindemann)
 
     return lindemann
 
 
-def self_diffusion_coefficent(atoms: Atoms, output_dict={'lindemann_criterion': []}, time_elapsed_per_interval = 1):
+def self_diffusion_coefficent(output_dict={'self_diffusion_coefficient': []}, time_elapsed_per_interval = 1):
     """Calculate the self-diffusion coefficient of atoms object.
 
     The formula used is D = 1/(6*t)*MSD where t is time elapsed at a certian iteration

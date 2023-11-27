@@ -8,13 +8,14 @@ from ase import Atoms, Atom
 from ase.calculators.emt import EMT
 from tkinter import Tk
 from Simulation.lattice_constant import optimize_scaling
-from Simulation.calc_properties import calc_temp, calc_pressure, calc_mean_square_displacement, lindemann_criterion
+from Simulation.calc_properties import calc_temp, calc_pressure, calc_mean_square_displacement, lindemann_criterion, self_diffusion_coefficent
 from Simulation.calc_bulk_properties import calc_bulk_modulus, calculate_cohesive_energy
 from Simulation.run_md_simulation import run_single_md_simulation
 from Gather_data.download_data import get_ASE_atoms_from_material_id
 from User_interface.user_interface import initiate_gui
 from User_API_key import start_program
 import numpy as np
+from ase import units
 
 
 class UnitTests(unittest.TestCase):
@@ -127,15 +128,20 @@ class UnitTests(unittest.TestCase):
                         (calc_mean_square_displacement(atoms, output_dict2) == 0))
         
     def test_lindemann(self):
-        output_dict = {'mean_square_displacement': [1,2,125], 'lindemann_criterion': [0,1]}
+        output_dict = {'mean_square_displacement': [1,2,25], 'lindemann_criterion': [0,1]}
         output_dict1 = {'mean_square_displacement': [], 'lindemann_criterion': []}
         d = 5
-        print(lindemann_criterion(output_dict, d))
-        print(float(lindemann_criterion(output_dict, d)))
-        print(type(float(lindemann_criterion(output_dict, d))))
-        self.assertTrue((lindemann_criterion(output_dict, d) == 5))
-        # and (lindemann_criterion(output_dict1,d) == 0) and
-                        #(lindemann_criterion(output_dict) == np.sqrt(125))
+        self.assertTrue((lindemann_criterion(output_dict, d) == 1) and 
+                        (lindemann_criterion(output_dict1,d) == 0) and 
+                        (lindemann_criterion(output_dict) == 5))
+        
+    def test_self_diffusion(self):
+        output_dict = {'mean_square_displacement': [1,2,60], 'self_diffusion_coefficient': [0,1]}
+        output_dict1 = {'mean_square_displacement': [1,2,60], 'self_diffusion_coefficient': []}
+        time_elapsed = 5
+        self.assertTrue((self_diffusion_coefficent(output_dict,time_elapsed) == 1/units.fs) and
+                        (self_diffusion_coefficent(output_dict1,time_elapsed) == 0) and
+                        (self_diffusion_coefficent(output_dict) == 5/units.fs))
 
     def test_GUI(self):
         # There will be further testing when other methods connected to the gui has been developed.
