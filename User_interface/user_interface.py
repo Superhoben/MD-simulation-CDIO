@@ -666,7 +666,8 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
 
 def animate_traj(traj_file):
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files/'
-    os.system("ase gui" + " " + path + traj_file)
+    traj = Trajectory(path + traj_file, "r")
+    view(traj)
 
 if __name__ == "__main__":
     main_program = initiate_gui()
