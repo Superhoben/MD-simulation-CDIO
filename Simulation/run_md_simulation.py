@@ -87,10 +87,8 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
 
     # This dict will contain output data of the simulation to be written into the output text file
 
-    positions = np.array(atoms.get_positions())
-    distances_between_atoms = cdist(positions, positions)
-    # Finds distance d between the two closest atoms and is used to calculate the Lindemann criterion
-    d = np.min(distances_between_atoms[np.nonzero(distances_between_atoms)])
+    # Approximate lattice constant
+    d = calc_properties.approx_lattice_constant(atoms)
 
     output_dict = {}
     output_dict["config_file"] = config_file
