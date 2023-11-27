@@ -1,1 +1,1 @@
-__all__ = ["calc_properties", "calc_bulk_properties", "lattice_constant"]
+__all__ = ["calc_properties", "calc_bulk_properties", "lattice_constant", "simple_simulation"]

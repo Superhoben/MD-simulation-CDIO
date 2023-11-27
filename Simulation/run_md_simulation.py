@@ -6,6 +6,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.md.verlet import VelocityVerlet
 from ase import units
+from ase import Atoms
 from asap3 import EMT, LennardJones
 from ase.calculators.lj import LennardJones
 from ase.md.langevin import Langevin
@@ -13,12 +14,11 @@ from ase.io.trajectory import Trajectory
 from configparser import ConfigParser
 import json
 from Simulation import calc_properties, calc_bulk_properties, lattice_constant
-from parcalc import ParCalculate
-from elastic import get_elastic_tensor
 from ase.md.velocitydistribution import Stationary
 import numpy as np
 from scipy.spatial.distance import cdist
 from multiprocessing import Process
+from ase.lattice.cubic import FaceCenteredCubic
 
 def print_and_increase_progress(progress, sim_number):
     if sim_number:
@@ -27,7 +27,7 @@ def print_and_increase_progress(progress, sim_number):
     progress[0] += 10
 
 def run_single_md_simulation(config_file: str, traj_file: str, output_name: str, sim_number=0):
-    """Run md simulation for a single trajectory file, with parameters specified in config
+    """Run md simulation for a single trajectory file, with parameters specified in config.
 
     Args:
         config_file(str): Name of file with parameters to use in simulation.
@@ -132,7 +132,11 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
 
     interval_to_record_elastic_properties = int(recording_intervals['record_elastic'])
     if interval_to_record_elastic_properties:
-        output_dict['elastic_tensor'] = []
+        output_dict['elastic_tensor_c11'] = []
+        output_dict['bulk_modulus_from_tensor'] = []
+        output_dict['shear_modulus'] = []
+        output_dict['youngs_modulus'] = []
+        output_dict['poisson_ratio'] = []
         dyn.attach(calc_bulk_properties.calc_elastic, interval_to_record_elastic_properties, atoms, output_dict)
 
     interval_to_record_mean_square_displacement = int(config_data['RecordingIntervals']['record_mean_square_displacement'])
@@ -222,4 +226,10 @@ def run_md_simulations(config_file_name, trajectory_file_dir, output_dir_name):
 
 
 if __name__ == "__main__":
-    run_md_simulations("example_config.ini", 'Demo_multi_sim', 'Demo_multi_sim')
+    atoms = FaceCenteredCubic(directions=[[1, 0, 0], [0, 1, 0], [1, 1, 1]],
+                              size=(2, 2, 3), symbol='Cu', pbc=(1, 1, 0))
+    atoms.calc = EMT()
+    #optimize_scaling(atoms, {'optimal_scaling': [], 'iterations_to_find_scaling': []})
+    print(lattice_constant.optimize_scaling_using_simulation(atoms, {'potential': 'EMT', 'time_step': 5, 'temperature': 300, 'ensemble': 'NVE', 'step_number': 250}))
+
+    #run_md_simulations("example_config.ini", 'Demo_multi_sim', 'Demo_multi_sim')
