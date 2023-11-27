@@ -84,12 +84,12 @@ def calculate_specific_heat(atoms, config_file, output_dict):
     The two formulas used are from lecture 4 slide 49.
 
     Args:
-        atoms(ase atom object): the system to calculate the specific heat capacity for.
+        atoms(ase atom object): The system to calculate the specific heat capacity for.
         config_file(str): Name of the file with user's parameters.
-        output_dict(dict): dictionary to append the result to.
+        output_dict(dict): Dictionary to append the result to.
 
     Returns:
-        Specific heat capacity(float): the calculated specific heat capacity in Joule/Kilogram * Kelvin (J/Kg*K)
+        Specific heat capacity(float): The calculated specific heat capacity in Joule/Kilogram * Kelvin (J/Kg*K)
     """
     # Define the Boltzmann constant (kB)
     kB = 1.380649e-23  # Boltzmann constant in J/K
