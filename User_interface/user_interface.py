@@ -214,6 +214,10 @@ def initiate_gui():
     gather_data_button.grid(row=rownumber, column=1, pady=10)
     
     rownumber += 1
+    create_atom_button = Button(data_frame, text = "Create atom", command=create_atom)
+    create_atom_button.grid(row=rownumber, column=1, pady=10)
+    
+    rownumber += 1
     sep_label2 = Label(data_frame, text="-"*100, bg = "medium aquamarine")
     sep_label2.grid(row=rownumber, column = 0, columnspan = 3)
 
@@ -612,7 +616,7 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
         messagebox.showerror("Missing data", "Attribute not recorded")
         return None
     
-    average_attribute = round(sum(material_data_dict[attribute])/len(material_data_dict[attribute]))
+    average_attribute = round(sum(material_data_dict[attribute])/len(material_data_dict[attribute]),4)
     max_attribute = round(max(material_data_dict[attribute]),4)
     min_attribute = round(min(material_data_dict[attribute]),4)
     data_points = len(material_data_dict[attribute])
@@ -666,7 +670,199 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
 
 def animate_traj(traj_file):
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files/'
-    os.system("ase gui" + " " + path + traj_file)
+    traj = Trajectory(path + traj_file, "r")
+    view(traj)
+    
+def create_atom():
+    new_window = Tk()
+    new_window.title("Arbitrary atom configuration")
+    new_window.geometry("700x900")
+    
+    tabs = ttk.Notebook(new_window)
+    tabs.pack()
+    
+    tabframe0 = Frame(tabs, height=800, width=600, bg="SkyBlue1")
+    tabframe0.pack_propagate(False)
+    tabframe0.grid_propagate(False)
+    tabframe0.pack(expand=True, fill=BOTH)
+    
+    tabframe1 = Frame(tabs, height=800, width=600, bg="SkyBlue1")
+    tabframe1.pack_propagate(False)
+    tabframe1.grid_propagate(False)
+    tabframe1.pack(expand=True, fill=BOTH)
+
+    tabframe2 = Frame(tabs, height=800, width=600, bg="SkyBlue1")
+    tabframe2.pack_propagate(False)
+    tabframe2.grid_propagate(False)
+    tabframe2.pack(expand=True, fill=BOTH)
+    
+    tabframe3 = Frame(tabs, height=800, width=600, bg="SkyBlue1")
+    tabframe3.pack_propagate(False)
+    tabframe3.grid_propagate(False)
+    tabframe3.pack(expand=True, fill=BOTH)
+    
+    tabframe4 = Frame(tabs, height=800, width=600, bg="SkyBlue1")
+    tabframe4.pack_propagate(False)
+    tabframe4.grid_propagate(False)
+    tabframe4.pack(expand=True, fill=BOTH)
+    
+    tabframe5 = Frame(tabs, height=800, width=600, bg="SkyBlue1")
+    tabframe5.pack_propagate(False)
+    tabframe5.grid_propagate(False)
+    tabframe5.pack(expand=True, fill=BOTH)
+    
+    tabframe6 = Frame(tabs, height=800, width=600, bg="SkyBlue1")
+    tabframe6.pack_propagate(False)
+    tabframe6.grid_propagate(False)
+    tabframe6.pack(expand=True, fill=BOTH)
+    
+    tabframe7 = Frame(tabs, height=800, width=600, bg="SkyBlue1")
+    tabframe7.pack_propagate(False)
+    tabframe7.grid_propagate(False)
+    tabframe7.pack(expand=True, fill=BOTH)
+
+    tabs.add(tabframe0, text="Homepage??")
+    tabs.add(tabframe1, text="Triclinic")
+    tabs.add(tabframe2, text="Monoclinic")
+    tabs.add(tabframe3, text="Orthorhombic")
+    tabs.add(tabframe4, text="Tetragonal")
+    tabs.add(tabframe5, text="Trigonal")
+    tabs.add(tabframe6, text="Hexagonal")
+    tabs.add(tabframe7, text="Cubic")
+    
+    text_label = Label(tabframe0, text="Choose crystal system. System names and description of the lattice vectors follows below. \n" +
+          "1 - Triclinic, arbitrary lengths and directions \n"+
+          "2 - Monoclinic, arbitrary lengths, two vectors are orthagonal \n"+
+          "3 - Orthorhombic, arbitrary lengths, all vectors are orthagonal \n"+
+          "4 - Tetragonal, two equal lenghts, all vectors are orthagonol \n"+
+          "5 - Trigonal, not yet implemented \n"+
+          "6 - Hexagonal, not yet implemented \n"+
+          "7 - Cubic, equal lenghts and all vectors are orthagonal")
+    text_label.grid(row=0, column=0)
+
+    
+    label1 = Label(tabframe1, text="Input length of the first lattice translation vector in Å:")
+    label1.grid(row=1,column=0)
+    label2 = Label(tabframe1, text="Input length of the second lattice translation vector in Å:")
+    label2.grid(row=2,column=0)
+    label3 = Label(tabframe1, text="Input length of the third lattice translation vector in Å:")
+    label3.grid(row=3,column=0)
+    label4 = Label(tabframe1, text="Input angle between the first and second translation vector in degrees:")
+    label4.grid(row=4,column=0)
+    label5 = Label(tabframe1, text="Input angle between the first and third translation vector in degrees:")
+    label5.grid(row=5,column=0)
+    label6 = Label(tabframe1, text="Input angle between the second and third translation vector in degrees:")
+    label6.grid(row=6,column=0)
+    label7 = Label(tabframe1, text="Input the chemical symbol for the base atom:")
+    label7.grid(row=7,column=0)
+    entry1 = Entry(tabframe1)
+    entry1.grid(row=1,column=1)
+    entry2 = Entry(tabframe1)
+    entry2.grid(row=2,column=1)
+    entry3 = Entry(tabframe1)
+    entry3.grid(row=3,column=1)
+    entry4 = Entry(tabframe1)
+    entry4.grid(row=4,column=1)
+    entry5 = Entry(tabframe1)
+    entry5.grid(row=5,column=1)
+    entry6 = Entry(tabframe1)
+    entry6.grid(row=6,column=1)
+    entry7 = Entry(tabframe1)
+    entry7.grid(row=7,column=1)
+    
+    
+    monoclinic_label1 = Label(tabframe2, text="1 - Simple monoclinic (also known as primitive monoclinic)")
+    monoclinic_label1.grid(row=0,column=0)
+    monoclinic_label2 = Label(tabframe2, text="Input length of the first lattice translation vector in Å:")
+    monoclinic_label2.grid(row=1,column=0)
+    monoclinic_label3 = Label(tabframe2, text="Input length of the second lattice translation vector in Å:")
+    monoclinic_label3.grid(row=2,column=0)
+    monoclinic_label4 = Label(tabframe2, text="Input length of the third lattice translation vector in Å:")
+    monoclinic_label4.grid(row=3,column=0)
+    monoclinic_label5 = Label(tabframe2, text="First and second translation vectors are orthogonal")
+    monoclinic_label5.grid(row=4,column=0)
+    monoclinic_label6 = Label(tabframe2, text="Input angle between the first and third translation vector:")
+    monoclinic_label6.grid(row=5,column=0)
+    monoclinic_label7 = Label(tabframe2, text="Input angle between the second and third translation vector:")
+    monoclinic_label7.grid(row=6,column=0)
+    monoclinic_label8 = Label(tabframe2, text="Input one element in chemical notation:")
+    monoclinic_label8.grid(row=7,column=0)
+    monoclinic_entry1 = Entry(tabframe2)
+    monoclinic_entry1.grid(row=1,column=1)
+    monoclinic_entry2 = Entry(tabframe2)
+    monoclinic_entry2.grid(row=2,column=1)
+    monoclinic_entry3 = Entry(tabframe2)
+    monoclinic_entry3.grid(row=3,column=1)
+    monoclinic_entry4 = Entry(tabframe2)
+    monoclinic_entry4.grid(row=5,column=1)
+    monoclinic_entry5 = Entry(tabframe2)
+    monoclinic_entry5.grid(row=6,column=1)
+    monoclinic_entry6 = Entry(tabframe2)
+    monoclinic_entry6.grid(row=7,column=1)
+    
+    centered_monoclinic_label1 = Label(tabframe2, text="2 - Base centered monoclinic")
+    centered_monoclinic_label1.grid(row=8,column=0)
+    centered_monoclinic_label2 = Label(tabframe2, text="Input length of the first lattice translation vector in Å:")
+    centered_monoclinic_label2.grid(row=9,column=0)
+    centered_monoclinic_label3 = Label(tabframe2, text="Input length of the second lattice translation vector in Å:")
+    centered_monoclinic_label3.grid(row=10,column=0)
+    centered_monoclinic_label4 = Label(tabframe2, text="Input length of the third lattice translation vector in Å:")
+    centered_monoclinic_label4.grid(row=11,column=0)
+    centered_monoclinic_label5 = Label(tabframe2, text="First and second translation vectors are orthogonal")
+    centered_monoclinic_label5.grid(row=12,column=0)
+    centered_monoclinic_label6 = Label(tabframe2, text="Input angle between the first and third translation vector:")
+    centered_monoclinic_label6.grid(row=13,column=0)
+    centered_monoclinic_label7 = Label(tabframe2, text="Input angle between the second and third translation vector:")
+    centered_monoclinic_label7.grid(row=14,column=0)
+    centered_monoclinic_label8 = Label(tabframe2, text="Input the chemical symbols for the two base atoms separated by space:")
+    centered_monoclinic_label8.grid(row=15,column=0)
+    centered_monoclinic_entry1 = Entry(tabframe2)
+    centered_monoclinic_entry1.grid(row=9,column=1)
+    centered_monoclinic_entry2 = Entry(tabframe2)
+    centered_monoclinic_entry2.grid(row=10,column=1)
+    centered_monoclinic_entry3 = Entry(tabframe2)
+    centered_monoclinic_entry3.grid(row=11,column=1)
+    centered_monoclinic_entry4 = Entry(tabframe2)
+    centered_monoclinic_entry4.grid(row=13,column=1)
+    centered_monoclinic_entry5 = Entry(tabframe2)
+    centered_monoclinic_entry5.grid(row=14,column=1)
+    centered_monoclinic_entry6 = Entry(tabframe2)
+    centered_monoclinic_entry6.grid(row=15,column=1)
+    
+    
+    simple_orthorhomic_label1 = Label(tabframe3, text="Input x-direction lattice constant in Ångström: ")
+    simple_orthorhomic_label1.grid(row=1,column=0)
+    simple_orthorhomic_label2 = Label(tabframe3, text="Input y-direction lattice constant in Ångström: ")
+    simple_orthorhomic_label2.grid(row=2,column=0)
+    simple_orthorhomic_label3 = Label(tabframe3, text="Input z-direction lattice constant in Ångström: ")
+    simple_orthorhomic_label3.grid(row=3,column=0)
+    simple_orthorhomic_label4 = Label(tabframe3, text="1 - Simple orthorhomic (also known as primitive orthorhombic)")
+    simple_orthorhomic_label4.grid(row=4,column=0)
+    simple_orthorhomic_label5 = Label(tabframe3, text="Input the chemical symbol for the base atom:")
+    simple_orthorhomic_label5.grid(row=5,column=0)
+    simple_orthorhomic_label6 = Label(tabframe3, text="2 & 3 - Base and body centered orthorhomic")
+    simple_orthorhomic_label6.grid(row=6,column=0)
+    simple_orthorhomic_label7 = Label(tabframe3, text="Input the chemical symbol for the two base atoms separated by space:")
+    simple_orthorhomic_label7.grid(row=7,column=0)
+    simple_orthorhomic_label8 = Label(tabframe3, text="4 - Face centered orthorhomic")
+    simple_orthorhomic_label8.grid(row=8,column=0)
+    simple_orthorhomic_label9 = Label(tabframe3, text="Input the chemical symbol for the base atom")
+    simple_orthorhomic_label9.grid(row=9,column=0)
+    simple_orthorhomic_entry1 = Entry(tabframe3)
+    simple_orthorhomic_entry1.grid(row=1, column=1)
+    simple_orthorhomic_entry2 = Entry(tabframe3)
+    simple_orthorhomic_entry2.grid(row=2, column=1)
+    simple_orthorhomic_entry3 = Entry(tabframe3)
+    simple_orthorhomic_entry3.grid(row=3, column=1)
+    simple_orthorhomic_entry4 = Entry(tabframe3)
+    simple_orthorhomic_entry4.grid(row=5, column=1)
+    simple_orthorhomic_entry5 = Entry(tabframe3)
+    simple_orthorhomic_entry5.grid(row=7, column=1)
+    simple_orthorhomic_entry6 = Entry(tabframe3)
+    simple_orthorhomic_entry6.grid(row=9, column=1)
+    
+    new_window.mainloop()
+    
 
 if __name__ == "__main__":
     main_program = initiate_gui()
