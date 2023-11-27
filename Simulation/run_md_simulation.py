@@ -143,7 +143,7 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
     interval_to_record_lindemann_criterion = int(config_data['RecordingIntervals']['record_lindemann_criterion'])
     if interval_to_record_lindemann_criterion:
         output_dict['lindemann_criterion'] = []
-        dyn.attach(calc_properties.lindemann_criterion, interval_to_record_lindemann_criterion, atoms, output_dict, d)
+        dyn.attach(calc_properties.lindemann_criterion, interval_to_record_lindemann_criterion, output_dict, d)
 
     interval_to_record_self_diffusion_coefficient = int(config_data['RecordingIntervals']['record_self_diffusion_coefficient'])
     if interval_to_record_lindemann_criterion:

@@ -107,7 +107,7 @@ def calc_mean_square_displacement(atoms: Atoms, output_dict={'mean_square_displa
     return MSD
 
 
-def lindemann_criterion(atoms: Atoms, output_dict={'lindemann_criterion': []}, d = 1):
+def lindemann_criterion(output_dict={'lindemann_criterion': []}, d = 1):
     """Calculate the Lindemann criterion of atoms object.
 
     The formula used is L = 1/d*(MSD)^(1/2).

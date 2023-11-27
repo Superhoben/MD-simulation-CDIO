@@ -8,12 +8,13 @@ from ase import Atoms, Atom
 from ase.calculators.emt import EMT
 from tkinter import Tk
 from Simulation.lattice_constant import optimize_scaling
-from Simulation.calc_properties import calc_temp, calc_pressure
+from Simulation.calc_properties import calc_temp, calc_pressure, calc_mean_square_displacement, lindemann_criterion
 from Simulation.calc_bulk_properties import calc_bulk_modulus, calculate_cohesive_energy
 from Simulation.run_md_simulation import run_single_md_simulation
 from Gather_data.download_data import get_ASE_atoms_from_material_id
 from User_interface.user_interface import initiate_gui
 from User_API_key import start_program
+import numpy as np
 
 
 class UnitTests(unittest.TestCase):
@@ -96,15 +97,15 @@ class UnitTests(unittest.TestCase):
         # From 
         # you can find every single cohesive energy per atom for each elements in 
         self.assertTrue((2.9 < calculate_cohesive_energy(atom_structure_Ag)) and
-                        (calculate_cohesive_energy(atom_structure_Ag) < 3))
-        self.assertTrue((3.76 < calculate_cohesive_energy(atom_structure_Au)) and
-                        (calculate_cohesive_energy(atom_structure_Au) < 3.86))
-        self.assertTrue((4.39 < calculate_cohesive_energy(atom_structure_Ni)) and
-                        (calculate_cohesive_energy(atom_structure_Ni) < 4.49))
-        self.assertTrue((3.44 < calculate_cohesive_energy(atom_structure_Cu)) and
+                        (calculate_cohesive_energy(atom_structure_Ag) < 3) and 
+                        (3.76 < calculate_cohesive_energy(atom_structure_Au)) and 
+                        (calculate_cohesive_energy(atom_structure_Au) < 3.86) and 
+                        (4.39 < calculate_cohesive_energy(atom_structure_Ni)) and
+                        (calculate_cohesive_energy(atom_structure_Ni) < 4.49) and 
+                        (3.44 < calculate_cohesive_energy(atom_structure_Cu)) and
                         (calculate_cohesive_energy(atom_structure_Cu) < 3.54))
 
-    def test_cohesive_energy(self):
+    def test_cohesive_energy2(self):
         # Create N2 molecule structure
         molecule_structure = molecule('N2')
         molecule_structure.calc = EMT()
@@ -112,6 +113,29 @@ class UnitTests(unittest.TestCase):
         # had 2N Atomization energy(cohesive energy)= 9.76 eV, Which means N alone is 9.76/2 = 4.88 ev/atom
         self.assertTrue((4.82 < calculate_cohesive_energy(molecule_structure)) and
                         (calculate_cohesive_energy(molecule_structure) < 4.93))
+
+    def test_MSD(self):
+        atoms = FaceCenteredCubic(directions=[[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+                          symbol="Ag",
+                          size=(2, 2, 2),
+                          pbc=True)
+        positions = np.array(atoms.get_positions())
+        output_dict = {'mean_square_displacement': [positions]}
+        output_dict2 = {'mean_square_displacement': []}
+
+        self.assertTrue((calc_mean_square_displacement(atoms, output_dict) == 0) and 
+                        (calc_mean_square_displacement(atoms, output_dict2) == 0))
+        
+    def test_lindemann(self):
+        output_dict = {'mean_square_displacement': [1,2,125], 'lindemann_criterion': [0,1]}
+        output_dict1 = {'mean_square_displacement': [], 'lindemann_criterion': []}
+        d = 5
+        print(lindemann_criterion(output_dict, d))
+        print(float(lindemann_criterion(output_dict, d)))
+        print(type(float(lindemann_criterion(output_dict, d))))
+        self.assertTrue((lindemann_criterion(output_dict, d) == 5))
+        # and (lindemann_criterion(output_dict1,d) == 0) and
+                        #(lindemann_criterion(output_dict) == np.sqrt(125))
 
     def test_GUI(self):
         # There will be further testing when other methods connected to the gui has been developed.
