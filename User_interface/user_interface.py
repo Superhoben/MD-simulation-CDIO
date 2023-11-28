@@ -623,7 +623,6 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
     max_attribute = round(max(material_data_dict[attribute]),4)
     min_attribute = round(min(material_data_dict[attribute]),4)
     data_points = len(material_data_dict[attribute])
-    avg_MSD = material_data_dict["avg_MSD"]
     
     message = f"""
     Simulation inputs:
@@ -640,7 +639,11 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
         Max {attribute}: {max_attribute}
         Min {attribute}: {min_attribute}
         Data points: {data_points}
-        Average MSD: {avg_MSD}"""
+        """
+    
+    if "avg_MSD" in material_data_dict:
+        avg_MSD = material_data_dict["avg_MSD"]
+        message += f"""Average MSD: {avg_MSD}"""
     
     text_box.config(state="normal")
     text_box.delete('1.0', END)
