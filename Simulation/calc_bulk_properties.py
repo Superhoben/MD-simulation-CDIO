@@ -1,7 +1,4 @@
-"""The file will create the trajectory file with different configuration.
-
-It also will read from the created trajectory file and calculate the wishes properties.
-"""
+"""The file is for calculation of bulk properties."""
 from ase import Atoms
 from ase.io.trajectory import Trajectory
 from ase.calculators.emt import EMT
@@ -93,7 +90,7 @@ def calculate_cohesive_energy(atoms, output_dict={'cohesive_energy': []}):
         return cohesive_energy
 
 
-def calc_elastic(atoms: Atoms, output_dict={'elastic_tensor': []}):
+def calc_elastic(atoms: Atoms, output_dict={'elastic_tensor_c11': [], 'bulk_modulus_from_tensor': [], 'shear_modulus': [], 'youngs_modulus': [], 'poisson_ratio': []}):
     """Calculate the elastic tensor C11.
 
     This is somewhat computationally heavy for large systems. Computational
@@ -109,21 +106,22 @@ def calc_elastic(atoms: Atoms, output_dict={'elastic_tensor': []}):
     """
     systems = get_elementary_deformations(atoms, n=5, d=0.33)
 
-    # Here we should run stress calculations on each deformed system
-
     Cij, Bij = get_elastic_tensor(atoms, systems)
     cij_order = get_cij_order(atoms)
 
-    # After the program is restructured we can look at the following properties with the help of the elastic tensor:
-    # (For the numbers to make sense, we might want to convert them to GPa by calculating 'number/units.GPa')
-    #bulk_modulus = (Cij[cij_order.index('C_11')] + 2*Cij[cij_order.index('C_12')])/3
-    #shear_modulus = (3*Cij[cij_order.index('C_44')]+Cij[cij_order.index('C_11')]-Cij[cij_order.index('C_12')])/5
-    #youngs_modulus = 9*bulk_modulus*shear_modulus/(3*bulk_modulus+shear_modulus)
-    #poisson_ratio = 1/2-youngs_modulus/(6*bulk_modulus)
+    bulk_modulus = (Cij[cij_order.index('C_11')] + 2*Cij[cij_order.index('C_12')])/3
+    shear_modulus = (3*Cij[cij_order.index('C_44')]+Cij[cij_order.index('C_11')]-Cij[cij_order.index('C_12')])/5
+    youngs_modulus = 9*bulk_modulus*shear_modulus/(3*bulk_modulus+shear_modulus)
+    poisson_ratio = 1/2-youngs_modulus/(6*bulk_modulus)
 
-    # We have compared the bulk modulus here with the one implemented the 'normal' way, and we got similar numbers at the start of 
-    # the simulation, however when the energy freaks out in the NVE simulations, the bulk modulus here also freaks out, but the
-    # one Issa implemented still looks good when it goes crazy. Or maybe not after further investigation.
+    # Elastic tensors Cij and Birch coefficients Bij are lists/tuples (that are
+    # different in length depending on the structure) and currently this does
+    # not work with the creation of the json file. Don't know if we want to
+    # look at these but this is why we currently are not appending them.
 
-    output_dict['elastic_tensor'].append(Cij[0]/units.GPa)
-    return Cij/units.GPa
+    output_dict['elastic_tensor_c11'].append(Cij[0]/units.GPa)
+    output_dict['bulk_modulus_from_tensor'].append(bulk_modulus/units.GPa)
+    output_dict['shear_modulus'].append(shear_modulus/units.GPa)
+    output_dict['youngs_modulus'].append(youngs_modulus/units.GPa)
+    output_dict['poisson_ratio'].append(poisson_ratio)
+    return Cij/units.GPa, Bij, cij_order, bulk_modulus/units.GPa, shear_modulus/units.GPa, youngs_modulus/units.GPa, poisson_ratio
