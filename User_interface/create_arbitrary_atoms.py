@@ -1,17 +1,21 @@
+import os
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
 from ase import Atoms
+from ase.io.trajectory import Trajectory
 from ase.visualize import view
 from ase.lattice.triclinic import Triclinic
 from ase.lattice.monoclinic import SimpleMonoclinic, BaseCenteredMonoclinic
 from ase.lattice.orthorhombic import SimpleOrthorhombic, BaseCenteredOrthorhombic, BodyCenteredOrthorhombic, FaceCenteredOrthorhombic
 from ase.lattice.tetragonal import SimpleTetragonal, CenteredTetragonal
 from ase.lattice.cubic import SimpleCubic, BodyCenteredCubic, FaceCenteredCubic
+from math import floor, cbrt
+from ase.build import make_supercell
 
 
 def inbetweener(system, window, **kwargs):
     window.destroy()
-    print(system)
     create_view_and_save_crystal_guided(system, **kwargs)
 
 
@@ -67,6 +71,22 @@ def create_view_and_save_crystal_guided(system,a=0,b=0,c=0,alpha=0,beta=0,gamma=
 
     number_atoms_primitive = len(primitive_cell)
     view(primitive_cell, block = False)
+    
+    
+    new_window = Tk()
+    new_window.title("Create trajectory file")
+    
+    info_label = Label(new_window, text=f"Number of atoms in primitive cell: {len(primitive_cell)}").grid(row=0,column=0)
+    input_label = Label(new_window, text="In the target number of atoms in the super cell:").grid(row=1,column=0)
+    input_entry = Entry(new_window)
+    input_entry.grid(row=1,column=1)
+    traj_label = Label(new_window, text="Input name of .traj file:").grid(row=2,column=0)
+    traj_entry = Entry(new_window)
+    traj_entry.grid(row=2,column=1)
+    final_button = Button(new_window, text="Create .traj file", command=lambda: create_traj(len(primitive_cell), input_entry.get(), traj_entry.get(), primitive_cell, new_window))
+    final_button.grid(row=3,column=1)
+    
+    new_window.mainloop()
 
 
 def create_atom():
@@ -390,3 +410,22 @@ def create_atom():
     cubic_entry4.grid(row=8, column=1)
     
     new_window.mainloop()
+
+
+def create_traj(n_atoms_prim, target_n_atoms, file_name, primitive_cell, new_window):
+    if target_n_atoms.isdigit():
+        target_n_atoms = int(target_n_atoms)
+        if target_n_atoms < n_atoms_prim:
+            messagebox.showerror("Invalid data", "Number of atoms in supercell has to be greater than number in primitive cell")
+        else:
+            n = floor(cbrt(target_n_atoms/n_atoms_prim))
+            M = [[n, 0, 0], [0, n, 0], [0, 0, n]]
+            atoms = make_supercell(primitive_cell, M)
+            path_to_traj_folder = os.path.dirname(os.path.abspath(__file__)) + '/../Input_trajectory_files/'
+            location_and_name = path_to_traj_folder + file_name + ".traj"
+            traj = Trajectory(location_and_name, "w")
+            traj.write(atoms)
+            new_window.destroy()
+            messagebox.showinfo("Success!", "A trajectory file has been created!")
+    else:
+        messagebox.showerror("Invalid data", "Please put a proper value")
