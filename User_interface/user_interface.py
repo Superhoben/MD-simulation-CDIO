@@ -612,7 +612,7 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
         messagebox.showerror("Missing data", "Attribute not recorded")
         return None
     
-    average_attribute = round(sum(material_data_dict[attribute])/len(material_data_dict[attribute]))
+    average_attribute = round(sum(material_data_dict[attribute])/len(material_data_dict[attribute]),4)
     max_attribute = round(max(material_data_dict[attribute]),4)
     min_attribute = round(min(material_data_dict[attribute]),4)
     data_points = len(material_data_dict[attribute])
