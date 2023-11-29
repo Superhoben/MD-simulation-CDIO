@@ -124,7 +124,7 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
         output_dict['iterations_to_find_scaling'] = []
         dyn.attach(lattice_constant.optimize_scaling, interval_to_record_optimal_scaling, atoms, output_dict)
 
-    interval_to_record_configuration = int(config_data['RecordingIntervals']['record_configuration'])
+    interval_to_record_configuration = int(recording_intervals['record_configuration'])
     if interval_to_record_configuration:
         path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files/'
         traj = Trajectory(path+output_name+'.traj', "w", atoms)
@@ -139,23 +139,23 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
         output_dict['poisson_ratio'] = []
         dyn.attach(calc_bulk_properties.calc_elastic, interval_to_record_elastic_properties, atoms, output_dict)
 
-    interval_to_record_mean_square_displacement = int(config_data['RecordingIntervals']['record_mean_square_displacement'])
+    interval_to_record_mean_square_displacement = int(recording_intervals['record_mean_square_displacement'])
     if interval_to_record_mean_square_displacement:
         output_dict['mean_square_displacement'] = []
         dyn.attach(calc_properties.calc_mean_square_displacement, interval_to_record_mean_square_displacement, atoms, output_dict)
 
-    interval_to_record_lindemann_criterion = int(config_data['RecordingIntervals']['record_lindemann_criterion'])
+    interval_to_record_lindemann_criterion = int(recording_intervals['record_lindemann_criterion'])
     if interval_to_record_lindemann_criterion:
         output_dict['lindemann_criterion'] = []
         dyn.attach(calc_properties.lindemann_criterion, interval_to_record_lindemann_criterion, atoms, output_dict, d)
 
-    interval_to_record_self_diffusion_coefficient = int(config_data['RecordingIntervals']['record_self_diffusion_coefficient'])
+    interval_to_record_self_diffusion_coefficient = int(recording_intervals['record_self_diffusion_coefficient'])
     if interval_to_record_lindemann_criterion:
         output_dict['self_diffusion_coefficient'] = []
-        dyn.attach(calc_properties.self_diffusion_coefficent, interval_to_record_self_diffusion_coefficient, atoms, output_dict, interval_to_record_self_diffusion_coefficient*int(config_data['SimulationSettings']['time_step']))
+        dyn.attach(calc_properties.self_diffusion_coefficent, interval_to_record_self_diffusion_coefficient, atoms, output_dict, interval_to_record_self_diffusion_coefficient*int(simulation_settings['time_step']))
 
     progress = [0]
-    ten_percent_interval = int(0.1 * float(config_data['SimulationSettings']['step_number']))
+    ten_percent_interval = int(0.1 * float(simulation_settings['step_number']))
     dyn.attach(print_and_increase_progress, ten_percent_interval, progress, sim_number)
 
     # Run simulation with the attached recorders
@@ -163,14 +163,14 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
         print("Simulation ", sim_number, " started")
     else:
         print("Simulation started")
-    dyn.run(int(config_data['SimulationSettings']['step_number']))
+    dyn.run(int(simulation_settings['step_number']))
 
-    if int(config_data['RecordingIntervals']['record_mean_square_displacement']):
+    if int(recording_intervals['record_mean_square_displacement']):
         output_dict['mean_square_displacement'][0] = 0
         time_avg_MSD = 0
         for MSD in output_dict['mean_square_displacement']:
             time_avg_MSD = time_avg_MSD + MSD
-        output_dict["avg_MSD"] = time_avg_MSD/int(config_data['SimulationSettings']['step_number'])
+        output_dict["avg_MSD"] = time_avg_MSD/int(simulation_settings['step_number'])
 
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/'
     with open(path + output_name + '.txt', 'w') as file:
