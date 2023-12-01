@@ -83,11 +83,17 @@ def initiate_gui():
     # Config settings
     # inits different data fields and buttons.
     rownumber = 0
+
+    help_button = Button(data_frame, text="User Guide", bg="lemon chiffon", 
+                         command=lambda: user_guide())
+    help_button.grid(row=rownumber, column=0, pady=5)
+
+    rownumber += 1
     potential_label = Label(data_frame, text="Choose potential", width=20)
     potential_label.grid(row=rownumber, column=0)
     potential_list = ["EMT", "LennardJones"]
     value_inside_potential_list = StringVar(gui)
-    value_inside_potential_list.set("Select an Option")
+    value_inside_potential_list.set("EMT")
     potential_menu = OptionMenu(data_frame, value_inside_potential_list,
                                 *potential_list)
     potential_menu.grid(row=rownumber, column=2, padx=15)
@@ -97,7 +103,7 @@ def initiate_gui():
     ensamble_label.grid(row=rownumber, column=0)
     ensamble_list = ["NVE", "NVT"]
     value_inside_ensemble_list = StringVar(gui)
-    value_inside_ensemble_list.set("Select an Option")
+    value_inside_ensemble_list.set("NVE")
     ensemble_menu = OptionMenu(data_frame, value_inside_ensemble_list,
                                *ensamble_list)
     ensemble_menu.grid(row=rownumber, column=2)
@@ -107,34 +113,40 @@ def initiate_gui():
     temperature_label.grid(row=rownumber, column=0)
     temperature_entry = Entry(data_frame)
     temperature_entry.grid(row=rownumber, column=2)
+    temperature_entry.insert(0, 500)
+    
 
     rownumber += 1
     steps_label = Label(data_frame, text="Number of steps", width=20)
     steps_label.grid(row=rownumber, column=0)
     steps_entry = Entry(data_frame)
     steps_entry.grid(row=rownumber, column=2)
+    steps_entry.insert(0, 5000)
 
     rownumber += 1
     time_steps_label = Label(data_frame, text="Time step (fs)", width=20)
     time_steps_label.grid(row=rownumber, column=0)
     time_steps_entry = Entry(data_frame)
     time_steps_entry.grid(row=rownumber, column=2)
+    time_steps_entry.insert(0, 5)
 
     rownumber += 1
     friction_label = Label(data_frame, text="Friction", width=20)
     friction_label.grid(row=rownumber, column=0)
     friction_entry = Entry(data_frame)
     friction_entry.grid(row=rownumber, column=2)
+    friction_entry.insert(0, 0.005)
 
     rownumber += 1
-    rec_cohesive_label = Label(data_frame, text="Intervals for recording attributes", width=35)
-    rec_cohesive_label.grid(row=rownumber, column=1)
+    record_attributes_label = Label(data_frame, text="Intervals for recording attributes", width=35)
+    record_attributes_label.grid(row=rownumber, column=1)
 
     rownumber += 1    
     rec_basic_properties_label = Label(data_frame, text="Basic Properties", width=20)
     rec_basic_properties_label.grid(row=rownumber, column=0)
     rec_basic_properties_entry = Entry(data_frame)
     rec_basic_properties_entry.grid(row=rownumber, column=2)
+    rec_basic_properties_entry.insert(0, 0)
     Hovertip(rec_basic_properties_label, "Energy\nTemperature\nPressure", hover_delay=0)
     
     rownumber += 1
@@ -142,6 +154,7 @@ def initiate_gui():
     rec_physical_properties_label.grid(row=rownumber, column=0)
     rec_physical_properties_entry = Entry(data_frame)
     rec_physical_properties_entry.grid(row=rownumber, column=2)
+    rec_physical_properties_entry.insert(0, 0)
     Hovertip(rec_physical_properties_label, "Mean Square Displacement\nLindemann criterion\nSelf-diffusion coefficient", hover_delay=0)
     
     rownumber += 1
@@ -149,6 +162,7 @@ def initiate_gui():
     rec_elasticbulk_label.grid(row=rownumber, column=0)
     rec_elasticbulk_entry = Entry(data_frame)
     rec_elasticbulk_entry.grid(row=rownumber, column=2)
+    rec_elasticbulk_entry.insert(0, 0)
     Hovertip(rec_elasticbulk_label, "Elastic tensor\nBulk modulus", hover_delay=0)
 
     rownumber += 1
@@ -156,18 +170,21 @@ def initiate_gui():
     rec_configuration_label.grid(row=rownumber, column=0)
     rec_configuration_entry = Entry(data_frame)
     rec_configuration_entry.grid(row=rownumber, column=2)
+    rec_configuration_entry.insert(0, 0)
 
     rownumber += 1
     rec_scaling_label = Label(data_frame, text="Optimal scaling", width=20)
     rec_scaling_label.grid(row=rownumber, column=0)
     rec_scaling_entry = Entry(data_frame)
     rec_scaling_entry.grid(row=rownumber, column=2)
+    rec_scaling_entry.insert(0, 0)
 
     rownumber += 1
     config_name_label = Label(data_frame, text="Config file name", width=20)
     config_name_label.grid(row=rownumber, column=0)
     config_name_entry = Entry(data_frame)
     config_name_entry.grid(row=rownumber, column=2)
+    config_name_entry.insert(0, "default_config")
 
     rownumber += 1
     config_button = Button(data_frame, text='Write to config file',
@@ -189,6 +206,8 @@ def initiate_gui():
                            )
     config_button.grid(row=rownumber, column=1, pady=10)
 
+
+  
     rownumber += 1
     sep_label1 = Label(data_frame, text="-"*100, bg = "medium aquamarine")
     sep_label1.grid(row=rownumber, column = 0, columnspan = 3)
@@ -339,15 +358,15 @@ def initiate_gui():
     trajbutton = Button(data_frame, text="Look at trajectory", command=lambda: animate_traj(value_inside_trajoutput_data.get()))
     trajbutton.grid(row=rownumber, column=2)
     
-    
+
     # Quit
     quit_button = Button(data_frame, text="Exit Program", command=gui.quit)
     quit_button.grid(pady=50)
 
-
     Button(tabframe1, text="Clear Graph", command=lambda: clear_canvas(ax_canvas[0], ax_canvas[1], plot_title)).pack(pady=10)
 
     return gui
+
 
 
 def update_input_config_list(event, config_files_menu, value_inside_config_files_list):
@@ -441,6 +460,8 @@ def update_output_traj_list(event, traj_menu, value_inside_traj_list):
     for traj_file in traj_files:
         menu.add_command(label=traj_file, command=lambda value=traj_file: value_inside_traj_list.set(value))
 
+def user_guide():
+    pass
 
 def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE', temperature=500, value_inside_potential_list='EMT',
                 steps=5000, time_steps=5, friction=0.005, rec_basic_properties = 0,
@@ -468,7 +489,7 @@ def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE'
     Returns:
         None
     """
-    
+
     # Check if temperature is valid
     if temperature.isdigit():
         if int(temperature) <= 0:
@@ -546,7 +567,7 @@ def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE'
     
     cfs.config_file(file_name, value_inside_ensemble_list, temperature, value_inside_potential_list,
                 steps, time_steps, friction, rec_basic_properties,
-                rec_physical_properties, rec_elastic_bulk, "0", rec_configuration,
+                rec_physical_properties, rec_elastic_bulk, rec_cohesive_energy, rec_configuration,
                 rec_scaling)
 
 
