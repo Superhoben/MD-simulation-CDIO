@@ -159,7 +159,8 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str)
         output_dict["avg_MSD"] = time_avg_MSD/int(config_data['SimulationSettings']['step_number'])
     
     # Time average of debye temperature.
-    output_dict["time_average_of_debye_temperature"] = np.mean(output_dict['debye_temperature'])
+    if interval_to_record_bulk_modulus:
+        output_dict["time_average_of_debye_temperature"] = np.mean(output_dict['debye_temperature'])
 
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/'
     with open(path + output_name + '.txt', 'w') as file:
