@@ -114,11 +114,12 @@ class UnitTests(unittest.TestCase):
                         (calculate_cohesive_energy(molecule_structure) < 4.93))
 
     def test_approx_lattice(self):
-        atoms = FaceCenteredCubic(directions=[[1, 0, 0], [0, 1, 0], [0, 0, 1]],
-                          symbol="Cu",
-                          size=(2, 1, 1),
-                          pbc=True)
-        self.assertTrue(approx_lattice_constant(atoms) == 2.684823545073007)
+        # Lattice constant for Cu (fcc) is 3.61 Å, which gives a nearest neighbor distance of 2.55 Å
+        atoms = FaceCenteredCubic(symbol="Cu", size=(5, 5, 5), pbc=True)
+        self.assertTrue(2.4 <= approx_lattice_constant(atoms) <= 2.7)
+        # Lattice constant for Ag (fcc) is 4.09 Å, which gives a nearest neighbor distance of 2.89 Å
+        atoms = FaceCenteredCubic(symbol="Ag", size=(5, 5, 5), pbc=True)
+        self.assertTrue(2.8 <= approx_lattice_constant(atoms) <= 3.05)
 
     def test_GUI(self):
         # There will be further testing when other methods connected to the gui has been developed.
