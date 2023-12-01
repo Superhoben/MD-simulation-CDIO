@@ -103,16 +103,16 @@ def calculate_specific_heat(atoms, config_file, output_dict):
     config_data = ConfigParser()
     config_data.read(config_path+config_file)
 
-    # Skipping the first 50% of unstable values 
+    # Skipping the first 80% of the unstable values 
     total_nr_values = len(output_dict["total_energy"])
     skippable_values = int(0.8 * total_nr_values)
 
     # Get the average of the instantaneous temperatures
-    # Ignoring the first 2000 unstable values at the begining of the simulation
+    # Ignoring the first 80% of the unstable values at the beginning of the simulation
     average_temperature = np.mean(output_dict["temperature"][skippable_values:])
 
     if config_data['SimulationSettings']['ensemble'] == "NVE":
-        # Ignoring the first 2000 unstable values at the begining of the simulation
+        # Ignoring the first 80% of the unstable values at the beginning of the simulation
         kinetic_energies = output_dict["kinetic_energy"][skippable_values:]
         kinetic_energies_array = np.array(kinetic_energies)
 
@@ -140,7 +140,7 @@ def calculate_specific_heat(atoms, config_file, output_dict):
         #print("specific_heat_capacity : ", specific_heat_capacity, "J/Kg*K")
 
     elif config_data['SimulationSettings']['ensemble'] == "NVT":
-        # Ignoring the first 2000 unstable values at the begining of the simulation
+        # Ignoring the first 80% of the unstable values at the beginning of the simulation
         total_energies = output_dict["total_energy"][skippable_values:]
         total_energies_array = np.array(total_energies)
 
