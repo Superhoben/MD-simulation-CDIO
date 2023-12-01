@@ -72,14 +72,14 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
     # Set dynamics module depending on simulation type
     ensemble = simulation_settings['ensemble']
     if ensemble == "NVE":
-        MaxwellBoltzmannDistribution(atoms, temperature_K=int(simulation_settings['temperature']))
+        MaxwellBoltzmannDistribution(atoms, temperature_K=2*int(simulation_settings['temperature']))
         Stationary(atoms)
         dyn = VelocityVerlet(atoms, int(simulation_settings['time_step'])*units.fs)
     elif ensemble == "NVT":
         dyn = Langevin(atoms, timestep=int(simulation_settings['time_step'])*units.fs,
                        temperature_K=int(simulation_settings['temperature']),
                        friction=(float(simulation_settings['friction']) or 0.005))
-        MaxwellBoltzmannDistribution(atoms, temperature_K=int(simulation_settings['temperature']))
+        MaxwellBoltzmannDistribution(atoms, temperature_K=2*int(simulation_settings['temperature']))
         Stationary(atoms)
     else:
         # TODO: implement other ensembles
