@@ -21,9 +21,9 @@ from Simulation.run_md_simulation import run_single_md_simulation
 from configparser import ConfigParser
 from os import listdir
 from os.path import isfile
-from User_API_key.start_program import get_api_key
+from API_key.start_program import *
 import json
-
+from idlelib.tooltip import Hovertip
 
 
 def initiate_gui():
@@ -131,64 +131,37 @@ def initiate_gui():
     rec_cohesive_label.grid(row=rownumber, column=1)
 
     rownumber += 1    
-    rec_energy_label = Label(data_frame, text="Energy", width=20)
-    rec_energy_label.grid(row=rownumber, column=0)
-    rec_energy_entry = Entry(data_frame)
-    rec_energy_entry.grid(row=rownumber, column=2)
-
-    rownumber += 1    
-    rec_temp_label = Label(data_frame, text="Temperature", width=20)
-    rec_temp_label.grid(row=rownumber, column=0)
-    rec_temp_entry = Entry(data_frame)
-    rec_temp_entry.grid(row=rownumber, column=2)
-
-    rownumber += 1    
-    rec_pressure_label = Label(data_frame, text="Pressure", width=20)
-    rec_pressure_label.grid(row=rownumber, column=0)
-    rec_pressure_entry = Entry(data_frame)
-    rec_pressure_entry.grid(row=rownumber, column=2)
+    rec_basic_properties_label = Label(data_frame, text="Basic Properties", width=20)
+    rec_basic_properties_label.grid(row=rownumber, column=0)
+    rec_basic_properties_entry = Entry(data_frame)
+    rec_basic_properties_entry.grid(row=rownumber, column=2)
+    Hovertip(rec_basic_properties_label, "Energy\nTemperature\nPressure", hover_delay=0)
+    
+    rownumber += 1
+    rec_physical_properties_label = Label(data_frame, text="Physical Properties", width=20)
+    rec_physical_properties_label.grid(row=rownumber, column=0)
+    rec_physical_properties_entry = Entry(data_frame)
+    rec_physical_properties_entry.grid(row=rownumber, column=2)
+    Hovertip(rec_physical_properties_label, "Mean Square Displacement\nLindemann criterion\nSelf-diffusion coefficient", hover_delay=0)
+    
+    rownumber += 1
+    rec_elasticbulk_label = Label(data_frame, text="Elastic/bulk", width=20)
+    rec_elasticbulk_label.grid(row=rownumber, column=0)
+    rec_elasticbulk_entry = Entry(data_frame)
+    rec_elasticbulk_entry.grid(row=rownumber, column=2)
+    Hovertip(rec_elasticbulk_label, "Elastic tensor\nBulk modulus", hover_delay=0)
 
     rownumber += 1
-    rec_config_label = Label(data_frame, text="Configuration", width=20)
-    rec_config_label.grid(row=rownumber, column=0)
-    rec_config_entry = Entry(data_frame)
-    rec_config_entry.grid(row=rownumber, column=2)
-
-    rownumber += 1
-    rec_bulk_label = Label(data_frame, text="Bulk modulus", width=20)
-    rec_bulk_label.grid(row=rownumber, column=0)
-    rec_bulk_entry = Entry(data_frame)
-    rec_bulk_entry.grid(row=rownumber, column=2)
+    rec_configuration_label = Label(data_frame, text="Configuration", width=20)
+    rec_configuration_label.grid(row=rownumber, column=0)
+    rec_configuration_entry = Entry(data_frame)
+    rec_configuration_entry.grid(row=rownumber, column=2)
 
     rownumber += 1
     rec_scaling_label = Label(data_frame, text="Optimal scaling", width=20)
     rec_scaling_label.grid(row=rownumber, column=0)
     rec_scaling_entry = Entry(data_frame)
     rec_scaling_entry.grid(row=rownumber, column=2)
-    
-    rownumber += 1
-    rec_elastic_label = Label(data_frame, text="Elastic tensor", width=20)
-    rec_elastic_label.grid(row=rownumber, column=0)
-    rec_elastic_entry = Entry(data_frame)
-    rec_elastic_entry.grid(row=rownumber, column=2)
-    
-    rownumber += 1
-    rec_mean_square_displacement_label = Label(data_frame, text="Mean square displacement", width=20)
-    rec_mean_square_displacement_label.grid(row=rownumber, column=0)
-    rec_mean_square_displacement_entry = Entry(data_frame)
-    rec_mean_square_displacement_entry.grid(row=rownumber, column=2)
-
-    rownumber += 1
-    rec_lindemann_criterion_label = Label(data_frame, text="Lindemann Criterion", width=20)
-    rec_lindemann_criterion_label.grid(row=rownumber, column=0)
-    rec_lindemann_criterion_entry = Entry(data_frame)
-    rec_lindemann_criterion_entry.grid(row=rownumber, column=2)
-    
-    rownumber += 1
-    rec_self_diffusion_coefficient_label = Label(data_frame, text="Self Diffusion Coefficient", width=20)
-    rec_self_diffusion_coefficient_label.grid(row=rownumber, column=0)
-    rec_self_diffusion_coefficient_entry = Entry(data_frame)
-    rec_self_diffusion_coefficient_entry.grid(row=rownumber, column=2)
 
     rownumber += 1
     config_name_label = Label(data_frame, text="Config file name", width=20)
@@ -206,17 +179,12 @@ def initiate_gui():
                                steps_entry.get() or "5000",
                                time_steps_entry.get() or "5",
                                friction_entry.get() or "0.005",
-                               rec_energy_entry.get() or "0",
+                               rec_basic_properties_entry.get() or "0",
+                               rec_physical_properties_entry.get() or "0",
+                               rec_elasticbulk_entry.get() or "0",
                                "0",
-                               rec_temp_entry.get() or "0",
-                               rec_pressure_entry.get() or "0",
-                               rec_config_entry.get() or "0",
-                               rec_bulk_entry.get() or "0",
-                               rec_scaling_entry.get() or "0",
-                               rec_elastic_entry.get() or "0",
-                               rec_mean_square_displacement_entry.get() or "0",
-                               rec_lindemann_criterion_entry.get() or "0",
-                               rec_self_diffusion_coefficient_entry.get() or "0"
+                               rec_configuration_entry.get() or "0",
+                               rec_scaling_entry.get() or "0"
                                )
                            )
     config_button.grid(row=rownumber, column=1, pady=10)
@@ -240,10 +208,14 @@ def initiate_gui():
     cell_size_entry.grid(row=rownumber, column=2)
 
     rownumber += 1
-    gather_data_button = Button(data_frame, text='Gather material data from Material ID',
+    gather_data_button = Button(data_frame, text='Gather material data',
                                 command=lambda: send_mat_id_to_gather_data(
                                 materialID_entry.get(), cell_size_entry.get()))
-    gather_data_button.grid(row=rownumber, column=1, pady=10)
+    gather_data_button.grid(row=rownumber, column=2, pady=10, padx=10)
+
+    update_api_key = Button(data_frame, text='Update API key ',
+                                command=lambda: prompt_for_api_key())
+    update_api_key.grid(row=rownumber, column=0, pady=10)
     
     rownumber += 1
     sep_label2 = Label(data_frame, text="-"*100, bg = "medium aquamarine")
@@ -471,11 +443,9 @@ def update_output_traj_list(event, traj_menu, value_inside_traj_list):
 
 
 def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE', temperature=500, value_inside_potential_list='EMT',
-                steps=5000, time_steps=5, friction=0.005, rec_energy = 0,
-                rec_coh_e = 0, rec_temp = 0, rec_pressure = 0, 
-                rec_config = 0, rec_bulk = 0, rec_scaling = 0,
-                record_elastic = 0, rec_MSD = 0, rec_lindemann = 0,
-                rec_diffusion_coef = 0):
+                steps=5000, time_steps=5, friction=0.005, rec_basic_properties = 0,
+                rec_physical_properties = 0, rec_elastic_bulk = 0, rec_cohesive_energy = 0,
+                rec_configuration = 0, rec_scaling = 0):
     """Create the configuration file
 
     Args:
@@ -529,60 +499,42 @@ def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE'
         messagebox.showerror("Value error", "Invalid time step") 
         return None
     
-    # Check if cohesive energy step is valid
-    if rec_coh_e.isdigit():
-        if (0 < int(rec_coh_e) < int(steps)):
-            messagebox.showerror("Value error", "Invalid cohesive energy step") 
+    # Check if basic properties step is valid
+    if rec_basic_properties.isdigit():
+        if int(rec_basic_properties) < 0 or int(rec_basic_properties) > int(steps):
+            messagebox.showerror("Value error", "Invalid basic properies step") 
             return None
     else:
-        messagebox.showerror("Value error", "Invalid cohesive energy step") 
+        messagebox.showerror("Value error", "Invalid basic properties step") 
         return None
     
-    # Check if energy step is valid
-    if rec_energy.isdigit():
-        if int(rec_energy) < 0 or int(rec_energy) > int(steps):
-            messagebox.showerror("Value error", "Invalid energy step") 
+    # Check if physical properties step is valid
+    if rec_physical_properties.isdigit():
+        if int(rec_physical_properties) < 0 or int(rec_physical_properties) > int(steps):
+            messagebox.showerror("Value error", "Invalid physical properies step") 
             return None
     else:
-        messagebox.showerror("Value error", "Invalid energy step") 
+        messagebox.showerror("Value error", "Invalid physical properties step") 
         return None
     
-    # Check if temperature step is valid
-    if rec_temp.isdigit():
-        if int(rec_temp) < 0 or int(rec_temp) > int(steps):
-            messagebox.showerror("Value error", "Invalid temperature step") 
+    # Check if elastic/bulk step is valid
+    if rec_elastic_bulk.isdigit():
+        if int(rec_elastic_bulk) < 0 or int(rec_elastic_bulk) > int(steps):
+            messagebox.showerror("Value error", "Invalid elastic/bulk step") 
             return None
     else:
-        messagebox.showerror("Value error", "Invalid temperature step") 
-        return None
-    
-    # Check if pressure step is valid
-    if rec_pressure.isdigit():
-        if int(rec_pressure) < 0 or int(rec_pressure) > int(steps):
-            messagebox.showerror("Value error", "Invalid pressure step") 
-            return None
-    else:
-        messagebox.showerror("Value error", "Invalid pressure step") 
+        messagebox.showerror("Value error", "Invalid elastic/bulk step") 
         return None
     
     # Check if configuration step is valid
-    if rec_config.isdigit():
-        if int(rec_config) < 0 or int(rec_config) > int(steps):
+    if rec_configuration.isdigit():
+        if int(rec_configuration) < 0 or int(rec_configuration) > int(steps):
             messagebox.showerror("Value error", "Invalid configuration step") 
             return None
     else:
         messagebox.showerror("Value error", "Invalid configuration step") 
-        return None
-    
-    # Check if bulk step is valid
-    if rec_bulk.isdigit():
-        if int(rec_bulk) < 0 or int(rec_bulk) > int(steps):
-            messagebox.showerror("Value error", "Invalid bulk step") 
-            return None
-    else:
-        messagebox.showerror("Value error", "Invalid bulk step") 
-        return None
-    
+        return None    
+
     # Check if scaling step is valid
     if rec_scaling.isdigit():
         if int(rec_scaling) < 0 or int(rec_scaling) > int(steps):
@@ -593,10 +545,9 @@ def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE'
         return None
     
     cfs.config_file(file_name, value_inside_ensemble_list, temperature, value_inside_potential_list,
-                steps, time_steps, friction, rec_energy,
-                rec_coh_e, rec_temp, rec_pressure, 
-                rec_config, rec_bulk, rec_scaling,
-                record_elastic, rec_MSD, rec_lindemann, rec_diffusion_coef)
+                steps, time_steps, friction, rec_basic_properties,
+                rec_physical_properties, rec_elastic_bulk, "0", rec_configuration,
+                rec_scaling)
 
 
 
@@ -610,14 +561,17 @@ def send_mat_id_to_gather_data(materialID, cell_size):
     Returns:
         None
     """
-    messagebox.showinfo("Information", "Please Check the terminal")
-    api_key = get_api_key()
-    messagebox.showinfo("API key", f"Using API key: {api_key}")
+    
+    #messagebox.showinfo("Information", "Please Check the terminal")
 
+    api_key = get_api_key()
+    if api_key == "API key doesnt exist":
+        api_key = prompt_for_api_key()
+    
     try:
         Gather_data.download_data.make_traj_from_material_id(materialID, api_key, int(cell_size))
     except:
-        messagebox.showerror("Invalid id", "Please enter a valid id")
+        messagebox.showerror("Could not download data", "Please check if the material ID is correct or if the API-key is correct.")
 
 
 def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, boolean, plot_title):
@@ -665,11 +619,10 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
         messagebox.showerror("Missing data", "Attribute not recorded")
         return None
     
-    average_attribute = round(sum(material_data_dict[attribute])/len(material_data_dict[attribute]))
+    average_attribute = round(sum(material_data_dict[attribute])/len(material_data_dict[attribute]),4)
     max_attribute = round(max(material_data_dict[attribute]),4)
     min_attribute = round(min(material_data_dict[attribute]),4)
     data_points = len(material_data_dict[attribute])
-    avg_MSD = material_data_dict["avg_MSD"]
     
     message = f"""
     Simulation inputs:
@@ -686,7 +639,11 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
         Max {attribute}: {max_attribute}
         Min {attribute}: {min_attribute}
         Data points: {data_points}
-        Average MSD: {avg_MSD}"""
+        """
+    
+    if "avg_MSD" in material_data_dict:
+        avg_MSD = material_data_dict["avg_MSD"]
+        message += f"""Average MSD: {avg_MSD}"""
     
     text_box.config(state="normal")
     text_box.delete('1.0', END)
@@ -719,7 +676,8 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
 
 def animate_traj(traj_file):
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files/'
-    os.system("ase gui" + " " + path + traj_file)
+    traj = Trajectory(path + traj_file, "r")
+    view(traj)
 
 if __name__ == "__main__":
     main_program = initiate_gui()
