@@ -6,7 +6,33 @@ import os
 import sys
 from numpy import linalg as LA
 from ase import units
+import numpy as np
+from scipy.spatial.distance import cdist
+from heapq import nsmallest
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
+
+
+def approx_lattice_constant(atoms):
+    """Calculate the approximate lattice constant
+
+    This is done by finding the distances to the four nearest neighbours for 
+    every atom, summing the results and dividing by the amount of results
+
+    Args:
+        atoms(ase atom object): The system to calculate the lattice constant for.
+
+    Returns:
+        (float): The approximate lattice constant.
+    """
+    positions = np.array(atoms.get_positions())
+    distances_between_atoms = cdist(positions, positions)
+
+    lattice_contributions = 0
+    for element in distances_between_atoms:
+        # Since 0 is always present for each atom, we calculate the 5 nearest distances
+        lattice_contributions += sum(nsmallest(5,element))
+    
+    return lattice_contributions/(4 * len(positions))
 
 
 def calc_temp(atoms: Atoms, output_dict={'temperature': []}):

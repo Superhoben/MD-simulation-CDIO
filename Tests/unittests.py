@@ -8,7 +8,7 @@ from ase import Atoms, Atom
 from ase.calculators.emt import EMT
 from tkinter import Tk
 from Simulation.lattice_constant import optimize_scaling
-from Simulation.calc_properties import calc_temp, calc_pressure
+from Simulation.calc_properties import calc_temp, calc_pressure, approx_lattice_constant
 from Simulation.calc_bulk_properties import calc_bulk_modulus, calculate_cohesive_energy
 from Simulation.run_md_simulation import run_single_md_simulation
 from Gather_data.download_data import get_ASE_atoms_from_material_id
@@ -112,6 +112,14 @@ class UnitTests(unittest.TestCase):
         # had 2N Atomization energy(cohesive energy)= 9.76 eV, Which means N alone is 9.76/2 = 4.88 ev/atom
         self.assertTrue((4.82 < calculate_cohesive_energy(molecule_structure)) and
                         (calculate_cohesive_energy(molecule_structure) < 4.93))
+
+    def test_approx_lattice(self):
+        # Lattice constant for Cu (fcc) is 3.61 Å, which gives a nearest neighbor distance of 2.55 Å
+        atoms = FaceCenteredCubic(symbol="Cu", size=(5, 5, 5), pbc=True)
+        self.assertTrue(2.4 <= approx_lattice_constant(atoms) <= 2.7)
+        # Lattice constant for Ag (fcc) is 4.09 Å, which gives a nearest neighbor distance of 2.89 Å
+        atoms = FaceCenteredCubic(symbol="Ag", size=(5, 5, 5), pbc=True)
+        self.assertTrue(2.8 <= approx_lattice_constant(atoms) <= 3.05)
 
     def test_GUI(self):
         # There will be further testing when other methods connected to the gui has been developed.
