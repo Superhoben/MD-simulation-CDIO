@@ -14,6 +14,7 @@ from asap3 import EMT
 from ase.visualize import view
 from pathlib import Path
 from User_interface.plot_in_gui import *
+from User_interface.create_arbitrary_atoms import create_atom, create_view_and_save_crystal_guided
 import Gather_data.configuration_file_script as cfs
 import Gather_data.download_data 
 from Simulation.run_md_simulation import run_single_md_simulation
@@ -216,6 +217,10 @@ def initiate_gui():
     update_api_key = Button(data_frame, text='Update API key ',
                                 command=lambda: prompt_for_api_key())
     update_api_key.grid(row=rownumber, column=0, pady=10)
+    
+    rownumber += 1
+    create_atom_button = Button(data_frame, text = "Create atom", command=create_atom)
+    create_atom_button.grid(row=rownumber, column=1, pady=10)
     
     rownumber += 1
     sep_label2 = Label(data_frame, text="-"*100, bg = "medium aquamarine")
@@ -678,6 +683,7 @@ def animate_traj(traj_file):
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files/'
     traj = Trajectory(path + traj_file, "r")
     view(traj)
+
 
 if __name__ == "__main__":
     main_program = initiate_gui()
