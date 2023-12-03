@@ -10,7 +10,8 @@ from ase.lattice.monoclinic import SimpleMonoclinic, BaseCenteredMonoclinic
 from ase.lattice.orthorhombic import SimpleOrthorhombic, BaseCenteredOrthorhombic, BodyCenteredOrthorhombic, FaceCenteredOrthorhombic
 from ase.lattice.tetragonal import SimpleTetragonal, CenteredTetragonal
 from ase.lattice.cubic import SimpleCubic, BodyCenteredCubic, FaceCenteredCubic
-from math import floor, cbrt
+from math import floor
+from numpy import cbrt
 from ase.build import make_supercell
 
 
