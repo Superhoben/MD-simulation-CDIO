@@ -139,21 +139,21 @@ def initiate_gui():
     Hovertip(rec_basic_properties_label, "Energy\nTemperature\nPressure", hover_delay=0)
     
     rownumber += 1
-    rec_physical_properties_label = Label(data_frame, text="Physical Properties", width=20)
+    rec_physical_properties_label = Label(data_frame, text="Displacement prop.", width=20)
     rec_physical_properties_label.grid(row=rownumber, column=0)
     rec_physical_properties_entry = Entry(data_frame)
     rec_physical_properties_entry.grid(row=rownumber, column=2)
     Hovertip(rec_physical_properties_label, "Mean Square Displacement\nLindemann criterion\nSelf-diffusion coefficient", hover_delay=0)
     
     rownumber += 1
-    rec_elasticbulk_label = Label(data_frame, text="Elastic/bulk", width=20)
+    rec_elasticbulk_label = Label(data_frame, text="Elastic properties", width=20)
     rec_elasticbulk_label.grid(row=rownumber, column=0)
     rec_elasticbulk_entry = Entry(data_frame)
     rec_elasticbulk_entry.grid(row=rownumber, column=2)
-    Hovertip(rec_elasticbulk_label, "Elastic tensor\nBulk modulus", hover_delay=0)
+    Hovertip(rec_elasticbulk_label, "Elastic tensor\nBulk modulus\nShear modulus\nYoungs modulus\nPoisson ratio", hover_delay=0)
 
     rownumber += 1
-    rec_configuration_label = Label(data_frame, text="Configuration", width=20)
+    rec_configuration_label = Label(data_frame, text="Atom configuration", width=20)
     rec_configuration_label.grid(row=rownumber, column=0)
     rec_configuration_entry = Entry(data_frame)
     rec_configuration_entry.grid(row=rownumber, column=2)
