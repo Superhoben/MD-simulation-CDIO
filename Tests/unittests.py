@@ -14,9 +14,10 @@ from Simulation.calc_bulk_properties import calc_bulk_modulus, calculate_cohesiv
 from Simulation.run_md_simulation import run_single_md_simulation
 from Gather_data.download_data import get_ASE_atoms_from_material_id
 from User_interface.user_interface import initiate_gui
-from User_API_key import start_program
 import numpy as np
 from ase import units
+from API_key import start_program
+
 
 
 class UnitTests(unittest.TestCase):
@@ -104,6 +105,7 @@ class UnitTests(unittest.TestCase):
         self.assertTrue((4.82 < calculate_cohesive_energy(molecule_structure)) and
                         (calculate_cohesive_energy(molecule_structure) < 4.93))
 
+
     def test_MSD_lindemann_diffusion(self):
         atom1 = FaceCenteredCubic(symbol="Cu", size=(10, 10, 10), pbc=True)
 
@@ -140,6 +142,15 @@ class UnitTests(unittest.TestCase):
         self.assertTrue((MSD < 0.1) and (lindemann < 0.1) and (self_diffusion < 0.001) and
                         (MSD2 > 0.1) and (lindemann2 > 0.1) and (self_diffusion2 > 0.00001))
         
+
+    def test_approx_lattice(self):
+        # Lattice constant for Cu (fcc) is 3.61 Å, which gives a nearest neighbor distance of 2.55 Å
+        atoms = FaceCenteredCubic(symbol="Cu", size=(5, 5, 5), pbc=True)
+        self.assertTrue(2.4 <= approx_lattice_constant(atoms) <= 2.7)
+        # Lattice constant for Ag (fcc) is 4.09 Å, which gives a nearest neighbor distance of 2.89 Å
+        atoms = FaceCenteredCubic(symbol="Ag", size=(5, 5, 5), pbc=True)
+        self.assertTrue(2.8 <= approx_lattice_constant(atoms) <= 3.05)
+
 
     def test_GUI(self):
         # There will be further testing when other methods connected to the gui has been developed.

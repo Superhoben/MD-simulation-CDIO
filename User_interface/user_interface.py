@@ -14,6 +14,7 @@ from asap3 import EMT
 from ase.visualize import view
 from pathlib import Path
 from User_interface.plot_in_gui import *
+from User_interface.create_arbitrary_atoms import create_atom, create_view_and_save_crystal_guided
 import Gather_data.configuration_file_script as cfs
 import Gather_data.download_data 
 from Simulation.run_md_simulation import run_single_md_simulation
@@ -21,7 +22,7 @@ from Simulation.run_md_simulation import run_single_md_simulation
 from configparser import ConfigParser
 from os import listdir
 from os.path import isfile
-from User_API_key.start_program import get_api_key
+from API_key.start_program import *
 import json
 from idlelib.tooltip import Hovertip
 
@@ -138,21 +139,21 @@ def initiate_gui():
     Hovertip(rec_basic_properties_label, "Energy\nTemperature\nPressure", hover_delay=0)
     
     rownumber += 1
-    rec_physical_properties_label = Label(data_frame, text="Physical Properties", width=20)
+    rec_physical_properties_label = Label(data_frame, text="Displacement prop.", width=20)
     rec_physical_properties_label.grid(row=rownumber, column=0)
     rec_physical_properties_entry = Entry(data_frame)
     rec_physical_properties_entry.grid(row=rownumber, column=2)
     Hovertip(rec_physical_properties_label, "Mean Square Displacement\nLindemann criterion\nSelf-diffusion coefficient", hover_delay=0)
     
     rownumber += 1
-    rec_elasticbulk_label = Label(data_frame, text="Elastic/bulk", width=20)
+    rec_elasticbulk_label = Label(data_frame, text="Elastic properties", width=20)
     rec_elasticbulk_label.grid(row=rownumber, column=0)
     rec_elasticbulk_entry = Entry(data_frame)
     rec_elasticbulk_entry.grid(row=rownumber, column=2)
-    Hovertip(rec_elasticbulk_label, "Elastic tensor\nBulk modulus", hover_delay=0)
+    Hovertip(rec_elasticbulk_label, "Elastic tensor\nBulk modulus\nShear modulus\nYoungs modulus\nPoisson ratio", hover_delay=0)
 
     rownumber += 1
-    rec_configuration_label = Label(data_frame, text="Configuration", width=20)
+    rec_configuration_label = Label(data_frame, text="Atom configuration", width=20)
     rec_configuration_label.grid(row=rownumber, column=0)
     rec_configuration_entry = Entry(data_frame)
     rec_configuration_entry.grid(row=rownumber, column=2)
@@ -208,10 +209,18 @@ def initiate_gui():
     cell_size_entry.grid(row=rownumber, column=2)
 
     rownumber += 1
-    gather_data_button = Button(data_frame, text='Gather material data from Material ID',
+    gather_data_button = Button(data_frame, text='Gather material data',
                                 command=lambda: send_mat_id_to_gather_data(
                                 materialID_entry.get(), cell_size_entry.get()))
-    gather_data_button.grid(row=rownumber, column=1, pady=10)
+    gather_data_button.grid(row=rownumber, column=2, pady=10, padx=10)
+
+    update_api_key = Button(data_frame, text='Update API key ',
+                                command=lambda: prompt_for_api_key())
+    update_api_key.grid(row=rownumber, column=0, pady=10)
+    
+    rownumber += 1
+    create_atom_button = Button(data_frame, text = "Create atom", command=create_atom)
+    create_atom_button.grid(row=rownumber, column=1, pady=10)
     
     rownumber += 1
     sep_label2 = Label(data_frame, text="-"*100, bg = "medium aquamarine")
@@ -557,14 +566,17 @@ def send_mat_id_to_gather_data(materialID, cell_size):
     Returns:
         None
     """
-    messagebox.showinfo("Information", "Please Check the terminal")
-    api_key = get_api_key()
-    messagebox.showinfo("API key", f"Using API key: {api_key}")
+    
+    #messagebox.showinfo("Information", "Please Check the terminal")
 
+    api_key = get_api_key()
+    if api_key == "API key doesnt exist":
+        api_key = prompt_for_api_key()
+    
     try:
         Gather_data.download_data.make_traj_from_material_id(materialID, api_key, int(cell_size))
     except:
-        messagebox.showerror("Invalid id", "Please enter a valid id")
+        messagebox.showerror("Could not download data", "Please check if the material ID is correct or if the API-key is correct.")
 
 
 def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, boolean, plot_title):
@@ -612,11 +624,10 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
         messagebox.showerror("Missing data", "Attribute not recorded")
         return None
     
-    average_attribute = round(sum(material_data_dict[attribute])/len(material_data_dict[attribute]))
+    average_attribute = round(sum(material_data_dict[attribute])/len(material_data_dict[attribute]),4)
     max_attribute = round(max(material_data_dict[attribute]),4)
     min_attribute = round(min(material_data_dict[attribute]),4)
     data_points = len(material_data_dict[attribute])
-    avg_MSD = material_data_dict["avg_MSD"]
     
     message = f"""
     Simulation inputs:
@@ -633,7 +644,11 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
         Max {attribute}: {max_attribute}
         Min {attribute}: {min_attribute}
         Data points: {data_points}
-        Average MSD: {avg_MSD}"""
+        """
+    
+    if "avg_MSD" in material_data_dict:
+        avg_MSD = material_data_dict["avg_MSD"]
+        message += f"""Average MSD: {avg_MSD}"""
     
     text_box.config(state="normal")
     text_box.delete('1.0', END)
@@ -668,6 +683,7 @@ def animate_traj(traj_file):
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files/'
     traj = Trajectory(path + traj_file, "r")
     view(traj)
+
 
 if __name__ == "__main__":
     main_program = initiate_gui()
