@@ -14,6 +14,18 @@ from Simulation.run_md_simulation import run_single_md_simulation
 from Gather_data.download_data import get_ASE_atoms_from_material_id
 from User_interface.user_interface import initiate_gui
 from API_key import start_program
+import json
+import numpy as np
+
+
+opened_file_NVE = open("Tests/SimulationOutputs/NVE_300K_for_testing.txt", "r")
+opened_file_NVT = open("Tests/SimulationOutputs/NVT_300K_for_testing.txt", "r")
+data_NVE = opened_file_NVE.readline()
+data_NVT = opened_file_NVT.readline()
+opened_file_NVE.close()
+opened_file_NVT.close()
+material_data_dict_NVE = json.loads(data_NVE)
+material_data_dict_NVT = json.loads(data_NVT)
 
 
 class UnitTests(unittest.TestCase):
@@ -104,7 +116,8 @@ class UnitTests(unittest.TestCase):
         self.assertTrue((3.44 < calculate_cohesive_energy(atom_structure_Cu)) and
                         (calculate_cohesive_energy(atom_structure_Cu) < 3.54))
 
-    def test_cohesive_energy(self):
+
+    def test_cohesive_energy2(self):
         # Create N2 molecule structure
         molecule_structure = molecule('N2')
         molecule_structure.calc = EMT()
@@ -113,6 +126,7 @@ class UnitTests(unittest.TestCase):
         self.assertTrue((4.82 < calculate_cohesive_energy(molecule_structure)) and
                         (calculate_cohesive_energy(molecule_structure) < 4.93))
 
+
     def test_approx_lattice(self):
         # Lattice constant for Cu (fcc) is 3.61 Å, which gives a nearest neighbor distance of 2.55 Å
         atoms = FaceCenteredCubic(symbol="Cu", size=(5, 5, 5), pbc=True)
@@ -120,6 +134,40 @@ class UnitTests(unittest.TestCase):
         # Lattice constant for Ag (fcc) is 4.09 Å, which gives a nearest neighbor distance of 2.89 Å
         atoms = FaceCenteredCubic(symbol="Ag", size=(5, 5, 5), pbc=True)
         self.assertTrue(2.8 <= approx_lattice_constant(atoms) <= 3.05)
+
+
+    def test_internal_pressure(self):
+        # Remove the first points since theyre usually havent reached equilibrium
+        # For an optimized volume the internal presssure should be minimized
+        avg_pressure_NVE = np.average(material_data_dict_NVE['pressure'][11:])
+        avg_pressure_NVT = np.average(material_data_dict_NVT['pressure'][11:])
+        
+        self.assertTrue(abs(avg_pressure_NVE) < 0.5)
+        self.assertTrue(abs(avg_pressure_NVT) < 0.5)
+
+
+    def test_reached_equilibrium(self):
+        # Remove the first points since theyre usually havent reached equilibrium
+        NVE_equilibrium = material_data_dict_NVE['total_energy'][11:]
+        NVT_equilibrium = material_data_dict_NVT['temperature'][11:]
+        avg_interval_NVE = []
+        avg_interval_NVT = []
+        # Check the average energy/temperature in intervals
+        for x in range(9):
+            avg_interval_NVE.append(np.average(NVE_equilibrium[x*10:x*10+9]))
+            avg_interval_NVT.append(np.average(NVT_equilibrium[x*10:x*10+9]))
+        total_avg_NVE = np.average(NVE_equilibrium)
+        total_avg_NVT = np.average(NVT_equilibrium)
+        
+        # Compare the interval averages to the total average
+        diff_NVE = total_avg_NVE - np.array(avg_interval_NVE)
+        diff_NVT = total_avg_NVT - np.array(avg_interval_NVT)
+
+        self.assertTrue(abs(np.average(diff_NVE)) < 0.001)
+        # Since the temperature differs more than the energy for NVT 
+        # a bigger error margin is used
+        self.assertTrue(abs(np.average(diff_NVT)) < 10)
+
 
     def test_GUI(self):
         # There will be further testing when other methods connected to the gui has been developed.
