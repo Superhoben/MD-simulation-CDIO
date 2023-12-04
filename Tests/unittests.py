@@ -126,7 +126,7 @@ class UnitTests(unittest.TestCase):
 
         atom2 = FaceCenteredCubic(symbol="Cu", size=(10, 10, 10), pbc=True)
         
-        dict2 = {'potential': 'EMT', 'ensemble': 'NVT', 'temperature': 2000, 
+        dict2 = {'potential': 'EMT', 'ensemble': 'NVT', 'temperature': 1357, 
                  'step_number': 1000, 'time_step': 1, 'friction': 0.005}
         
         value_dict2 = {'mean_square_displacement': [atom2.get_positions()],
@@ -136,9 +136,13 @@ class UnitTests(unittest.TestCase):
         mod_atom2 = run_simple_md_simulation(atom2, dict2)
 
         MSD2 = calc_mean_square_displacement(mod_atom2, value_dict2)
+        print(MSD2)
         lindemann2 = lindemann_criterion(value_dict2, d)
         self_diffusion2 = self_diffusion_coefficent(value_dict2, dict2['step_number']*dict2['time_step'])
 
+        # Melting temperature for Copper is 1357.7 K. When using a lower temperature we expect Lindemann < 0.1
+        # and low MSD and diffusion. For temperatures greater than 1357.7 we expect Lindemann > 0.1 with greater
+        # MSD and diffusion values
         self.assertTrue((MSD < 0.1) and (lindemann < 0.1) and (self_diffusion < 0.001) and
                         (MSD2 > 0.1) and (lindemann2 > 0.1) and (self_diffusion2 > 0.00001))
         

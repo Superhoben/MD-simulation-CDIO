@@ -150,7 +150,7 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
     interval_to_record_self_diffusion_coefficient = int(recording_intervals['record_self_diffusion_coefficient'])
     if interval_to_record_lindemann_criterion:
         output_dict['self_diffusion_coefficient'] = []
-        dyn.attach(calc_properties.self_diffusion_coefficent, interval_to_record_self_diffusion_coefficient, atoms, output_dict, interval_to_record_self_diffusion_coefficient*int(simulation_settings['time_step']))
+        dyn.attach(calc_properties.self_diffusion_coefficent, interval_to_record_self_diffusion_coefficient, output_dict, interval_to_record_self_diffusion_coefficient*int(simulation_settings['time_step']))
 
     progress = [0]
     ten_percent_interval = int(0.1 * float(simulation_settings['step_number']))
