@@ -7,8 +7,9 @@ from ase import Atoms, Atom
 #from asap3 import EMT
 from ase.calculators.emt import EMT
 from tkinter import Tk
+from Simulation.simple_simulation import run_simple_md_simulation
 from Simulation.lattice_constant import optimize_scaling
-from Simulation.calc_properties import calc_temp, calc_pressure, calc_mean_square_displacement, lindemann_criterion, self_diffusion_coefficent
+from Simulation.calc_properties import approx_lattice_constant, calc_temp, calc_pressure, calc_mean_square_displacement, lindemann_criterion, self_diffusion_coefficent
 from Simulation.calc_bulk_properties import calc_bulk_modulus, calculate_cohesive_energy
 from Simulation.run_md_simulation import run_single_md_simulation
 from Gather_data.download_data import get_ASE_atoms_from_material_id
@@ -28,10 +29,7 @@ class UnitTests(unittest.TestCase):
     See example tests below.
     """
     def test_calc_temp(self):
-        atoms = FaceCenteredCubic(directions=[[1, 0, 0], [0, 1, 0], [0, 0, 1]],
-                          symbol="Cu",
-                          size=(5, 5, 5),
-                          pbc=True)
+        atoms = FaceCenteredCubic(symbol="Cu", size=(5, 5, 5), pbc=True)
         MaxwellBoltzmannDistribution(atoms, temperature_K=300)
         self.assertTrue(270 < calc_temp(atoms) < 330)
 
@@ -39,10 +37,7 @@ class UnitTests(unittest.TestCase):
         """Uses a material with known lattice constant, disorts it and see if the lattice method is able
         to find the original lattice constant which also should be the optimal one."""
         #atoms = get_ASE_atoms_from_material_id('mp-30')  # Get atoms object with atoms in optimal positions
-        atoms = FaceCenteredCubic(directions=[[1, 0, 0], [0, 1, 0], [0, 0, 1]],
-                          symbol="Cu",
-                          size=(2, 2, 2),
-                          pbc=True)
+        atoms = FaceCenteredCubic(symbol="Cu", size=(2, 2, 2), pbc=True)
         atoms.set_cell(atoms.cell*0.5, scale_atoms=True)  # Rescale unit cell so atoms are now in suboptimal positions
         atoms.calc = EMT()
         scaling = optimize_scaling(atoms, {'optimal_scaling': [], 'iterations_to_find_scaling': []})
@@ -53,10 +48,7 @@ class UnitTests(unittest.TestCase):
     # More test are needed for this function
     def test_calc_pressure_no_field(self):
         #atoms = get_ASE_atoms_from_material_id('mp-30')  # Get atoms object with atoms in optimal positions
-        atoms = FaceCenteredCubic(directions=[[1, 0, 0], [0, 1, 0], [0, 0, 1]],
-                          symbol="Cu",
-                          size=(2, 2, 2),
-                          pbc=True)
+        atoms = FaceCenteredCubic(symbol="Cu", size=(2, 2, 2), pbc=True)
         atoms.calc = EMT()  # If atoms are only, Ni, Cu, Pd, Ag, Pt or Au no input parameters are nessecary
         # When atoms are still at optimal positions no pressure should occur, +-0.1 GPa tolerance is given
         self.assertTrue((-0.1 < calc_pressure(atoms)) and (calc_pressure(atoms) < 0.1))
@@ -65,10 +57,7 @@ class UnitTests(unittest.TestCase):
         # lattice_constant = 4
         # choosing more specific silver to test the bulk modulus
         #atoms = get_ASE_atoms_from_material_id('mp-124')
-        atoms = FaceCenteredCubic(directions=[[1, 0, 0], [0, 1, 0], [0, 0, 1]],
-                          symbol="Ag",
-                          size=(2, 2, 2),
-                          pbc=True)
+        atoms = FaceCenteredCubic(symbol="Ag", size=(2, 2, 2), pbc=True)
         atoms.calc = EMT()
         # Another way to create our object "bulk" this time
         #ag_bulk = bulk(name= "Ag",crystalstructure= "fcc", a=4.09)
@@ -115,33 +104,42 @@ class UnitTests(unittest.TestCase):
         self.assertTrue((4.82 < calculate_cohesive_energy(molecule_structure)) and
                         (calculate_cohesive_energy(molecule_structure) < 4.93))
 
-    def test_MSD(self):
-        atoms = FaceCenteredCubic(directions=[[1, 0, 0], [0, 1, 0], [0, 0, 1]],
-                          symbol="Ag",
-                          size=(2, 2, 2),
-                          pbc=True)
-        positions = np.array(atoms.get_positions())
-        output_dict = {'mean_square_displacement': [positions]}
-        output_dict2 = {'mean_square_displacement': []}
+    def test_MSD_lindemann_diffusion(self):
+        atom1 = FaceCenteredCubic(symbol="Cu", size=(10, 10, 10), pbc=True)
 
-        self.assertTrue((calc_mean_square_displacement(atoms, output_dict) == 0) and 
-                        (calc_mean_square_displacement(atoms, output_dict2) == 0))
+        d = approx_lattice_constant(atom1)
         
-    def test_lindemann(self):
-        output_dict = {'mean_square_displacement': [1,2,25], 'lindemann_criterion': [0,1]}
-        output_dict1 = {'mean_square_displacement': [], 'lindemann_criterion': []}
-        d = 5
-        self.assertTrue((lindemann_criterion(output_dict, d) == 1) and 
-                        (lindemann_criterion(output_dict1,d) == 0) and 
-                        (lindemann_criterion(output_dict) == 5))
+        dict1 = {'potential': 'EMT', 'ensemble': 'NVT', 'temperature': 300, 
+                 'step_number': 1000, 'time_step': 1, 'friction': 0.005}
         
-    def test_self_diffusion(self):
-        output_dict = {'mean_square_displacement': [1,2,60], 'self_diffusion_coefficient': [0,1]}
-        output_dict1 = {'mean_square_displacement': [1,2,60], 'self_diffusion_coefficient': []}
-        time_elapsed = 5
-        self.assertTrue((self_diffusion_coefficent(output_dict,time_elapsed) == 1/units.fs) and
-                        (self_diffusion_coefficent(output_dict1,time_elapsed) == 0) and
-                        (self_diffusion_coefficent(output_dict) == 5/units.fs))
+        value_dict = {'mean_square_displacement': [atom1.get_positions()],
+                    'lindemann_criterion': [0],
+                    'self_diffusion_coefficient': [0]}
+        
+        mod_atom = run_simple_md_simulation(atom1, dict1)
+
+        MSD = calc_mean_square_displacement(mod_atom, value_dict)
+        lindemann = lindemann_criterion(value_dict, d)
+        self_diffusion = self_diffusion_coefficent(value_dict, dict1['step_number']*dict1['time_step'])
+
+        atom2 = FaceCenteredCubic(symbol="Cu", size=(10, 10, 10), pbc=True)
+        
+        dict2 = {'potential': 'EMT', 'ensemble': 'NVT', 'temperature': 2000, 
+                 'step_number': 1000, 'time_step': 1, 'friction': 0.005}
+        
+        value_dict2 = {'mean_square_displacement': [atom2.get_positions()],
+                    'lindemann_criterion': [0],
+                    'self_diffusion_coefficient': [0]}
+        
+        mod_atom2 = run_simple_md_simulation(atom2, dict2)
+
+        MSD2 = calc_mean_square_displacement(mod_atom2, value_dict2)
+        lindemann2 = lindemann_criterion(value_dict2, d)
+        self_diffusion2 = self_diffusion_coefficent(value_dict2, dict2['step_number']*dict2['time_step'])
+
+        self.assertTrue((MSD < 0.1) and (lindemann < 0.1) and (self_diffusion < 0.001) and
+                        (MSD2 > 0.1) and (lindemann2 > 0.1) and (self_diffusion2 > 0.00001))
+        
 
     def test_GUI(self):
         # There will be further testing when other methods connected to the gui has been developed.
