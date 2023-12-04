@@ -461,7 +461,12 @@ def update_output_traj_list(event, traj_menu, value_inside_traj_list):
         menu.add_command(label=traj_file, command=lambda value=traj_file: value_inside_traj_list.set(value))
 
 def user_guide():
-    pass
+    user_guide_window = Tk()
+    user_guide_window.title("User Guide")
+    user_guide_window.geometry("700x450")
+    
+    user_guide_window.mainloop()
+    user_guide_window.quit()
 
 def write_to_config(file_name='default_config', value_inside_ensemble_list='NVE', temperature=500, value_inside_potential_list='EMT',
                 steps=5000, time_steps=5, friction=0.005, rec_basic_properties = 0,
