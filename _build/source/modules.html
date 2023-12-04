@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>MD-simulation-CDIO &#8212; Computational Physics Project 0.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=8fc2db88" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=d7c963c3"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Computational Physics Project 0.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">MD-simulation-CDIO</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="md-simulation-cdio">
+<h1>MD-simulation-CDIO<a class="headerlink" href="#md-simulation-cdio" title="Permalink to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Gather_data.html">Gather_data package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Gather_data.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Gather_data.html#module-Gather_data.configuration_file_script">Gather_data.configuration_file_script module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Gather_data.html#Gather_data.configuration_file_script.Steps_number"><code class="docutils literal notranslate"><span class="pre">Steps_number()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Gather_data.html#Gather_data.configuration_file_script.choose_ensemble"><code class="docutils literal notranslate"><span class="pre">choose_ensemble()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Gather_data.html#Gather_data.configuration_file_script.config_file"><code class="docutils literal notranslate"><span class="pre">config_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Gather_data.html#Gather_data.configuration_file_script.material_id"><code class="docutils literal notranslate"><span class="pre">material_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Gather_data.html#Gather_data.configuration_file_script.potential"><code class="docutils literal notranslate"><span class="pre">potential()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Gather_data.html#Gather_data.configuration_file_script.temperature_parameter"><code class="docutils literal notranslate"><span class="pre">temperature_parameter()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Gather_data.html#module-Gather_data.create_arbitrary_atoms">Gather_data.create_arbitrary_atoms module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Gather_data.html#Gather_data.create_arbitrary_atoms.create_crystal_guided"><code class="docutils literal notranslate"><span class="pre">create_crystal_guided()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Gather_data.html#Gather_data.create_arbitrary_atoms.create_view_and_save_crystal_guided"><code class="docutils literal notranslate"><span class="pre">create_view_and_save_crystal_guided()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Gather_data.html#Gather_data.create_arbitrary_atoms.save_any_atoms"><code class="docutils literal notranslate"><span class="pre">save_any_atoms()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Gather_data.html#module-Gather_data.download_data">Gather_data.download_data module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Gather_data.html#Gather_data.download_data.find_materials_by_elements_and_bandgap"><code class="docutils literal notranslate"><span class="pre">find_materials_by_elements_and_bandgap()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Gather_data.html#Gather_data.download_data.get_ASE_atoms_from_material_id"><code class="docutils literal notranslate"><span class="pre">get_ASE_atoms_from_material_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Gather_data.html#Gather_data.download_data.make_traj_from_material_id"><code class="docutils literal notranslate"><span class="pre">make_traj_from_material_id()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Gather_data.html#module-Gather_data.hypothetical_materials">Gather_data.hypothetical_materials module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Gather_data.html#Gather_data.hypothetical_materials.create_mix_from_concentration"><code class="docutils literal notranslate"><span class="pre">create_mix_from_concentration()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Gather_data.html#Gather_data.hypothetical_materials.mix_materials"><code class="docutils literal notranslate"><span class="pre">mix_materials()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Gather_data.html#Gather_data.hypothetical_materials.random_mix"><code class="docutils literal notranslate"><span class="pre">random_mix()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Gather_data.html#module-Gather_data">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Simulation.html">Simulation package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Simulation.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Simulation.html#module-Simulation.calc_bulk_properties">Simulation.calc_bulk_properties module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Simulation.html#Simulation.calc_bulk_properties.calc_bulk_modulus"><code class="docutils literal notranslate"><span class="pre">calc_bulk_modulus()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Simulation.html#Simulation.calc_bulk_properties.calc_elastic"><code class="docutils literal notranslate"><span class="pre">calc_elastic()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Simulation.html#Simulation.calc_bulk_properties.calculate_cohesive_energy"><code class="docutils literal notranslate"><span class="pre">calculate_cohesive_energy()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Simulation.html#module-Simulation.calc_properties">Simulation.calc_properties module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Simulation.html#Simulation.calc_properties.approx_lattice_constant"><code class="docutils literal notranslate"><span class="pre">approx_lattice_constant()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Simulation.html#Simulation.calc_properties.calc_energy"><code class="docutils literal notranslate"><span class="pre">calc_energy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Simulation.html#Simulation.calc_properties.calc_mean_square_displacement"><code class="docutils literal notranslate"><span class="pre">calc_mean_square_displacement()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Simulation.html#Simulation.calc_properties.calc_pressure"><code class="docutils literal notranslate"><span class="pre">calc_pressure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Simulation.html#Simulation.calc_properties.calc_temp"><code class="docutils literal notranslate"><span class="pre">calc_temp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Simulation.html#Simulation.calc_properties.calculate_specific_heat"><code class="docutils literal notranslate"><span class="pre">calculate_specific_heat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Simulation.html#Simulation.calc_properties.lindemann_criterion"><code class="docutils literal notranslate"><span class="pre">lindemann_criterion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Simulation.html#Simulation.calc_properties.self_diffusion_coefficent"><code class="docutils literal notranslate"><span class="pre">self_diffusion_coefficent()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Simulation.html#module-Simulation.lattice_constant">Simulation.lattice_constant module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Simulation.html#Simulation.lattice_constant.optimize_scaling"><code class="docutils literal notranslate"><span class="pre">optimize_scaling()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Simulation.html#Simulation.lattice_constant.optimize_scaling_using_simulation"><code class="docutils literal notranslate"><span class="pre">optimize_scaling_using_simulation()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Simulation.html#module-Simulation.run_md_simulation">Simulation.run_md_simulation module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Simulation.html#Simulation.run_md_simulation.print_and_increase_progress"><code class="docutils literal notranslate"><span class="pre">print_and_increase_progress()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Simulation.html#Simulation.run_md_simulation.run_md_simulations"><code class="docutils literal notranslate"><span class="pre">run_md_simulations()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Simulation.html#Simulation.run_md_simulation.run_single_md_simulation"><code class="docutils literal notranslate"><span class="pre">run_single_md_simulation()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Simulation.html#module-Simulation.simple_simulation">Simulation.simple_simulation module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Simulation.html#Simulation.simple_simulation.calc_total_energy"><code class="docutils literal notranslate"><span class="pre">calc_total_energy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="Simulation.html#Simulation.simple_simulation.run_simple_md_simulation"><code class="docutils literal notranslate"><span class="pre">run_simple_md_simulation()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Simulation.html#module-Simulation">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Tests.html">Tests package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Tests.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tests.html#module-Tests.unittests">Tests.unittests module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Tests.html#Tests.unittests.UnitTests"><code class="docutils literal notranslate"><span class="pre">UnitTests</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Tests.html#Tests.unittests.UnitTests.test_GUI"><code class="docutils literal notranslate"><span class="pre">UnitTests.test_GUI()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tests.html#Tests.unittests.UnitTests.test_approx_lattice"><code class="docutils literal notranslate"><span class="pre">UnitTests.test_approx_lattice()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tests.html#Tests.unittests.UnitTests.test_bulk_modulus"><code class="docutils literal notranslate"><span class="pre">UnitTests.test_bulk_modulus()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tests.html#Tests.unittests.UnitTests.test_calc_pressure_no_field"><code class="docutils literal notranslate"><span class="pre">UnitTests.test_calc_pressure_no_field()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tests.html#Tests.unittests.UnitTests.test_calc_temp"><code class="docutils literal notranslate"><span class="pre">UnitTests.test_calc_temp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tests.html#Tests.unittests.UnitTests.test_cohesive_energy"><code class="docutils literal notranslate"><span class="pre">UnitTests.test_cohesive_energy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="Tests.html#Tests.unittests.UnitTests.test_lattice_constant_gradient_descent"><code class="docutils literal notranslate"><span class="pre">UnitTests.test_lattice_constant_gradient_descent()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Tests.html#module-Tests">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="User_interface.html">User_interface package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="User_interface.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="User_interface.html#module-User_interface.plot_in_gui">User_interface.plot_in_gui module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="User_interface.html#User_interface.plot_in_gui.clear_canvas"><code class="docutils literal notranslate"><span class="pre">clear_canvas()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="User_interface.html#User_interface.plot_in_gui.open_window"><code class="docutils literal notranslate"><span class="pre">open_window()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="User_interface.html#User_interface.plot_in_gui.plot"><code class="docutils literal notranslate"><span class="pre">plot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="User_interface.html#User_interface.plot_in_gui.plot_backbone"><code class="docutils literal notranslate"><span class="pre">plot_backbone()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="User_interface.html#module-User_interface.user_interface">User_interface.user_interface module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="User_interface.html#User_interface.user_interface.animate_traj"><code class="docutils literal notranslate"><span class="pre">animate_traj()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="User_interface.html#User_interface.user_interface.initiate_gui"><code class="docutils literal notranslate"><span class="pre">initiate_gui()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="User_interface.html#User_interface.user_interface.send_mat_id_to_gather_data"><code class="docutils literal notranslate"><span class="pre">send_mat_id_to_gather_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="User_interface.html#User_interface.user_interface.update_input_config_list"><code class="docutils literal notranslate"><span class="pre">update_input_config_list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="User_interface.html#User_interface.user_interface.update_input_traj_list"><code class="docutils literal notranslate"><span class="pre">update_input_traj_list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="User_interface.html#User_interface.user_interface.update_output_traj_list"><code class="docutils literal notranslate"><span class="pre">update_output_traj_list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="User_interface.html#User_interface.user_interface.update_output_txt_list"><code class="docutils literal notranslate"><span class="pre">update_output_txt_list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="User_interface.html#User_interface.user_interface.visualise_2D"><code class="docutils literal notranslate"><span class="pre">visualise_2D()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="User_interface.html#User_interface.user_interface.write_to_config"><code class="docutils literal notranslate"><span class="pre">write_to_config()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="User_interface.html#module-User_interface">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Visualization.html">Visualization package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Visualization.html#module-Visualization">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="conf.html">conf module</a></li>
+</ul>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/source/modules.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Computational Physics Project 0.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">MD-simulation-CDIO</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2023, Alice Eriksson, Emelie Eriksson, Jakov Krnic, Issa Nseir, Markus Wallin, Gustav Wassbäck.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    </div>
+  </body>
+</html>

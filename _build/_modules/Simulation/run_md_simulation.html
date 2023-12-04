@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simulation.run_md_simulation &#8212; Computational Physics Project 0.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=8fc2db88" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=d7c963c3"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Computational Physics Project 0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Simulation.run_md_simulation</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for Simulation.run_md_simulation</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This runs MD simulations.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/..&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">ase.md.velocitydistribution</span> <span class="kn">import</span> <span class="n">MaxwellBoltzmannDistribution</span>
+<span class="kn">from</span> <span class="nn">ase.md.verlet</span> <span class="kn">import</span> <span class="n">VelocityVerlet</span>
+<span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">units</span>
+<span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
+<span class="kn">from</span> <span class="nn">asap3</span> <span class="kn">import</span> <span class="n">EMT</span><span class="p">,</span> <span class="n">LennardJones</span>
+<span class="kn">from</span> <span class="nn">ase.calculators.lj</span> <span class="kn">import</span> <span class="n">LennardJones</span>
+<span class="kn">from</span> <span class="nn">ase.md.langevin</span> <span class="kn">import</span> <span class="n">Langevin</span>
+<span class="kn">from</span> <span class="nn">ase.io.trajectory</span> <span class="kn">import</span> <span class="n">Trajectory</span>
+<span class="kn">from</span> <span class="nn">configparser</span> <span class="kn">import</span> <span class="n">ConfigParser</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">Simulation</span> <span class="kn">import</span> <span class="n">calc_properties</span><span class="p">,</span> <span class="n">calc_bulk_properties</span><span class="p">,</span> <span class="n">lattice_constant</span>
+<span class="kn">from</span> <span class="nn">ase.md.velocitydistribution</span> <span class="kn">import</span> <span class="n">Stationary</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="kn">import</span> <span class="n">cdist</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Process</span>
+<span class="kn">from</span> <span class="nn">ase.lattice.cubic</span> <span class="kn">import</span> <span class="n">FaceCenteredCubic</span>
+
+<div class="viewcode-block" id="print_and_increase_progress"><a class="viewcode-back" href="../../source/Simulation.html#Simulation.run_md_simulation.print_and_increase_progress">[docs]</a><span class="k">def</span> <span class="nf">print_and_increase_progress</span><span class="p">(</span><span class="n">progress</span><span class="p">,</span> <span class="n">sim_number</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">sim_number</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Simulation &quot;</span><span class="p">,</span> <span class="n">sim_number</span><span class="p">,</span> <span class="s2">&quot;: Progress &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">progress</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;%&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Progress &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">progress</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;%&quot;</span><span class="p">)</span>
+    <span class="n">progress</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">10</span></div>
+
+<div class="viewcode-block" id="run_single_md_simulation"><a class="viewcode-back" href="../../source/Simulation.html#Simulation.run_md_simulation.run_single_md_simulation">[docs]</a><span class="k">def</span> <span class="nf">run_single_md_simulation</span><span class="p">(</span><span class="n">config_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">traj_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sim_number</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run md simulation for a single trajectory file, with parameters specified in config.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config_file(str): Name of file with parameters to use in simulation.</span>
+<span class="sd">        traj_file(str): Name of trajectory file with the atoms object to use</span>
+<span class="sd">                        in simulation</span>
+<span class="sd">        output_name(str): Name of file to write results to</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        atoms(ase atoms object): The ase atoms object after simulation.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Parse the config file to get dictionary of data</span>
+    <span class="n">config_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/../Input_config_files/&#39;</span>
+    <span class="n">config_data</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="p">()</span>
+    <span class="n">config_data</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">config_path</span><span class="o">+</span><span class="n">config_file</span><span class="p">)</span>
+
+    <span class="c1"># Create separate dicts for easier access of data</span>
+    <span class="n">simulation_settings</span> <span class="o">=</span> <span class="n">config_data</span><span class="p">[</span><span class="s1">&#39;SimulationSettings&#39;</span><span class="p">]</span>
+    <span class="n">recording_intervals</span> <span class="o">=</span> <span class="n">config_data</span><span class="p">[</span><span class="s1">&#39;RecordingIntervals&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Create atoms object for simulation</span>
+    <span class="n">traj_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/../Input_trajectory_files/&#39;</span>
+    <span class="n">traj</span> <span class="o">=</span> <span class="n">Trajectory</span><span class="p">(</span><span class="n">traj_path</span><span class="o">+</span><span class="n">traj_file</span><span class="p">)</span>
+    <span class="n">atoms</span> <span class="o">=</span> <span class="n">traj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Set potential for simulation</span>
+    <span class="n">potential</span> <span class="o">=</span> <span class="n">simulation_settings</span><span class="p">[</span><span class="s1">&#39;potential&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">potential</span> <span class="o">==</span> <span class="s2">&quot;EMT&quot;</span><span class="p">:</span>
+        <span class="c1"># EMT needs parameter values as input arguments for all materials except</span>
+        <span class="c1"># Ni, Cu, Pd, Ag, Pt and Au. Note that we don&#39;t know if it works with mixed</span>
+        <span class="c1"># materials or if it will make incorrect assumptions</span>
+        <span class="n">atoms</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">EMT</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">potential</span> <span class="o">==</span> <span class="s2">&quot;LennardJones&quot;</span><span class="p">:</span>
+        <span class="c1"># Lennard Jones is generally valid for gases and liquid but rarely solids</span>
+        <span class="c1"># and not metals as far as I understand it //Gustav</span>
+        <span class="n">atoms</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">LennardJones</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># TODO: implement running with other potentials, e.g.,:</span>
+        <span class="c1"># atoms.calc = OtherPotential()</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Running calculations with potential &#39;&quot;</span> <span class="o">+</span> <span class="n">potential</span> <span class="o">+</span> <span class="s2">&quot;&#39; is not implemented yet.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Set dynamics module depending on simulation type</span>
+    <span class="n">ensemble</span> <span class="o">=</span> <span class="n">simulation_settings</span><span class="p">[</span><span class="s1">&#39;ensemble&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">ensemble</span> <span class="o">==</span> <span class="s2">&quot;NVE&quot;</span><span class="p">:</span>
+        <span class="n">MaxwellBoltzmannDistribution</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">temperature_K</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="nb">int</span><span class="p">(</span><span class="n">simulation_settings</span><span class="p">[</span><span class="s1">&#39;temperature&#39;</span><span class="p">]))</span>
+        <span class="n">Stationary</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+        <span class="n">dyn</span> <span class="o">=</span> <span class="n">VelocityVerlet</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">simulation_settings</span><span class="p">[</span><span class="s1">&#39;time_step&#39;</span><span class="p">])</span><span class="o">*</span><span class="n">units</span><span class="o">.</span><span class="n">fs</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">ensemble</span> <span class="o">==</span> <span class="s2">&quot;NVT&quot;</span><span class="p">:</span>
+        <span class="n">dyn</span> <span class="o">=</span> <span class="n">Langevin</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">timestep</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">simulation_settings</span><span class="p">[</span><span class="s1">&#39;time_step&#39;</span><span class="p">])</span><span class="o">*</span><span class="n">units</span><span class="o">.</span><span class="n">fs</span><span class="p">,</span>
+                       <span class="n">temperature_K</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">simulation_settings</span><span class="p">[</span><span class="s1">&#39;temperature&#39;</span><span class="p">]),</span>
+                       <span class="n">friction</span><span class="o">=</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">simulation_settings</span><span class="p">[</span><span class="s1">&#39;friction&#39;</span><span class="p">])</span> <span class="ow">or</span> <span class="mf">0.005</span><span class="p">))</span>
+        <span class="n">MaxwellBoltzmannDistribution</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">temperature_K</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="nb">int</span><span class="p">(</span><span class="n">simulation_settings</span><span class="p">[</span><span class="s1">&#39;temperature&#39;</span><span class="p">]))</span>
+        <span class="n">Stationary</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># TODO: implement other ensembles</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Running calculations with ensemble &#39;&quot;</span> <span class="o">+</span> <span class="n">ensemble</span> <span class="o">+</span> <span class="s2">&quot;&#39; is not implemented yet.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># This dict will contain output data of the simulation to be written into the output text file</span>
+
+    <span class="c1"># Approximate lattice constant</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">calc_properties</span><span class="o">.</span><span class="n">approx_lattice_constant</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+
+    <span class="n">output_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;config_file&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config_file</span>
+
+    <span class="c1"># Attach recorders that calculate a certain property and store in the output_dict</span>
+    <span class="n">interval_to_record_energy</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">recording_intervals</span><span class="p">[</span><span class="s1">&#39;record_energy&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">interval_to_record_energy</span><span class="p">:</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;total_energy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;kinetic_energy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;potential_energy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">dyn</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">calc_properties</span><span class="o">.</span><span class="n">calc_energy</span><span class="p">,</span> <span class="n">interval_to_record_energy</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">output_dict</span><span class="p">)</span>
+
+    <span class="n">interval_to_record_temperature</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">recording_intervals</span><span class="p">[</span><span class="s1">&#39;record_temperature&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">interval_to_record_temperature</span><span class="p">:</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">dyn</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">calc_properties</span><span class="o">.</span><span class="n">calc_temp</span><span class="p">,</span> <span class="n">interval_to_record_temperature</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">output_dict</span><span class="p">)</span>
+
+    <span class="n">interval_to_record_pressure</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">recording_intervals</span><span class="p">[</span><span class="s1">&#39;record_pressure&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">interval_to_record_pressure</span><span class="p">:</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">dyn</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">calc_properties</span><span class="o">.</span><span class="n">calc_pressure</span><span class="p">,</span> <span class="n">interval_to_record_pressure</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">output_dict</span><span class="p">)</span>
+
+    <span class="n">interval_to_record_bulk_modulus</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">recording_intervals</span><span class="p">[</span><span class="s1">&#39;record_bulk_modulus&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">interval_to_record_bulk_modulus</span><span class="p">:</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;bulk_modulus&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">dyn</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">calc_bulk_properties</span><span class="o">.</span><span class="n">calc_bulk_modulus</span><span class="p">,</span> <span class="n">interval_to_record_bulk_modulus</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">output_dict</span><span class="p">)</span>
+
+    <span class="n">interval_to_record_optimal_scaling</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">recording_intervals</span><span class="p">[</span><span class="s1">&#39;record_optimal_scaling&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">interval_to_record_optimal_scaling</span><span class="p">:</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;optimal_scaling&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;iterations_to_find_scaling&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">dyn</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">lattice_constant</span><span class="o">.</span><span class="n">optimize_scaling</span><span class="p">,</span> <span class="n">interval_to_record_optimal_scaling</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">output_dict</span><span class="p">)</span>
+
+    <span class="n">interval_to_record_configuration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">recording_intervals</span><span class="p">[</span><span class="s1">&#39;record_configuration&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">interval_to_record_configuration</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/../Output_trajectory_files/&#39;</span>
+        <span class="n">traj</span> <span class="o">=</span> <span class="n">Trajectory</span><span class="p">(</span><span class="n">path</span><span class="o">+</span><span class="n">output_name</span><span class="o">+</span><span class="s1">&#39;.traj&#39;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">atoms</span><span class="p">)</span>
+        <span class="n">dyn</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">write</span><span class="p">,</span> <span class="n">interval_to_record_configuration</span><span class="p">)</span>
+
+    <span class="n">interval_to_record_elastic_properties</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">recording_intervals</span><span class="p">[</span><span class="s1">&#39;record_elastic&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">interval_to_record_elastic_properties</span><span class="p">:</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;elastic_tensor_c11&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;bulk_modulus_from_tensor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;shear_modulus&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;youngs_modulus&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;poisson_ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">dyn</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">calc_bulk_properties</span><span class="o">.</span><span class="n">calc_elastic</span><span class="p">,</span> <span class="n">interval_to_record_elastic_properties</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">output_dict</span><span class="p">)</span>
+
+    <span class="n">interval_to_record_mean_square_displacement</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">recording_intervals</span><span class="p">[</span><span class="s1">&#39;record_mean_square_displacement&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">interval_to_record_mean_square_displacement</span><span class="p">:</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;mean_square_displacement&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">dyn</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">calc_properties</span><span class="o">.</span><span class="n">calc_mean_square_displacement</span><span class="p">,</span> <span class="n">interval_to_record_mean_square_displacement</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">output_dict</span><span class="p">)</span>
+
+    <span class="n">interval_to_record_lindemann_criterion</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">recording_intervals</span><span class="p">[</span><span class="s1">&#39;record_lindemann_criterion&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">interval_to_record_lindemann_criterion</span><span class="p">:</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;lindemann_criterion&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">dyn</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">calc_properties</span><span class="o">.</span><span class="n">lindemann_criterion</span><span class="p">,</span> <span class="n">interval_to_record_lindemann_criterion</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">output_dict</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+
+    <span class="n">interval_to_record_self_diffusion_coefficient</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">recording_intervals</span><span class="p">[</span><span class="s1">&#39;record_self_diffusion_coefficient&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">interval_to_record_lindemann_criterion</span><span class="p">:</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;self_diffusion_coefficient&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">dyn</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">calc_properties</span><span class="o">.</span><span class="n">self_diffusion_coefficent</span><span class="p">,</span> <span class="n">interval_to_record_self_diffusion_coefficient</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">output_dict</span><span class="p">,</span> <span class="n">interval_to_record_self_diffusion_coefficient</span><span class="o">*</span><span class="nb">int</span><span class="p">(</span><span class="n">simulation_settings</span><span class="p">[</span><span class="s1">&#39;time_step&#39;</span><span class="p">]))</span>
+
+    <span class="n">progress</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">ten_percent_interval</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.1</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">simulation_settings</span><span class="p">[</span><span class="s1">&#39;step_number&#39;</span><span class="p">]))</span>
+    <span class="n">dyn</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">print_and_increase_progress</span><span class="p">,</span> <span class="n">ten_percent_interval</span><span class="p">,</span> <span class="n">progress</span><span class="p">,</span> <span class="n">sim_number</span><span class="p">)</span>
+
+    <span class="c1"># Run simulation with the attached recorders</span>
+    <span class="k">if</span> <span class="n">sim_number</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Simulation &quot;</span><span class="p">,</span> <span class="n">sim_number</span><span class="p">,</span> <span class="s2">&quot; started&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Simulation started&quot;</span><span class="p">)</span>
+
+    <span class="n">dyn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">simulation_settings</span><span class="p">[</span><span class="s1">&#39;step_number&#39;</span><span class="p">]))</span>
+
+    <span class="k">if</span> <span class="n">interval_to_record_energy</span><span class="p">:</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;specific_heat_capacity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">calc_properties</span><span class="o">.</span><span class="n">calculate_specific_heat</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">config_file</span><span class="p">,</span> <span class="n">output_dict</span><span class="p">)]</span>
+
+    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">recording_intervals</span><span class="p">[</span><span class="s1">&#39;record_mean_square_displacement&#39;</span><span class="p">]):</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;mean_square_displacement&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">time_avg_MSD</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">MSD</span> <span class="ow">in</span> <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;mean_square_displacement&#39;</span><span class="p">]:</span>
+            <span class="n">time_avg_MSD</span> <span class="o">=</span> <span class="n">time_avg_MSD</span> <span class="o">+</span> <span class="n">MSD</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;avg_MSD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_avg_MSD</span><span class="o">/</span><span class="nb">int</span><span class="p">(</span><span class="n">simulation_settings</span><span class="p">[</span><span class="s1">&#39;step_number&#39;</span><span class="p">])</span>
+
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/../Output_text_files/&#39;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">output_name</span> <span class="o">+</span> <span class="s1">&#39;.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">output_dict</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">sim_number</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Simulation &quot;</span><span class="p">,</span> <span class="n">sim_number</span><span class="p">,</span> <span class="s2">&quot; finished!&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Simulation finished!&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">atoms</span></div>
+
+
+<div class="viewcode-block" id="run_md_simulations"><a class="viewcode-back" href="../../source/Simulation.html#Simulation.run_md_simulation.run_md_simulations">[docs]</a><span class="k">def</span> <span class="nf">run_md_simulations</span><span class="p">(</span><span class="n">config_file_name</span><span class="p">,</span> <span class="n">trajectory_file_dir</span><span class="p">,</span> <span class="n">output_dir_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run md simulations for multiple configs and trajectory files.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config_file_list(list[str]): List of names of files with parameters to</span>
+<span class="sd">                                     use in the simulations.</span>
+<span class="sd">        traj_file(str): List of name of trajectory files with the atoms object</span>
+<span class="sd">                        to use in the simulations</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">base_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/../&#39;</span>
+    <span class="n">path_new_output_txt_dir</span> <span class="o">=</span> <span class="n">base_path</span> <span class="o">+</span> <span class="s1">&#39;Output_text_files/&#39;</span> <span class="o">+</span> <span class="n">output_dir_name</span>
+    <span class="n">path_new_output_traj_dir</span> <span class="o">=</span> <span class="n">base_path</span> <span class="o">+</span> <span class="s1">&#39;Output_trajectory_files/&#39;</span> <span class="o">+</span> <span class="n">output_dir_name</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path_new_output_txt_dir</span><span class="p">):</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path_new_output_txt_dir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path_new_output_traj_dir</span><span class="p">):</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path_new_output_traj_dir</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">base_path</span> <span class="o">+</span> <span class="s1">&#39;Output_text_files/&#39;</span> <span class="o">+</span> <span class="n">output_dir_name</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">base_path</span> <span class="o">+</span> <span class="s1">&#39;Output_trajectory_files/&#39;</span> <span class="o">+</span> <span class="n">output_dir_name</span><span class="p">)</span>
+    <span class="n">traj_files_full_path</span> <span class="o">=</span> <span class="n">base_path</span> <span class="o">+</span> <span class="s1">&#39;Input_trajectory_files/&#39;</span> <span class="o">+</span> <span class="n">trajectory_file_dir</span>
+    <span class="n">traj_file_names</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">traj_files_full_path</span><span class="p">)</span>
+    <span class="n">process_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">sim_number</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">traj_file_name</span> <span class="ow">in</span> <span class="n">traj_file_names</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+        <span class="n">dir_and_traj_file_name</span> <span class="o">=</span> <span class="n">trajectory_file_dir</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">traj_file_name</span>
+        <span class="n">output_dir_and_file_name</span> <span class="o">=</span> <span class="n">output_dir_name</span> <span class="o">+</span> <span class="n">traj_file_name</span>
+        <span class="n">simulation_args</span> <span class="o">=</span> <span class="p">[</span><span class="n">config_file_name</span><span class="p">,</span> <span class="n">dir_and_traj_file_name</span><span class="p">,</span> <span class="n">output_dir_and_file_name</span><span class="p">,</span> <span class="n">sim_number</span><span class="p">]</span>
+        <span class="n">process_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">run_single_md_simulation</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">simulation_args</span><span class="p">))</span>
+        <span class="n">sim_number</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">for</span> <span class="n">process</span> <span class="ow">in</span> <span class="n">process_list</span><span class="p">:</span>
+        <span class="n">process</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">process</span> <span class="ow">in</span> <span class="n">process_list</span><span class="p">:</span>
+        <span class="n">process</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;All simulations finished!&quot;</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">atoms</span> <span class="o">=</span> <span class="n">FaceCenteredCubic</span><span class="p">(</span><span class="n">directions</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span>
+                              <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">symbol</span><span class="o">=</span><span class="s1">&#39;Cu&#39;</span><span class="p">,</span> <span class="n">pbc</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">atoms</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">EMT</span><span class="p">()</span>
+    <span class="c1">#optimize_scaling(atoms, {&#39;optimal_scaling&#39;: [], &#39;iterations_to_find_scaling&#39;: []})</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">lattice_constant</span><span class="o">.</span><span class="n">optimize_scaling_using_simulation</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;potential&#39;</span><span class="p">:</span> <span class="s1">&#39;EMT&#39;</span><span class="p">,</span> <span class="s1">&#39;time_step&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="s1">&#39;ensemble&#39;</span><span class="p">:</span> <span class="s1">&#39;NVE&#39;</span><span class="p">,</span> <span class="s1">&#39;step_number&#39;</span><span class="p">:</span> <span class="mi">250</span><span class="p">}))</span>
+
+    <span class="c1">#run_md_simulations(&quot;example_config.ini&quot;, &#39;Demo_multi_sim&#39;, &#39;Demo_multi_sim&#39;)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Computational Physics Project 0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Simulation.run_md_simulation</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2023, Alice Eriksson, Emelie Eriksson, Jakov Krnic, Issa Nseir, Markus Wallin, Gustav Wassbäck.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    </div>
+  </body>
+</html>

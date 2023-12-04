@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gather_data.download_data &#8212; Computational Physics Project 0.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=8fc2db88" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=d7c963c3"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Computational Physics Project 0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Gather_data.download_data</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for Gather_data.download_data</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Material gathering module.</span>
+
+<span class="sd">This module contains functions to gather data from the next-gen materials project database using</span>
+<span class="sd">the so called new API (as opposed to the legacy API).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">mp_api.client</span> <span class="kn">import</span> <span class="n">MPRester</span>
+<span class="kn">from</span> <span class="nn">pymatgen.io.ase</span> <span class="kn">import</span> <span class="n">AseAtomsAdaptor</span>
+<span class="kn">from</span> <span class="nn">ase.io.trajectory</span> <span class="kn">import</span> <span class="n">Trajectory</span>
+<span class="kn">from</span> <span class="nn">ase.build</span> <span class="kn">import</span> <span class="n">make_supercell</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">cbrt</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">floor</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+
+
+<div class="viewcode-block" id="make_traj_from_material_id"><a class="viewcode-back" href="../../source/Gather_data.html#Gather_data.download_data.make_traj_from_material_id">[docs]</a><span class="k">def</span> <span class="nf">make_traj_from_material_id</span><span class="p">(</span><span class="n">material_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">target_number_of_atoms</span><span class="o">=</span><span class="mi">300</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Take a material id and an API key and save a corresponding atoms object in</span>
+<span class="sd">    a .traj file which can be found in the folder Trajectory files.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        material_id (str): The material id must exist in the next-gen material</span>
+<span class="sd">            projects database and should be in the form &#39;mp-1234&#39; but with</span>
+<span class="sd">            another number.</span>
+<span class="sd">        api_key (str): The user&#39;s Materials Project API key.</span>
+<span class="sd">        traget_number_of_atoms (int): The number of atoms of the material desired</span>
+<span class="sd">            in the system. It is a maximum rather than a minimum.</span>
+
+
+<span class="sd">    Returns:</span>
+<span class="sd">        none</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">MPRester</span><span class="p">(</span><span class="n">api_key</span><span class="p">)</span> <span class="k">as</span> <span class="n">mpr</span><span class="p">:</span>
+        <span class="n">some_material</span> <span class="o">=</span> <span class="n">mpr</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">material_ids</span><span class="o">=</span><span class="p">[</span><span class="n">material_id</span><span class="p">])</span>
+        <span class="n">primitive_cell</span> <span class="o">=</span> <span class="n">AseAtomsAdaptor</span><span class="o">.</span><span class="n">get_atoms</span><span class="p">(</span><span class="n">some_material</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">structure</span><span class="p">)</span>
+        <span class="n">number_atoms_primitive</span> <span class="o">=</span> <span class="n">primitive_cell</span><span class="o">.</span><span class="n">get_number_of_atoms</span><span class="p">()</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">floor</span><span class="p">(</span><span class="n">cbrt</span><span class="p">(</span><span class="n">target_number_of_atoms</span><span class="o">/</span><span class="n">number_atoms_primitive</span><span class="p">))</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="p">[[</span><span class="n">n</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">]]</span>
+        <span class="n">atoms</span> <span class="o">=</span> <span class="n">make_supercell</span><span class="p">(</span><span class="n">primitive_cell</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>
+        <span class="n">size_descripition</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">get_number_of_atoms</span><span class="p">())</span><span class="o">+</span><span class="s1">&#39;_atoms_of_&#39;</span>
+        <span class="n">path_to_traj_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/../Input_trajectory_files/&#39;</span>
+        <span class="n">location_and_name</span> <span class="o">=</span> <span class="n">path_to_traj_folder</span> <span class="o">+</span> <span class="n">size_descripition</span> <span class="o">+</span> <span class="n">material_id</span> <span class="o">+</span> <span class="s1">&#39;.traj&#39;</span>
+        <span class="n">traj</span> <span class="o">=</span> <span class="n">Trajectory</span><span class="p">(</span><span class="n">location_and_name</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">traj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span></div>
+        
+
+
+<div class="viewcode-block" id="get_ASE_atoms_from_material_id"><a class="viewcode-back" href="../../source/Gather_data.html#Gather_data.download_data.get_ASE_atoms_from_material_id">[docs]</a><span class="k">def</span> <span class="nf">get_ASE_atoms_from_material_id</span><span class="p">(</span><span class="n">material_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Take a material id and return the primitive unitcell of</span>
+
+<span class="sd">    the material in a format that can be used in ASE simulations.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        material_id (str): The material id must exist in the next-gen material</span>
+<span class="sd">            projects database and should be in the form &#39;mp-1234&#39; but with</span>
+<span class="sd">            another number.</span>
+<span class="sd">        api_key (str): The user&#39;s Materials Project API key.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        atoms: An ASE atoms object, for more information see</span>
+<span class="sd">            https://wiki.fysik.dtu.dk/ase/ase/atoms.html</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">with</span> <span class="n">MPRester</span><span class="p">(</span><span class="n">api_key</span><span class="p">)</span> <span class="k">as</span> <span class="n">mpr</span><span class="p">:</span>
+        <span class="n">some_material</span> <span class="o">=</span> <span class="n">mpr</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">material_ids</span><span class="o">=</span><span class="p">[</span><span class="n">material_id</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">AseAtomsAdaptor</span><span class="o">.</span><span class="n">get_atoms</span><span class="p">(</span><span class="n">some_material</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">structure</span><span class="p">)</span></div>
+
+
+<span class="c1">#def find_materials_by_elements_and_bandgap(elements: list[str], band_gap: tuple[float, float], fields: list[str], api_key: str):</span>
+<div class="viewcode-block" id="find_materials_by_elements_and_bandgap"><a class="viewcode-back" href="../../source/Gather_data.html#Gather_data.download_data.find_materials_by_elements_and_bandgap">[docs]</a><span class="k">def</span> <span class="nf">find_materials_by_elements_and_bandgap</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">band_gap</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Search for materials containing at least every material mentioned in &#39;elements&#39; that has a band gap in the</span>
+<span class="sd">    range specified by &#39;band_gap&#39; and for these materials gather only the properties specified by &#39;fields&#39;.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        elements (list[str]): Elements are stated in chemical short notation as found in the periodic table. An</span>
+<span class="sd">            example argument could be [&#39;Cu&#39;, &#39;Fe&#39;]. Only elements 1 to 83 and 89 to 94 can be used as of 26/9-2023.</span>
+<span class="sd">        band_gap (tuple[float, float]): Filter for materials with a bandgap in the specified range, where the first</span>
+<span class="sd">            float is the lowest allowed bandgap value and the second float is the highest in eV. Due to no bandgap</span>
+<span class="sd">            being less than 0 and the highest known bandgap being less than 15eV a requirement for the argument is</span>
+<span class="sd">            0 ≤ First float ≤ Second float ≤ 15. An example argument when looking for conductors could be (0, 0.3),</span>
+<span class="sd">            when looking for semi conductors (0.6, 2) and when looking for insulators (5, 15).</span>
+<span class="sd">        fields (list[str]): Specifies which properties that will be gathered for the found materials. The properties</span>
+<span class="sd">            can be read about at https://docs.materialsproject.org/methodology/materials-methodology and every valid</span>
+<span class="sd">            field name can be seen in the example argument below:</span>
+<span class="sd">            [&#39;builder_meta&#39;, &#39;nsites&#39;, &#39;elements&#39;, &#39;nelements&#39;, &#39;composition&#39;, &#39;composition_reduced&#39;, &#39;formula_pretty&#39;,</span>
+<span class="sd">            &#39;formula_anonymous&#39;, &#39;chemsys&#39;, &#39;volume&#39;, &#39;density&#39;, &#39;density_atomic&#39;, &#39;symmetry&#39;, &#39;property_name&#39;,</span>
+<span class="sd">            &#39;material_id&#39;, &#39;deprecated&#39;, &#39;deprecation_reasons&#39;, &#39;last_updated&#39;, &#39;origins&#39;, &#39;warnings&#39;, &#39;structure&#39;,</span>
+<span class="sd">            &#39;task_ids&#39;, &#39;uncorrected_energy_per_atom&#39;, &#39;energy_per_atom&#39;, &#39;formation_energy_per_atom&#39;, &#39;energy_above_hull&#39;,</span>
+<span class="sd">            &#39;is_stable&#39;, &#39;equilibrium_reaction_energy_per_atom&#39;, &#39;decomposes_to&#39;, &#39;xas&#39;, &#39;grain_boundaries&#39;, &#39;band_gap&#39;,</span>
+<span class="sd">            &#39;cbm&#39;, &#39;vbm&#39;, &#39;efermi&#39;, &#39;is_gap_direct&#39;, &#39;is_metal&#39;, &#39;es_source_calc_id&#39;, &#39;bandstructure&#39;, &#39;dos&#39;, &#39;dos_energy_up&#39;,</span>
+<span class="sd">            &#39;dos_energy_down&#39;, &#39;is_magnetic&#39;, &#39;ordering&#39;, &#39;total_magnetization&#39;, &#39;total_magnetization_normalized_vol&#39;,</span>
+<span class="sd">            &#39;total_magnetization_normalized_formula_units&#39;, &#39;num_magnetic_sites&#39;, &#39;num_unique_magnetic_sites&#39;,</span>
+<span class="sd">            &#39;types_of_magnetic_species&#39;, &#39;k_voigt&#39;, &#39;k_reuss&#39;, &#39;k_vrh&#39;, &#39;g_voigt&#39;, &#39;g_reuss&#39;, &#39;g_vrh&#39;, &#39;universal_anisotropy&#39;,</span>
+<span class="sd">            &#39;homogeneous_poisson&#39;, &#39;e_total&#39;, &#39;e_ionic&#39;, &#39;e_electronic&#39;, &#39;n&#39;, &#39;e_ij_max&#39;, &#39;weighted_surface_energy_EV_PER_ANG2&#39;,</span>
+<span class="sd">            &#39;weighted_surface_energy&#39;, &#39;weighted_work_function&#39;, &#39;surface_anisotropy&#39;, &#39;shape_factor&#39;, &#39;has_reconstructed&#39;,</span>
+<span class="sd">            &#39;possible_species&#39;, &#39;has_props&#39;, &#39;theoretical&#39;, &#39;database_IDs&#39;]</span>
+<span class="sd">        api_key (str): The user&#39;s Materials Project API key.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict[str, MPDataDoc]: A dictionary with material id&#39;s a keys and MPDataDocs object containing all properties for the</span>
+<span class="sd">            corresponding material that was asked for by the fields argument.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="s2">&quot;material_id&quot;</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">):</span>
+        <span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;material_id&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">MPRester</span><span class="p">(</span><span class="n">api_key</span><span class="p">)</span> <span class="k">as</span> <span class="n">mpr</span><span class="p">:</span>
+        <span class="n">matching_materials</span> <span class="o">=</span> <span class="n">mpr</span><span class="o">.</span><span class="n">materials</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">elements</span><span class="o">=</span><span class="n">elements</span><span class="p">,</span> <span class="n">band_gap</span><span class="o">=</span><span class="n">band_gap</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">)</span>
+        <span class="n">material_dictionary</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">material</span> <span class="ow">in</span> <span class="n">matching_materials</span><span class="p">:</span>
+            <span class="n">material_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">material</span><span class="o">.</span><span class="n">material_id</span><span class="p">)</span>
+            <span class="n">material_dictionary</span><span class="p">[</span><span class="n">material_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">material</span>
+        <span class="k">return</span> <span class="n">material_dictionary</span></div>
+
+
+<span class="c1"># Example to show how it works</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">api_key</span> <span class="o">=</span> <span class="s2">&quot;YOUR_API_KEY_HERE&quot;</span>  <span class="c1"># Replace with your Materials Project API key</span>
+    <span class="c1"># materials_dict = find_materials_by_elements_and_bandgap([&quot;Ni&quot;, &quot;Sb&quot;, &quot;Zr&quot;], (0, 1), [&quot;band_gap&quot;],api_key)</span>
+    <span class="c1"># print(materials_dict.keys())</span>
+    <span class="c1"># print(materials_dict.values())</span>
+    <span class="c1"># make_traj_from_material_id(&#39;mp-24&#39;, api_key)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Computational Physics Project 0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Gather_data.download_data</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2023, Alice Eriksson, Emelie Eriksson, Jakov Krnic, Issa Nseir, Markus Wallin, Gustav Wassbäck.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gather_data.configuration_file_script &#8212; Computational Physics Project 0.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=8fc2db88" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=d7c963c3"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Computational Physics Project 0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Gather_data.configuration_file_script</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for Gather_data.configuration_file_script</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Import the configparser library which creates the config file.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">configparser</span> <span class="kn">import</span> <span class="n">ConfigParser</span>
+
+
+<div class="viewcode-block" id="config_file"><a class="viewcode-back" href="../../source/Gather_data.html#Gather_data.configuration_file_script.config_file">[docs]</a><span class="k">def</span> <span class="nf">config_file</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s1">&#39;default_config&#39;</span><span class="p">,</span> <span class="n">ensemble</span><span class="o">=</span><span class="s1">&#39;NVE&#39;</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">potential</span><span class="o">=</span><span class="s1">&#39;EMT&#39;</span><span class="p">,</span>
+                <span class="n">step_number</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">time_step</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">friction</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span> <span class="n">record_basic_properties</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="n">record_physical_properties</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">record_elastic_bulk</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">record_cohesive_energy</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="n">record_configuration</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">record_optimal_scaling</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create the configuration file</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    	file_name(string): Name of the file to create</span>
+<span class="sd">        ensemble(string): Ensemble to use in simulation</span>
+<span class="sd">        temperature(int): Initial temperature in simulation</span>
+<span class="sd">        potential(string): Potential to use in simulation</span>
+<span class="sd">        step_number(int): Number of steps to use in simulation</span>
+<span class="sd">        time_step(int): Time step in fs to use in simulation</span>
+<span class="sd">        friction(float): Friction for NVT simulation</span>
+<span class="sd">        record_energy(int): Interval to record energy in simulation</span>
+<span class="sd">        record_cohesive_energy(int): Interval to record cohesive energy in simulation</span>
+<span class="sd">        record_temperature(int): Interval to record temperature in simulation</span>
+<span class="sd">        record_pressure(int): Interval to record pressure in simulation</span>
+<span class="sd">        record_configuration(int): Interval to record configuration in simulation</span>
+<span class="sd">        record_bulk_modulus(int): Interval to record bulk modulus in simulation</span>
+<span class="sd">        record_optimal_scaling(int): Interval to record optimal scaling in simulation</span>
+<span class="sd">        record_elastic(int): Interval to record elastic properties in simulation</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ensemble</span> <span class="o">==</span> <span class="s2">&quot;Select an Option&quot;</span><span class="p">:</span>
+        <span class="n">ensemble</span> <span class="o">=</span> <span class="s2">&quot;NVE&quot;</span>
+    <span class="k">if</span> <span class="n">potential</span> <span class="o">==</span> <span class="s2">&quot;Select an Option&quot;</span><span class="p">:</span>
+        <span class="n">potential</span> <span class="o">=</span> <span class="s2">&quot;EMT&quot;</span>
+    
+    <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="p">()</span>
+    <span class="n">config</span><span class="p">[</span><span class="s1">&#39;SimulationSettings&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ensemble&#39;</span><span class="p">:</span> <span class="n">ensemble</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">:</span> <span class="n">temperature</span><span class="p">,</span>
+                                    <span class="s1">&#39;potential&#39;</span><span class="p">:</span> <span class="n">potential</span><span class="p">,</span> <span class="s1">&#39;step_number&#39;</span><span class="p">:</span> <span class="n">step_number</span><span class="p">,</span>
+                                    <span class="s1">&#39;time_step&#39;</span><span class="p">:</span> <span class="n">time_step</span><span class="p">,</span> <span class="s1">&#39;friction&#39;</span><span class="p">:</span> <span class="n">friction</span><span class="p">}</span>
+
+    <span class="n">config</span><span class="p">[</span><span class="s1">&#39;RecordingIntervals&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;record_energy&#39;</span><span class="p">:</span> <span class="n">record_basic_properties</span><span class="p">,</span>
+                        <span class="s1">&#39;record_temperature&#39;</span><span class="p">:</span> <span class="n">record_basic_properties</span><span class="p">,</span>
+                        <span class="s1">&#39;record_pressure&#39;</span><span class="p">:</span> <span class="n">record_basic_properties</span><span class="p">,</span>
+                        <span class="s1">&#39;record_mean_square_displacement&#39;</span><span class="p">:</span> <span class="n">record_physical_properties</span><span class="p">,</span>
+                        <span class="s1">&#39;record_lindemann_criterion&#39;</span><span class="p">:</span> <span class="n">record_physical_properties</span><span class="p">,</span>
+                        <span class="s1">&#39;record_self_diffusion_coefficient&#39;</span><span class="p">:</span> <span class="n">record_physical_properties</span><span class="p">,</span>
+                        <span class="s1">&#39;record_elastic&#39;</span><span class="p">:</span> <span class="n">record_elastic_bulk</span><span class="p">,</span>
+                        <span class="s1">&#39;record_bulk_modulus&#39;</span><span class="p">:</span> <span class="n">record_elastic_bulk</span><span class="p">,</span>
+                        <span class="s1">&#39;record_cohesive_energy&#39;</span><span class="p">:</span> <span class="n">record_cohesive_energy</span><span class="p">,</span>
+                        <span class="s1">&#39;record_configuration&#39;</span><span class="p">:</span> <span class="n">record_configuration</span><span class="p">,</span>
+                        <span class="s1">&#39;record_optimal_scaling&#39;</span><span class="p">:</span> <span class="n">record_optimal_scaling</span><span class="p">}</span>
+
+    <span class="c1"># Write to config file</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/../Input_config_files/&#39;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="o">+</span><span class="n">file_name</span><span class="o">+</span><span class="s1">&#39;.ini&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">config_file</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="temperature_parameter"><a class="viewcode-back" href="../../source/Gather_data.html#Gather_data.configuration_file_script.temperature_parameter">[docs]</a><span class="k">def</span> <span class="nf">temperature_parameter</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch the user&#39;s temperature parameter.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        None</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (float): the input temperature</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">temperature</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Choose the Simulation temperature in Kelvin?  (hint: interval between [0k - 10000k]) </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">temperature</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">temperature</span><span class="p">)</span>
+            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">temperature</span> <span class="o">&lt;=</span> <span class="mi">10000</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">temperature</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Invalid temperature, try again&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Invalid input, please enter a numeric value for temperature.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Steps_number"><a class="viewcode-back" href="../../source/Gather_data.html#Gather_data.configuration_file_script.Steps_number">[docs]</a><span class="k">def</span> <span class="nf">Steps_number</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch the user&#39;s steps number parameter.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        None</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (float): the input steps number</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">Steps_number</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Choose the Simulation steps number?  (hint: pick a step around ≈1 fsec, interval=[1-10000] (ex: 5 femtosecond)) </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">Steps_number</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Steps_number</span><span class="p">)</span>
+            <span class="k">if</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">Steps_number</span> <span class="o">&lt;=</span> <span class="mi">10000</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">Steps_number</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Invalid steps number, try again&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Invalid input, please enter a numeric value for Steps_number.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="potential"><a class="viewcode-back" href="../../source/Gather_data.html#Gather_data.configuration_file_script.potential">[docs]</a><span class="k">def</span> <span class="nf">potential</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch the user&#39;s potential.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        None</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (string): the desired potential</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">available_potential_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Lennard Jones&quot;</span><span class="p">,</span> <span class="s2">&quot;EMT&quot;</span><span class="p">,</span> <span class="s2">&quot;bla bla&quot;</span><span class="p">]</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Choose from the exsisting potentials: &quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">available_potential_list</span><span class="p">))</span>
+        <span class="n">potential</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Enter the potential name: &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">potential</span> <span class="ow">in</span> <span class="n">available_potential_list</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">potential</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unavailable potential, try again&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="choose_ensemble"><a class="viewcode-back" href="../../source/Gather_data.html#Gather_data.configuration_file_script.choose_ensemble">[docs]</a><span class="k">def</span> <span class="nf">choose_ensemble</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch the user&#39;s ensemble.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    None</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    (string): the desired ensemble</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">available_ensemble_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;NVE&quot;</span><span class="p">,</span> <span class="s2">&quot;NVT&quot;</span><span class="p">,</span> <span class="s2">&quot;NPT&quot;</span><span class="p">]</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Choose from the exsisting ensembles: &quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">available_ensemble_list</span><span class="p">))</span>
+        <span class="n">ensemble</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Enter the ensemble name: &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ensemble</span> <span class="ow">in</span> <span class="n">available_ensemble_list</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ensemble</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unavailable ensemble, try again&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="material_id"><a class="viewcode-back" href="../../source/Gather_data.html#Gather_data.configuration_file_script.material_id">[docs]</a><span class="k">def</span> <span class="nf">material_id</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch the user&#39;s material_id parameter.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        None</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (string): the material id</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">material_id</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;What is the Material ID?  (hint: mp-123456 or cif file)   </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">material_id</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">config_file</span><span class="p">(</span><span class="s1">&#39;config_parser_test&#39;</span><span class="p">)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Computational Physics Project 0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Gather_data.configuration_file_script</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2023, Alice Eriksson, Emelie Eriksson, Jakov Krnic, Issa Nseir, Markus Wallin, Gustav Wassbäck.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    </div>
+  </body>
+</html>

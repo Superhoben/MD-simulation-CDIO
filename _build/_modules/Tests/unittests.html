@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tests.unittests &#8212; Computational Physics Project 0.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=8fc2db88" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=d7c963c3"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Computational Physics Project 0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tests.unittests</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for Tests.unittests</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os.path</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">unittest</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/..&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">ase.lattice.cubic</span> <span class="kn">import</span> <span class="n">FaceCenteredCubic</span>
+<span class="kn">from</span> <span class="nn">ase.md.velocitydistribution</span> <span class="kn">import</span> <span class="n">MaxwellBoltzmannDistribution</span>
+<span class="kn">from</span> <span class="nn">ase.build</span> <span class="kn">import</span> <span class="n">bulk</span><span class="p">,</span> <span class="n">molecule</span>
+<span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span><span class="p">,</span> <span class="n">Atom</span>
+<span class="c1">#from asap3 import EMT</span>
+<span class="kn">from</span> <span class="nn">ase.calculators.emt</span> <span class="kn">import</span> <span class="n">EMT</span>
+<span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">Tk</span>
+<span class="kn">from</span> <span class="nn">Simulation.lattice_constant</span> <span class="kn">import</span> <span class="n">optimize_scaling</span>
+<span class="kn">from</span> <span class="nn">Simulation.calc_properties</span> <span class="kn">import</span> <span class="n">calc_temp</span><span class="p">,</span> <span class="n">calc_pressure</span><span class="p">,</span> <span class="n">approx_lattice_constant</span>
+<span class="kn">from</span> <span class="nn">Simulation.calc_bulk_properties</span> <span class="kn">import</span> <span class="n">calc_bulk_modulus</span><span class="p">,</span> <span class="n">calculate_cohesive_energy</span>
+<span class="kn">from</span> <span class="nn">Simulation.run_md_simulation</span> <span class="kn">import</span> <span class="n">run_single_md_simulation</span>
+<span class="kn">from</span> <span class="nn">Gather_data.download_data</span> <span class="kn">import</span> <span class="n">get_ASE_atoms_from_material_id</span>
+<span class="kn">from</span> <span class="nn">User_interface.user_interface</span> <span class="kn">import</span> <span class="n">initiate_gui</span>
+<span class="kn">from</span> <span class="nn">API_key</span> <span class="kn">import</span> <span class="n">start_program</span>
+
+
+<div class="viewcode-block" id="UnitTests"><a class="viewcode-back" href="../../source/Tests.html#Tests.unittests.UnitTests">[docs]</a><span class="k">class</span> <span class="nc">UnitTests</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Definitions of unittests.</span>
+
+<span class="sd">    Different tests can be added here from different files. To add a new test,</span>
+<span class="sd">    import the functions from the file that is to be tested and then write a </span>
+<span class="sd">    new test function below the existing ones.</span>
+
+<span class="sd">    See example tests below.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="UnitTests.test_calc_temp"><a class="viewcode-back" href="../../source/Tests.html#Tests.unittests.UnitTests.test_calc_temp">[docs]</a>    <span class="k">def</span> <span class="nf">test_calc_temp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">atoms</span> <span class="o">=</span> <span class="n">FaceCenteredCubic</span><span class="p">(</span><span class="n">directions</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span>
+                          <span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;Cu&quot;</span><span class="p">,</span>
+                          <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+                          <span class="n">pbc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">MaxwellBoltzmannDistribution</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">temperature_K</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="mi">270</span> <span class="o">&lt;</span> <span class="n">calc_temp</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">330</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UnitTests.test_lattice_constant_gradient_descent"><a class="viewcode-back" href="../../source/Tests.html#Tests.unittests.UnitTests.test_lattice_constant_gradient_descent">[docs]</a>    <span class="k">def</span> <span class="nf">test_lattice_constant_gradient_descent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Uses a material with known lattice constant, disorts it and see if the lattice method is able</span>
+<span class="sd">        to find the original lattice constant which also should be the optimal one.&quot;&quot;&quot;</span>
+        <span class="c1">#atoms = get_ASE_atoms_from_material_id(&#39;mp-30&#39;)  # Get atoms object with atoms in optimal positions</span>
+        <span class="n">atoms</span> <span class="o">=</span> <span class="n">FaceCenteredCubic</span><span class="p">(</span><span class="n">directions</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span>
+                          <span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;Cu&quot;</span><span class="p">,</span>
+                          <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+                          <span class="n">pbc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">atoms</span><span class="o">.</span><span class="n">set_cell</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">cell</span><span class="o">*</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">scale_atoms</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Rescale unit cell so atoms are now in suboptimal positions</span>
+        <span class="n">atoms</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">EMT</span><span class="p">()</span>
+        <span class="n">scaling</span> <span class="o">=</span> <span class="n">optimize_scaling</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;optimal_scaling&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;iterations_to_find_scaling&#39;</span><span class="p">:</span> <span class="p">[]})</span>
+        <span class="c1"># print(scaling)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">((</span><span class="mf">0.98</span> <span class="o">&lt;</span> <span class="n">scaling</span><span class="o">*</span><span class="mf">0.5</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">scaling</span><span class="o">*</span><span class="mf">0.5</span> <span class="o">&lt;</span> <span class="mf">1.02</span><span class="p">))</span></div>
+        
+
+    <span class="c1"># More test are needed for this function</span>
+<div class="viewcode-block" id="UnitTests.test_calc_pressure_no_field"><a class="viewcode-back" href="../../source/Tests.html#Tests.unittests.UnitTests.test_calc_pressure_no_field">[docs]</a>    <span class="k">def</span> <span class="nf">test_calc_pressure_no_field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1">#atoms = get_ASE_atoms_from_material_id(&#39;mp-30&#39;)  # Get atoms object with atoms in optimal positions</span>
+        <span class="n">atoms</span> <span class="o">=</span> <span class="n">FaceCenteredCubic</span><span class="p">(</span><span class="n">directions</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span>
+                          <span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;Cu&quot;</span><span class="p">,</span>
+                          <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+                          <span class="n">pbc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">atoms</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">EMT</span><span class="p">()</span>  <span class="c1"># If atoms are only, Ni, Cu, Pd, Ag, Pt or Au no input parameters are nessecary</span>
+        <span class="c1"># When atoms are still at optimal positions no pressure should occur, +-0.1 GPa tolerance is given</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">((</span><span class="o">-</span><span class="mf">0.1</span> <span class="o">&lt;</span> <span class="n">calc_pressure</span><span class="p">(</span><span class="n">atoms</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="n">calc_pressure</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.1</span><span class="p">))</span></div>
+        
+<div class="viewcode-block" id="UnitTests.test_bulk_modulus"><a class="viewcode-back" href="../../source/Tests.html#Tests.unittests.UnitTests.test_bulk_modulus">[docs]</a>    <span class="k">def</span> <span class="nf">test_bulk_modulus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># lattice_constant = 4</span>
+        <span class="c1"># choosing more specific silver to test the bulk modulus</span>
+        <span class="c1">#atoms = get_ASE_atoms_from_material_id(&#39;mp-124&#39;)</span>
+        <span class="n">atoms</span> <span class="o">=</span> <span class="n">FaceCenteredCubic</span><span class="p">(</span><span class="n">directions</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span>
+                          <span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;Ag&quot;</span><span class="p">,</span>
+                          <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+                          <span class="n">pbc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">atoms</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">EMT</span><span class="p">()</span>
+        <span class="c1"># Another way to create our object &quot;bulk&quot; this time</span>
+        <span class="c1">#ag_bulk = bulk(name= &quot;Ag&quot;,crystalstructure= &quot;fcc&quot;, a=4.09)</span>
+        <span class="c1">#ag_bulk.calc = EMT</span>
+        <span class="n">calc_bulk_modulus</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+        <span class="c1"># From material website https://next-gen.materialsproject.org/materials/mp-124?chemsys=Ag#elastic_constants</span>
+        <span class="c1"># we have the bulk modulus for Ag to be 88 GPa</span>
+        <span class="c1"># According to Rickard, it is absolutely no problem to get 100 GPa of bulk modulus since we are first taking the</span>
+        <span class="c1"># second derivative approximation and secondly we are using EMT calculator.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">((</span><span class="mi">86</span> <span class="o">&lt;</span> <span class="n">calc_bulk_modulus</span><span class="p">(</span><span class="n">atoms</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="n">calc_bulk_modulus</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">105</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="nf">test_cohesive_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Cohesive energy per atom (eV/atom) values from Charles Kittle book &quot;Introduction to Solid State Physics&quot; page 50</span>
+        <span class="c1"># Ag cohesive energy = 2.95</span>
+        <span class="c1"># Au cohesive energy = 3.81</span>
+        <span class="c1"># Ni cohesive energy = 4.44</span>
+        <span class="c1"># Cu cohesive energy = 3.49</span>
+        <span class="c1"># Create multiple atoms object</span>
+        <span class="n">atom_structure_Ag</span> <span class="o">=</span> <span class="n">Atoms</span><span class="p">(</span><span class="s2">&quot;Ag&quot;</span><span class="p">)</span>
+        <span class="n">atom_structure_Ag</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">EMT</span><span class="p">()</span>
+        <span class="n">atom_structure_Au</span> <span class="o">=</span> <span class="n">Atoms</span><span class="p">(</span><span class="s2">&quot;Au&quot;</span><span class="p">)</span>
+        <span class="n">atom_structure_Au</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">EMT</span><span class="p">()</span>
+        <span class="n">atom_structure_Ni</span> <span class="o">=</span> <span class="n">Atoms</span><span class="p">(</span><span class="s2">&quot;Ni&quot;</span><span class="p">)</span>
+        <span class="n">atom_structure_Ni</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">EMT</span><span class="p">()</span>
+        <span class="n">atom_structure_Cu</span> <span class="o">=</span> <span class="n">Atoms</span><span class="p">(</span><span class="s2">&quot;Cu&quot;</span><span class="p">)</span>
+        <span class="n">atom_structure_Cu</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">EMT</span><span class="p">()</span>
+        <span class="c1"># From </span>
+        <span class="c1"># you can find every single cohesive energy per atom for each elements in </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">((</span><span class="mf">2.9</span> <span class="o">&lt;</span> <span class="n">calculate_cohesive_energy</span><span class="p">(</span><span class="n">atom_structure_Ag</span><span class="p">))</span> <span class="ow">and</span>
+                        <span class="p">(</span><span class="n">calculate_cohesive_energy</span><span class="p">(</span><span class="n">atom_structure_Ag</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">((</span><span class="mf">3.76</span> <span class="o">&lt;</span> <span class="n">calculate_cohesive_energy</span><span class="p">(</span><span class="n">atom_structure_Au</span><span class="p">))</span> <span class="ow">and</span>
+                        <span class="p">(</span><span class="n">calculate_cohesive_energy</span><span class="p">(</span><span class="n">atom_structure_Au</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">3.86</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">((</span><span class="mf">4.39</span> <span class="o">&lt;</span> <span class="n">calculate_cohesive_energy</span><span class="p">(</span><span class="n">atom_structure_Ni</span><span class="p">))</span> <span class="ow">and</span>
+                        <span class="p">(</span><span class="n">calculate_cohesive_energy</span><span class="p">(</span><span class="n">atom_structure_Ni</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">4.49</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">((</span><span class="mf">3.44</span> <span class="o">&lt;</span> <span class="n">calculate_cohesive_energy</span><span class="p">(</span><span class="n">atom_structure_Cu</span><span class="p">))</span> <span class="ow">and</span>
+                        <span class="p">(</span><span class="n">calculate_cohesive_energy</span><span class="p">(</span><span class="n">atom_structure_Cu</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">3.54</span><span class="p">))</span>
+
+<div class="viewcode-block" id="UnitTests.test_cohesive_energy"><a class="viewcode-back" href="../../source/Tests.html#Tests.unittests.UnitTests.test_cohesive_energy">[docs]</a>    <span class="k">def</span> <span class="nf">test_cohesive_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Create N2 molecule structure</span>
+        <span class="n">molecule_structure</span> <span class="o">=</span> <span class="n">molecule</span><span class="p">(</span><span class="s1">&#39;N2&#39;</span><span class="p">)</span>
+        <span class="n">molecule_structure</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">EMT</span><span class="p">()</span>
+        <span class="c1"># From ase example:https://wiki.fysik.dtu.dk/ase/tutorials/atomization.html, Obs: they </span>
+        <span class="c1"># had 2N Atomization energy(cohesive energy)= 9.76 eV, Which means N alone is 9.76/2 = 4.88 ev/atom</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">((</span><span class="mf">4.82</span> <span class="o">&lt;</span> <span class="n">calculate_cohesive_energy</span><span class="p">(</span><span class="n">molecule_structure</span><span class="p">))</span> <span class="ow">and</span>
+                        <span class="p">(</span><span class="n">calculate_cohesive_energy</span><span class="p">(</span><span class="n">molecule_structure</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">4.93</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="UnitTests.test_approx_lattice"><a class="viewcode-back" href="../../source/Tests.html#Tests.unittests.UnitTests.test_approx_lattice">[docs]</a>    <span class="k">def</span> <span class="nf">test_approx_lattice</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Lattice constant for Cu (fcc) is 3.61 Å, which gives a nearest neighbor distance of 2.55 Å</span>
+        <span class="n">atoms</span> <span class="o">=</span> <span class="n">FaceCenteredCubic</span><span class="p">(</span><span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;Cu&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">pbc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="mf">2.4</span> <span class="o">&lt;=</span> <span class="n">approx_lattice_constant</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mf">2.7</span><span class="p">)</span>
+        <span class="c1"># Lattice constant for Ag (fcc) is 4.09 Å, which gives a nearest neighbor distance of 2.89 Å</span>
+        <span class="n">atoms</span> <span class="o">=</span> <span class="n">FaceCenteredCubic</span><span class="p">(</span><span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;Ag&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">pbc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="mf">2.8</span> <span class="o">&lt;=</span> <span class="n">approx_lattice_constant</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mf">3.05</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UnitTests.test_GUI"><a class="viewcode-back" href="../../source/Tests.html#Tests.unittests.UnitTests.test_GUI">[docs]</a>    <span class="k">def</span> <span class="nf">test_GUI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># There will be further testing when other methods connected to the gui has been developed.</span>
+        <span class="n">gui</span> <span class="o">=</span> <span class="n">initiate_gui</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">gui</span><span class="p">)</span> <span class="o">==</span> <span class="n">Tk</span><span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">tests</span> <span class="o">=</span> <span class="p">[</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestLoader</span><span class="p">()</span><span class="o">.</span><span class="n">loadTestsFromTestCase</span><span class="p">(</span><span class="n">UnitTests</span><span class="p">)]</span>
+    <span class="n">testsuite</span> <span class="o">=</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestSuite</span><span class="p">(</span><span class="n">tests</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TextTestRunner</span><span class="p">(</span><span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">testsuite</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">wasSuccessful</span><span class="p">())</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Computational Physics Project 0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tests.unittests</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2023, Alice Eriksson, Emelie Eriksson, Jakov Krnic, Issa Nseir, Markus Wallin, Gustav Wassbäck.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    </div>
+  </body>
+</html>

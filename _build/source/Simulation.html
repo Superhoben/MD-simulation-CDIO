@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Simulation package &#8212; Computational Physics Project 0.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=8fc2db88" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=d7c963c3"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Computational Physics Project 0.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Simulation package</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="simulation-package">
+<h1>Simulation package<a class="headerlink" href="#simulation-package" title="Permalink to this heading">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="module-Simulation.calc_bulk_properties">
+<span id="simulation-calc-bulk-properties-module"></span><h2>Simulation.calc_bulk_properties module<a class="headerlink" href="#module-Simulation.calc_bulk_properties" title="Permalink to this heading">¶</a></h2>
+<p>The file is for calculation of bulk properties.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="Simulation.calc_bulk_properties.calc_bulk_modulus">
+<span class="sig-prename descclassname"><span class="pre">Simulation.calc_bulk_properties.</span></span><span class="sig-name descname"><span class="pre">calc_bulk_modulus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'bulk_modulus':</span> <span class="pre">[]}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Simulation/calc_bulk_properties.html#calc_bulk_modulus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Simulation.calc_bulk_properties.calc_bulk_modulus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the equilibrium bulk modulus B for solids using the equation of state.</p>
+<p>It is directly connnected to the second derivative given by the equation
+B = V * (d^2E/dV^2), bulk modulus (incompressibility constant) is a measure of
+substance’s resistance to changes in volume when subject to compressive force from
+all directions.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>atoms(ase atom object): The system to calculate the bulk modulus for
+traj_file: List of configuration files which provide us with volumes and potential energies</p>
+</dd>
+<dt>Returns:</dt><dd><p>(float): The optimal bulk modulus in eV/Ångstrom^3</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Simulation.calc_bulk_properties.calc_elastic">
+<span class="sig-prename descclassname"><span class="pre">Simulation.calc_bulk_properties.</span></span><span class="sig-name descname"><span class="pre">calc_elastic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'bulk_modulus_from_tensor':</span> <span class="pre">[],</span> <span class="pre">'elastic_tensor_c11':</span> <span class="pre">[],</span> <span class="pre">'poisson_ratio':</span> <span class="pre">[],</span> <span class="pre">'shear_modulus':</span> <span class="pre">[],</span> <span class="pre">'youngs_modulus':</span> <span class="pre">[]}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Simulation/calc_bulk_properties.html#calc_elastic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Simulation.calc_bulk_properties.calc_elastic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the elastic tensor C11.</p>
+<p>This is somewhat computationally heavy for large systems. Computational
+cost increases exponentially with the size of the system.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>atoms(ase atoms object): Atoms object to calculate the tensor for.
+output_dict(dict): Dictionary to append the result to.</p>
+</dd>
+<dt>Returns:</dt><dd><p>(float): Elastic tensor C11 in GPa.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Simulation.calc_bulk_properties.calculate_cohesive_energy">
+<span class="sig-prename descclassname"><span class="pre">Simulation.calc_bulk_properties.</span></span><span class="sig-name descname"><span class="pre">calculate_cohesive_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'cohesive_energy':</span> <span class="pre">[]}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Simulation/calc_bulk_properties.html#calculate_cohesive_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Simulation.calc_bulk_properties.calculate_cohesive_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the cohesive energy of an Atoms object, molecule, cluster or Bulk).</p>
+<p>Keep in mind that the attached calculator should support the atoms object your are trying to create
+To calculate the cohesive energy of an Atoms object, crystal(cluster/Bulk), etc.
+we need first to find the energy required to separate its components
+into neutral free atoms at rest and at infinite separation,
+Formula: Cohesive energy=(isolated atoms potential energies-total atoms potential energy)/nr of atoms</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>atoms (ASE atoms object): The ASE atoms object for which to calculate the cohesive energy.
+output_dict(dict): Dictionary to append the result to.</p>
+</dd>
+<dt>Returns:</dt><dd><p>(float): The Cohesive energy in eV.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-Simulation.calc_properties">
+<span id="simulation-calc-properties-module"></span><h2>Simulation.calc_properties module<a class="headerlink" href="#module-Simulation.calc_properties" title="Permalink to this heading">¶</a></h2>
+<p>This script calculated the intesive and extensive properties.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="Simulation.calc_properties.approx_lattice_constant">
+<span class="sig-prename descclassname"><span class="pre">Simulation.calc_properties.</span></span><span class="sig-name descname"><span class="pre">approx_lattice_constant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Simulation/calc_properties.html#approx_lattice_constant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Simulation.calc_properties.approx_lattice_constant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the approximate lattice constant</p>
+<p>This is done by finding the distances to the four nearest neighbours for 
+every atom, summing the results and dividing by the amount of results</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>atoms(ase atom object): The system to calculate the lattice constant for.</p>
+</dd>
+<dt>Returns:</dt><dd><p>(float): The approximate lattice constant.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Simulation.calc_properties.calc_energy">
+<span class="sig-prename descclassname"><span class="pre">Simulation.calc_properties.</span></span><span class="sig-name descname"><span class="pre">calc_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'kinetic_energy':</span> <span class="pre">[],</span> <span class="pre">'potential_energy':</span> <span class="pre">[],</span> <span class="pre">'total_energy':</span> <span class="pre">[]}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Simulation/calc_properties.html#calc_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Simulation.calc_properties.calc_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the total, kinetic, and potential energy of atoms object.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>atoms(ase atom object): The system to calculate the energy for.
+output_dict(dict): Dictionary to append the result to.</p>
+</dd>
+<dt>Returns:</dt><dd><p>(float): The calculated total energy.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Simulation.calc_properties.calc_mean_square_displacement">
+<span class="sig-prename descclassname"><span class="pre">Simulation.calc_properties.</span></span><span class="sig-name descname"><span class="pre">calc_mean_square_displacement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'mean_square_displacement':</span> <span class="pre">[]}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Simulation/calc_properties.html#calc_mean_square_displacement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Simulation.calc_properties.calc_mean_square_displacement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the mean square displacement of atoms object.</p>
+<p>The formula used is MSD=1/N*sum{(r_i(t_n)-r_i(t_0))^2 where r_i is the
+position of atom i at time t_n and N is the number of atoms</p>
+<dl>
+<dt>Args:</dt><dd><p>atoms(ase atom object): the system to calculate the mean square displacement for
+external_field(function(Atoms)-&gt;np.array): A function which takes an ase Atom object</p>
+<blockquote>
+<div><p>and returns the force on each atom as an array in the same format as Atoms.force
+function would but converted to an np.array. For N atoms in 3 dimensions:
+[[f_x_atom1, f_y_atom1, f_z_atom1], …, [f_x_atomN, f_y_atomN, f_z_atomN]]</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>(float): the calculated mean square displacement</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Simulation.calc_properties.calc_pressure">
+<span class="sig-prename descclassname"><span class="pre">Simulation.calc_properties.</span></span><span class="sig-name descname"><span class="pre">calc_pressure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'pressure':</span> <span class="pre">[]}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Simulation/calc_properties.html#calc_pressure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Simulation.calc_properties.calc_pressure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate pressure of atoms object with or without an external field.</p>
+<p>The formula used is P=1/3V*(2*E_kin(t)+sum_over_all_atoms{r_i*f_i}) where
+r_i and f_i is the position of and force on atom i and V referes to the
+volume of the unitcell.</p>
+<dl>
+<dt>Args:</dt><dd><p>atoms(ase atom object): The system to calculate the pressure for.
+output_dict(dict): Dictionary to append the result to.
+external_field(function(Atoms)-&gt;np.array): A function which takes an ase Atom object</p>
+<blockquote>
+<div><p>and returns the force on each atom as an array in the same format as Atoms.force
+function would but converted to an np.array. For N atoms in 3 dimensions:
+[[f_x_atom1, f_y_atom1, f_z_atom1], …, [f_x_atomN, f_y_atomN, f_z_atomN]]</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>(float): The calculated pressure in GPa (giga pascal).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Simulation.calc_properties.calc_temp">
+<span class="sig-prename descclassname"><span class="pre">Simulation.calc_properties.</span></span><span class="sig-name descname"><span class="pre">calc_temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'temperature':</span> <span class="pre">[]}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Simulation/calc_properties.html#calc_temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Simulation.calc_properties.calc_temp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the temperature of atoms object.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>atoms(ase atom object): The system to calculate the temperature for.
+output_dict(dict): Dictionary to append the result to.</p>
+</dd>
+<dt>Returns:</dt><dd><p>(float): The calculated temperature.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Simulation.calc_properties.calculate_specific_heat">
+<span class="sig-prename descclassname"><span class="pre">Simulation.calc_properties.</span></span><span class="sig-name descname"><span class="pre">calculate_specific_heat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Simulation/calc_properties.html#calculate_specific_heat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Simulation.calc_properties.calculate_specific_heat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate specific heat capacity of atoms object.</p>
+<p>Two formulas are used here, for NVE or NVT ensemble:
+1. For NVE: heat capacity = 3*N*kB / 2*(1-(2*variance of the kinetic energy/Number of atoms^2)/3*kB^2*T^2)
+2. For NVT: heat capacity = (variance of the total energy/Number of atoms^2) /kB * T^2
+Finally the specific heat capacity = Heat capactiy / sum of the atoms masses</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>atoms(ase atom object): The system to calculate the specific heat capacity for.
+config_file(str): Name of the file with user’s parameters.
+output_dict(dict): Dictionary to append the result to.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Specific heat capacity(float): The calculated specific heat capacity in Joule/Kilogram * Kelvin (J/Kg*K)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Simulation.calc_properties.lindemann_criterion">
+<span class="sig-prename descclassname"><span class="pre">Simulation.calc_properties.</span></span><span class="sig-name descname"><span class="pre">lindemann_criterion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'lindemann_criterion':</span> <span class="pre">[]}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Simulation/calc_properties.html#lindemann_criterion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Simulation.calc_properties.lindemann_criterion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the Lindemann criterion of atoms object.</p>
+<p>The formula used is L = 1/d*(MSD)^(1/2).</p>
+<dl>
+<dt>Args:</dt><dd><p>atoms(ase atom object): the system to calculate the lindemann criterion for
+external_field(function(Atoms)-&gt;np.array): A function which takes an ase Atom object</p>
+<blockquote>
+<div><p>and returns the force on each atom as an array in the same format as Atoms.force
+function would but converted to an np.array. For N atoms in 3 dimensions:
+[[f_x_atom1, f_y_atom1, f_z_atom1], …, [f_x_atomN, f_y_atomN, f_z_atomN]]</p>
+</div></blockquote>
+<p>d(int): the nearest neighbour distance between the atoms</p>
+</dd>
+<dt>Returns:</dt><dd><p>(float): the calculated Lindemann criterion</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Simulation.calc_properties.self_diffusion_coefficent">
+<span class="sig-prename descclassname"><span class="pre">Simulation.calc_properties.</span></span><span class="sig-name descname"><span class="pre">self_diffusion_coefficent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'lindemann_criterion':</span> <span class="pre">[]}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_elapsed_per_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Simulation/calc_properties.html#self_diffusion_coefficent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Simulation.calc_properties.self_diffusion_coefficent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the self-diffusion coefficient of atoms object.</p>
+<p>The formula used is D = 1/(6*t)*MSD where t is time elapsed at a certian iteration</p>
+<dl>
+<dt>Args:</dt><dd><p>atoms(ase atom object): the system to calculate the self-diffusion coefficient for
+external_field(function(Atoms)-&gt;np.array): A function which takes an ase Atom object</p>
+<blockquote>
+<div><p>and returns the force on each atom as an array in the same format as Atoms.force
+function would but converted to an np.array. For N atoms in 3 dimensions:
+[[f_x_atom1, f_y_atom1, f_z_atom1], …, [f_x_atomN, f_y_atomN, f_z_atomN]]</p>
+</div></blockquote>
+<p>time_elapsed_per_interval(s): number of seconds that have passed per iteration</p>
+</dd>
+<dt>Returns:</dt><dd><p>(float): the calculated self-diffusion coefficient</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-Simulation.lattice_constant">
+<span id="simulation-lattice-constant-module"></span><h2>Simulation.lattice_constant module<a class="headerlink" href="#module-Simulation.lattice_constant" title="Permalink to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="Simulation.lattice_constant.optimize_scaling">
+<span class="sig-prename descclassname"><span class="pre">Simulation.lattice_constant.</span></span><span class="sig-name descname"><span class="pre">optimize_scaling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'iterations_to_find_scaling':</span> <span class="pre">[],</span> <span class="pre">'optimal_scaling':</span> <span class="pre">[]}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Simulation/lattice_constant.html#optimize_scaling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Simulation.lattice_constant.optimize_scaling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the optimal scaling of the lattice constant using a gradient descent method.</p>
+<p>The gradient descent method is modified by a sigmoid function since energy changes
+can become very extreme as some potential depend on the -12th power of the distance
+so starting with half the correct distance can result in approximately 4000 times the
+energy which would make a normal gradient search go crazy even with a reasonable
+learning rate. The new scaling s_(k+1) is calculated as:
+e_gradient = (e_(k) - e_(k-1)) / (s_(k) - s_(k-1))
+s_(k+1) = s_(k) - learning_rate*sigmoid(e_gradient)
+The energy at a certain scaling is calculated by using the simulation_function.</p>
+<dl>
+<dt>Args:</dt><dd><p>atoms(ASE atoms object): The configuration to find an optimal lattice constant for
+output_dict(dict): Dictionary to append the result to.
+learning_rate(float): The scaling converges quicker for larger values but if</p>
+<blockquote>
+<div><p>it’s too large the scaling will oscillate and not converge at all</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>scaling(float): Return the scaling factor which would give the inputed atoms object</dt><dd><p>the lowest possible energy</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Simulation.lattice_constant.optimize_scaling_using_simulation">
+<span class="sig-prename descclassname"><span class="pre">Simulation.lattice_constant.</span></span><span class="sig-name descname"><span class="pre">optimize_scaling_using_simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulation_settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'iterations_to_find_scaling':</span> <span class="pre">[],</span> <span class="pre">'optimal_scaling':</span> <span class="pre">[]}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Simulation/lattice_constant.html#optimize_scaling_using_simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Simulation.lattice_constant.optimize_scaling_using_simulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the optimal scaling of the lattice constant using a gradient descent method.</p>
+<p>The gradient descent method is modified by a sigmoid function since energy changes
+can become very extreme as some potential depend on the -12th power of the distance
+so starting with half the correct distance can result in approximately 4000 times the
+energy which would make a normal gradient search go crazy even with a reasonable
+learning rate. The new scaling s_(k+1) is calculated as:
+e_gradient = (e_(k) - e_(k-1)) / (s_(k) - s_(k-1))
+s_(k+1) = s_(k) - learning_rate*sigmoid(e_gradient)
+The energy at a certain scaling is calculated by using the simulation_function.</p>
+<dl>
+<dt>Args:</dt><dd><p>atoms(ASE atoms object): The configuration to find an optimal lattice constant for
+simulation_settings(dict): Dictionary of simulation settings to use.
+output_dict(dict): Dictionary to append the result to.
+learning_rate(float): The scaling converges quicker for larger values but if</p>
+<blockquote>
+<div><p>it’s too large the scaling will oscillate and not converge at all</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>scaling(float): Return the scaling factor which would give the inputed atoms object</dt><dd><p>the lowest possible energy</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-Simulation.run_md_simulation">
+<span id="simulation-run-md-simulation-module"></span><h2>Simulation.run_md_simulation module<a class="headerlink" href="#module-Simulation.run_md_simulation" title="Permalink to this heading">¶</a></h2>
+<p>This runs MD simulations.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="Simulation.run_md_simulation.print_and_increase_progress">
+<span class="sig-prename descclassname"><span class="pre">Simulation.run_md_simulation.</span></span><span class="sig-name descname"><span class="pre">print_and_increase_progress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">progress</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_number</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Simulation/run_md_simulation.html#print_and_increase_progress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Simulation.run_md_simulation.print_and_increase_progress" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Simulation.run_md_simulation.run_md_simulations">
+<span class="sig-prename descclassname"><span class="pre">Simulation.run_md_simulation.</span></span><span class="sig-name descname"><span class="pre">run_md_simulations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trajectory_file_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Simulation/run_md_simulation.html#run_md_simulations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Simulation.run_md_simulation.run_md_simulations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run md simulations for multiple configs and trajectory files.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>config_file_list(list[str]): List of names of files with parameters to</dt><dd><p>use in the simulations.</p>
+</dd>
+<dt>traj_file(str): List of name of trajectory files with the atoms object</dt><dd><p>to use in the simulations</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Simulation.run_md_simulation.run_single_md_simulation">
+<span class="sig-prename descclassname"><span class="pre">Simulation.run_md_simulation.</span></span><span class="sig-name descname"><span class="pre">run_single_md_simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traj_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Simulation/run_md_simulation.html#run_single_md_simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Simulation.run_md_simulation.run_single_md_simulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run md simulation for a single trajectory file, with parameters specified in config.</p>
+<dl>
+<dt>Args:</dt><dd><p>config_file(str): Name of file with parameters to use in simulation.
+traj_file(str): Name of trajectory file with the atoms object to use</p>
+<blockquote>
+<div><p>in simulation</p>
+</div></blockquote>
+<p>output_name(str): Name of file to write results to</p>
+</dd>
+<dt>Returns:</dt><dd><p>atoms(ase atoms object): The ase atoms object after simulation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-Simulation.simple_simulation">
+<span id="simulation-simple-simulation-module"></span><h2>Simulation.simple_simulation module<a class="headerlink" href="#module-Simulation.simple_simulation" title="Permalink to this heading">¶</a></h2>
+<p>This is intended for relaxing structures during property calculations.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="Simulation.simple_simulation.calc_total_energy">
+<span class="sig-prename descclassname"><span class="pre">Simulation.simple_simulation.</span></span><span class="sig-name descname"><span class="pre">calc_total_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'total_energy':</span> <span class="pre">[]}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Simulation/simple_simulation.html#calc_total_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Simulation.simple_simulation.calc_total_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the total energy of atoms object.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>atoms(ase atom object): The system to calculate the energy for.
+output_dict(dict): Dictionary to append the result to.</p>
+</dd>
+<dt>Returns:</dt><dd><p>(float): The calculated total energy.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Simulation.simple_simulation.run_simple_md_simulation">
+<span class="sig-prename descclassname"><span class="pre">Simulation.simple_simulation.</span></span><span class="sig-name descname"><span class="pre">run_simple_md_simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulation_settings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_average_energy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Simulation/simple_simulation.html#run_simple_md_simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Simulation.simple_simulation.run_simple_md_simulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run md simulation for an atoms object, with parameters from a dict.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>atoms(ase atom object): The system to bully with simulation.
+simulation_settings(dict): Dictionary of simulation settings.</p>
+</dd>
+<dt>Returns:</dt><dd><p>atoms(ase atoms object): The ase atoms object after simulation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-Simulation">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-Simulation" title="Permalink to this heading">¶</a></h2>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Simulation package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-Simulation.calc_bulk_properties">Simulation.calc_bulk_properties module</a><ul>
+<li><a class="reference internal" href="#Simulation.calc_bulk_properties.calc_bulk_modulus"><code class="docutils literal notranslate"><span class="pre">calc_bulk_modulus()</span></code></a></li>
+<li><a class="reference internal" href="#Simulation.calc_bulk_properties.calc_elastic"><code class="docutils literal notranslate"><span class="pre">calc_elastic()</span></code></a></li>
+<li><a class="reference internal" href="#Simulation.calc_bulk_properties.calculate_cohesive_energy"><code class="docutils literal notranslate"><span class="pre">calculate_cohesive_energy()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-Simulation.calc_properties">Simulation.calc_properties module</a><ul>
+<li><a class="reference internal" href="#Simulation.calc_properties.approx_lattice_constant"><code class="docutils literal notranslate"><span class="pre">approx_lattice_constant()</span></code></a></li>
+<li><a class="reference internal" href="#Simulation.calc_properties.calc_energy"><code class="docutils literal notranslate"><span class="pre">calc_energy()</span></code></a></li>
+<li><a class="reference internal" href="#Simulation.calc_properties.calc_mean_square_displacement"><code class="docutils literal notranslate"><span class="pre">calc_mean_square_displacement()</span></code></a></li>
+<li><a class="reference internal" href="#Simulation.calc_properties.calc_pressure"><code class="docutils literal notranslate"><span class="pre">calc_pressure()</span></code></a></li>
+<li><a class="reference internal" href="#Simulation.calc_properties.calc_temp"><code class="docutils literal notranslate"><span class="pre">calc_temp()</span></code></a></li>
+<li><a class="reference internal" href="#Simulation.calc_properties.calculate_specific_heat"><code class="docutils literal notranslate"><span class="pre">calculate_specific_heat()</span></code></a></li>
+<li><a class="reference internal" href="#Simulation.calc_properties.lindemann_criterion"><code class="docutils literal notranslate"><span class="pre">lindemann_criterion()</span></code></a></li>
+<li><a class="reference internal" href="#Simulation.calc_properties.self_diffusion_coefficent"><code class="docutils literal notranslate"><span class="pre">self_diffusion_coefficent()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-Simulation.lattice_constant">Simulation.lattice_constant module</a><ul>
+<li><a class="reference internal" href="#Simulation.lattice_constant.optimize_scaling"><code class="docutils literal notranslate"><span class="pre">optimize_scaling()</span></code></a></li>
+<li><a class="reference internal" href="#Simulation.lattice_constant.optimize_scaling_using_simulation"><code class="docutils literal notranslate"><span class="pre">optimize_scaling_using_simulation()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-Simulation.run_md_simulation">Simulation.run_md_simulation module</a><ul>
+<li><a class="reference internal" href="#Simulation.run_md_simulation.print_and_increase_progress"><code class="docutils literal notranslate"><span class="pre">print_and_increase_progress()</span></code></a></li>
+<li><a class="reference internal" href="#Simulation.run_md_simulation.run_md_simulations"><code class="docutils literal notranslate"><span class="pre">run_md_simulations()</span></code></a></li>
+<li><a class="reference internal" href="#Simulation.run_md_simulation.run_single_md_simulation"><code class="docutils literal notranslate"><span class="pre">run_single_md_simulation()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-Simulation.simple_simulation">Simulation.simple_simulation module</a><ul>
+<li><a class="reference internal" href="#Simulation.simple_simulation.calc_total_energy"><code class="docutils literal notranslate"><span class="pre">calc_total_energy()</span></code></a></li>
+<li><a class="reference internal" href="#Simulation.simple_simulation.run_simple_md_simulation"><code class="docutils literal notranslate"><span class="pre">run_simple_md_simulation()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-Simulation">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/source/Simulation.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Computational Physics Project 0.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Simulation package</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2023, Alice Eriksson, Emelie Eriksson, Jakov Krnic, Issa Nseir, Markus Wallin, Gustav Wassbäck.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    </div>
+  </body>
+</html>

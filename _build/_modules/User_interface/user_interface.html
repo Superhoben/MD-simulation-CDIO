@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User_interface.user_interface &#8212; Computational Physics Project 0.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=8fc2db88" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=d7c963c3"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Computational Physics Project 0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">User_interface.user_interface</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for User_interface.user_interface</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This module defines the entire GUI.</span>
+
+<span class="sd">At the time of writing, all functionality is not implemented</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/..&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">filedialog</span>
+<span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">ttk</span>
+<span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">messagebox</span>
+<span class="kn">from</span> <span class="nn">ase.build</span> <span class="kn">import</span> <span class="n">molecule</span>
+<span class="kn">from</span> <span class="nn">ase.io.trajectory</span> <span class="kn">import</span> <span class="n">Trajectory</span>
+<span class="kn">from</span> <span class="nn">asap3</span> <span class="kn">import</span> <span class="n">EMT</span>
+<span class="kn">from</span> <span class="nn">ase.visualize</span> <span class="kn">import</span> <span class="n">view</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">User_interface.plot_in_gui</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">Gather_data.configuration_file_script</span> <span class="k">as</span> <span class="nn">cfs</span>
+<span class="kn">import</span> <span class="nn">Gather_data.download_data</span> 
+<span class="kn">from</span> <span class="nn">Simulation.run_md_simulation</span> <span class="kn">import</span> <span class="n">run_single_md_simulation</span>
+<span class="c1">#from User_API_key.start_program import *</span>
+<span class="kn">from</span> <span class="nn">configparser</span> <span class="kn">import</span> <span class="n">ConfigParser</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">listdir</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">isfile</span>
+<span class="kn">from</span> <span class="nn">API_key.start_program</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">idlelib.tooltip</span> <span class="kn">import</span> <span class="n">Hovertip</span>
+
+
+<div class="viewcode-block" id="initiate_gui"><a class="viewcode-back" href="../../source/User_interface.html#User_interface.user_interface.initiate_gui">[docs]</a><span class="k">def</span> <span class="nf">initiate_gui</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a GUI and defines funtcionality.</span>
+
+<span class="sd">    The gui consists of two main windows. The left one is data inputs aswell</span>
+<span class="sd">    as starting the simulation while the right one is graphic visualisations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Define Tkinter window</span>
+    <span class="n">gui</span> <span class="o">=</span> <span class="n">Tk</span><span class="p">()</span>
+    <span class="n">gui</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Molecular Dynamics simulations&quot;</span><span class="p">)</span>
+    <span class="n">gui</span><span class="o">.</span><span class="n">geometry</span><span class="p">(</span><span class="s2">&quot;1200x900&quot;</span><span class="p">)</span>
+    <span class="n">gui</span><span class="o">.</span><span class="n">resizable</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># </span>
+    <span class="c1"># Define the 2 different main sections of the gui.</span>
+    <span class="n">data_frame</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="n">gui</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="s2">&quot;medium aquamarine&quot;</span><span class="p">)</span>
+    <span class="n">data_frame</span><span class="o">.</span><span class="n">pack_propagate</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">data_frame</span><span class="o">.</span><span class="n">grid_propagate</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">data_frame</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="n">LEFT</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="n">BOTH</span><span class="p">)</span>
+    <span class="n">data_frame</span><span class="o">.</span><span class="n">columnconfigure</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">data_frame</span><span class="o">.</span><span class="n">columnconfigure</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">plot_frame</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="n">gui</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="s2">&quot;light blue&quot;</span><span class="p">)</span>
+    <span class="n">plot_frame</span><span class="o">.</span><span class="n">pack_propagate</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">plot_frame</span><span class="o">.</span><span class="n">grid_propagate</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">plot_frame</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="n">RIGHT</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="n">BOTH</span><span class="p">)</span>
+
+    <span class="n">tabs</span> <span class="o">=</span> <span class="n">ttk</span><span class="o">.</span><span class="n">Notebook</span><span class="p">(</span><span class="n">plot_frame</span><span class="p">)</span>
+    <span class="n">tabs</span><span class="o">.</span><span class="n">pack</span><span class="p">()</span>
+    <span class="n">tabframe1</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="n">tabs</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s2">&quot;SkyBlue1&quot;</span><span class="p">)</span>
+    <span class="n">tabframe1</span><span class="o">.</span><span class="n">pack_propagate</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">tabframe1</span><span class="o">.</span><span class="n">grid_propagate</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">tabframe1</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="n">BOTH</span><span class="p">)</span>
+
+    <span class="n">tabframe2</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="n">tabs</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s2">&quot;SkyBlue1&quot;</span><span class="p">)</span>
+    <span class="n">tabframe2</span><span class="o">.</span><span class="n">pack_propagate</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">tabframe2</span><span class="o">.</span><span class="n">grid_propagate</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">tabframe2</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="n">BOTH</span><span class="p">)</span>
+
+    <span class="n">tabs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tabframe1</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Visualisation&quot;</span><span class="p">)</span>
+    <span class="n">tabs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tabframe2</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Data output&quot;</span><span class="p">)</span>
+
+    <span class="n">text_box_frame</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="n">tabframe2</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s2">&quot;lemon chiffon&quot;</span><span class="p">)</span>
+    <span class="n">text_box_frame</span><span class="o">.</span><span class="n">pack_propagate</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">text_box_frame</span><span class="o">.</span><span class="n">grid_propagate</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">text_box_frame</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">225</span><span class="p">)</span> 
+
+
+    <span class="n">text_box</span> <span class="o">=</span> <span class="n">Text</span><span class="p">(</span><span class="n">text_box_frame</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="s2">&quot;lemon chiffon&quot;</span><span class="p">)</span>
+    <span class="n">text_box</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">text_box</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s2">&quot;disabled&quot;</span><span class="p">)</span>
+
+    <span class="n">ax_canvas</span><span class="p">,</span> <span class="n">plot_title</span> <span class="o">=</span> <span class="n">plot_backbone</span><span class="p">(</span><span class="n">tabframe1</span><span class="p">)</span>
+
+    <span class="c1"># Frame 1</span>
+    <span class="c1"># Config settings</span>
+    <span class="c1"># inits different data fields and buttons.</span>
+    <span class="n">rownumber</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">potential_label</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Choose potential&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">potential_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">potential_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;EMT&quot;</span><span class="p">,</span> <span class="s2">&quot;LennardJones&quot;</span><span class="p">]</span>
+    <span class="n">value_inside_potential_list</span> <span class="o">=</span> <span class="n">StringVar</span><span class="p">(</span><span class="n">gui</span><span class="p">)</span>
+    <span class="n">value_inside_potential_list</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;Select an Option&quot;</span><span class="p">)</span>
+    <span class="n">potential_menu</span> <span class="o">=</span> <span class="n">OptionMenu</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">value_inside_potential_list</span><span class="p">,</span>
+                                <span class="o">*</span><span class="n">potential_list</span><span class="p">)</span>
+    <span class="n">potential_menu</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">ensamble_label</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Ensemble&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">ensamble_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">ensamble_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;NVE&quot;</span><span class="p">,</span> <span class="s2">&quot;NVT&quot;</span><span class="p">]</span>
+    <span class="n">value_inside_ensemble_list</span> <span class="o">=</span> <span class="n">StringVar</span><span class="p">(</span><span class="n">gui</span><span class="p">)</span>
+    <span class="n">value_inside_ensemble_list</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;Select an Option&quot;</span><span class="p">)</span>
+    <span class="n">ensemble_menu</span> <span class="o">=</span> <span class="n">OptionMenu</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">value_inside_ensemble_list</span><span class="p">,</span>
+                               <span class="o">*</span><span class="n">ensamble_list</span><span class="p">)</span>
+    <span class="n">ensemble_menu</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">temperature_label</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Temperature (K)&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">temperature_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">temperature_entry</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="n">data_frame</span><span class="p">)</span>
+    <span class="n">temperature_entry</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">steps_label</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Number of steps&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">steps_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">steps_entry</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="n">data_frame</span><span class="p">)</span>
+    <span class="n">steps_entry</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">time_steps_label</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Time step (fs)&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">time_steps_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">time_steps_entry</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="n">data_frame</span><span class="p">)</span>
+    <span class="n">time_steps_entry</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">friction_label</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Friction&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">friction_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">friction_entry</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="n">data_frame</span><span class="p">)</span>
+    <span class="n">friction_entry</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">rec_cohesive_label</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Intervals for recording attributes&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">35</span><span class="p">)</span>
+    <span class="n">rec_cohesive_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>    
+    <span class="n">rec_basic_properties_label</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Basic Properties&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">rec_basic_properties_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">rec_basic_properties_entry</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="n">data_frame</span><span class="p">)</span>
+    <span class="n">rec_basic_properties_entry</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">Hovertip</span><span class="p">(</span><span class="n">rec_basic_properties_label</span><span class="p">,</span> <span class="s2">&quot;Energy</span><span class="se">\n</span><span class="s2">Temperature</span><span class="se">\n</span><span class="s2">Pressure&quot;</span><span class="p">,</span> <span class="n">hover_delay</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">rec_physical_properties_label</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Physical Properties&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">rec_physical_properties_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">rec_physical_properties_entry</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="n">data_frame</span><span class="p">)</span>
+    <span class="n">rec_physical_properties_entry</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">Hovertip</span><span class="p">(</span><span class="n">rec_physical_properties_label</span><span class="p">,</span> <span class="s2">&quot;Mean Square Displacement</span><span class="se">\n</span><span class="s2">Lindemann criterion</span><span class="se">\n</span><span class="s2">Self-diffusion coefficient&quot;</span><span class="p">,</span> <span class="n">hover_delay</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">rec_elasticbulk_label</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Elastic/bulk&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">rec_elasticbulk_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">rec_elasticbulk_entry</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="n">data_frame</span><span class="p">)</span>
+    <span class="n">rec_elasticbulk_entry</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">Hovertip</span><span class="p">(</span><span class="n">rec_elasticbulk_label</span><span class="p">,</span> <span class="s2">&quot;Elastic tensor</span><span class="se">\n</span><span class="s2">Bulk modulus&quot;</span><span class="p">,</span> <span class="n">hover_delay</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">rec_configuration_label</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Configuration&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">rec_configuration_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">rec_configuration_entry</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="n">data_frame</span><span class="p">)</span>
+    <span class="n">rec_configuration_entry</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">rec_scaling_label</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Optimal scaling&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">rec_scaling_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">rec_scaling_entry</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="n">data_frame</span><span class="p">)</span>
+    <span class="n">rec_scaling_entry</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">config_name_label</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Config file name&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">config_name_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">config_name_entry</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="n">data_frame</span><span class="p">)</span>
+    <span class="n">config_name_entry</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">config_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Write to config file&#39;</span><span class="p">,</span>
+                           <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">write_to_config</span><span class="p">(</span>
+                               <span class="n">config_name_entry</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span>
+                               <span class="n">value_inside_ensemble_list</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span>
+                               <span class="n">temperature_entry</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="ow">or</span> <span class="s2">&quot;500&quot;</span><span class="p">,</span>
+                               <span class="n">value_inside_potential_list</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span>
+                               <span class="n">steps_entry</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="ow">or</span> <span class="s2">&quot;5000&quot;</span><span class="p">,</span>
+                               <span class="n">time_steps_entry</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="ow">or</span> <span class="s2">&quot;5&quot;</span><span class="p">,</span>
+                               <span class="n">friction_entry</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="ow">or</span> <span class="s2">&quot;0.005&quot;</span><span class="p">,</span>
+                               <span class="n">rec_basic_properties_entry</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="ow">or</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+                               <span class="n">rec_physical_properties_entry</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="ow">or</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+                               <span class="n">rec_elasticbulk_entry</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="ow">or</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+                               <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+                               <span class="n">rec_configuration_entry</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="ow">or</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+                               <span class="n">rec_scaling_entry</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="ow">or</span> <span class="s2">&quot;0&quot;</span>
+                               <span class="p">)</span>
+                           <span class="p">)</span>
+    <span class="n">config_button</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">sep_label1</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">bg</span> <span class="o">=</span> <span class="s2">&quot;medium aquamarine&quot;</span><span class="p">)</span>
+    <span class="n">sep_label1</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">columnspan</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span>
+
+
+    <span class="c1"># Gather data</span>
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">materialID_label</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Material ID&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">materialID_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">materialID_entry</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="n">data_frame</span><span class="p">)</span>
+    <span class="n">materialID_entry</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">cell_size_label</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Supercell size&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">cell_size_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">cell_size_entry</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="n">data_frame</span><span class="p">)</span>
+    <span class="n">cell_size_entry</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">gather_data_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Gather material data&#39;</span><span class="p">,</span>
+                                <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">send_mat_id_to_gather_data</span><span class="p">(</span>
+                                <span class="n">materialID_entry</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">cell_size_entry</span><span class="o">.</span><span class="n">get</span><span class="p">()))</span>
+    <span class="n">gather_data_button</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="n">update_api_key</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Update API key &#39;</span><span class="p">,</span>
+                                <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">prompt_for_api_key</span><span class="p">())</span>
+    <span class="n">update_api_key</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">sep_label2</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">bg</span> <span class="o">=</span> <span class="s2">&quot;medium aquamarine&quot;</span><span class="p">)</span>
+    <span class="n">sep_label2</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">columnspan</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span>
+
+    <span class="c1"># Simulation</span>
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">config_files_label</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Config files&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">config_files_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Creates a list which contains the file names of all the files in a directory</span>
+    <span class="c1"># In this case the directory is the one we&#39;re standing in (since listdir has no input)</span>
+    <span class="n">config_files</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Initializing list&quot;</span><span class="p">]</span>
+    <span class="n">value_inside_config_files_list</span> <span class="o">=</span> <span class="n">StringVar</span><span class="p">(</span><span class="n">gui</span><span class="p">)</span>
+    <span class="n">value_inside_config_files_list</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;Select a config file&quot;</span><span class="p">)</span>
+
+    <span class="n">config_files_menu</span> <span class="o">=</span> <span class="n">OptionMenu</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">value_inside_config_files_list</span><span class="p">,</span>
+                                <span class="o">*</span><span class="n">config_files</span><span class="p">)</span>
+
+    <span class="c1"># Argument trick to allow us to send in more than one argument to the event handler, config_files_menu.bind(&#39;&lt;Button-1&gt;&#39;, config_handler)</span>
+    <span class="c1"># For the curious, see: https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/extra-args.html </span>
+    <span class="k">def</span> <span class="nf">config_handler</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">config_files_menu</span><span class="o">=</span><span class="n">config_files_menu</span><span class="p">,</span> <span class="n">value_inside_config_files_list</span><span class="o">=</span><span class="n">value_inside_config_files_list</span><span class="p">):</span>   
+        <span class="k">return</span> <span class="n">update_input_config_list</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">config_files_menu</span><span class="p">,</span> <span class="n">value_inside_config_files_list</span><span class="p">)</span>
+    <span class="n">config_files_menu</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s1">&#39;&lt;Button-1&gt;&#39;</span><span class="p">,</span> <span class="n">config_handler</span><span class="p">)</span>    
+
+    <span class="n">config_files_menu</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">ensamble_label</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;.traj files&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">ensamble_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">traj_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">listdir</span><span class="p">()</span> <span class="k">if</span> <span class="n">isfile</span><span class="p">(</span><span class="n">file</span><span class="p">)]</span>
+    <span class="n">value_inside_traj_list</span> <span class="o">=</span> <span class="n">StringVar</span><span class="p">(</span><span class="n">gui</span><span class="p">)</span>
+    <span class="n">value_inside_traj_list</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;Select a .traj file&quot;</span><span class="p">)</span>
+
+    <span class="n">input_traj_menu</span> <span class="o">=</span> <span class="n">OptionMenu</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">value_inside_traj_list</span><span class="p">,</span>
+                               <span class="o">*</span><span class="n">traj_list</span><span class="p">)</span>
+
+    <span class="c1"># Same as for config handler</span>
+    <span class="k">def</span> <span class="nf">input_traj_handler</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">traj_menu</span><span class="o">=</span><span class="n">input_traj_menu</span><span class="p">,</span> <span class="n">value_inside_traj_list</span><span class="o">=</span><span class="n">value_inside_traj_list</span><span class="p">):</span>   
+        <span class="k">return</span> <span class="n">update_input_traj_list</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">traj_menu</span><span class="p">,</span> <span class="n">value_inside_traj_list</span><span class="p">)</span>
+    <span class="n">input_traj_menu</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s1">&#39;&lt;Button-1&gt;&#39;</span><span class="p">,</span> <span class="n">input_traj_handler</span><span class="p">)</span>  
+
+    <span class="n">input_traj_menu</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c1"># Load traj file data</span>
+    <span class="n">output_name_label</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Output name&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">output_name_label</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">output_name_entry</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="n">data_frame</span><span class="p">)</span>
+    <span class="n">output_name_entry</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Start sim button </span>
+    <span class="n">md_sim_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Start Simulation&#39;</span><span class="p">,</span>
+                           <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">run_single_md_simulation</span><span class="p">(</span><span class="n">value_inside_config_files_list</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> 
+                                                                    <span class="n">value_inside_traj_list</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span>
+                                                                    <span class="n">output_name_entry</span><span class="o">.</span><span class="n">get</span><span class="p">()))</span>
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">md_sim_button</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">sep_label3</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">bg</span> <span class="o">=</span> <span class="s2">&quot;medium aquamarine&quot;</span><span class="p">)</span>
+    <span class="n">sep_label3</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">columnspan</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span>
+
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">plottable_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Total Energy&quot;</span><span class="p">,</span> <span class="s2">&quot;Kinetic Energy&quot;</span><span class="p">,</span> <span class="s2">&quot;Potential Energy&quot;</span><span class="p">,</span> 
+                            <span class="s2">&quot;Temperature&quot;</span><span class="p">,</span> <span class="s2">&quot;Pressure&quot;</span><span class="p">,</span> <span class="s2">&quot;Bulk Modulus&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;Optimal Scaling&quot;</span><span class="p">,</span> <span class="s2">&quot;Elastic Tensor&quot;</span><span class="p">,</span> <span class="s2">&quot;Mean Square Displacement&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;Lindemann Criterion&quot;</span><span class="p">,</span> <span class="s2">&quot;Self Diffusion Coefficient&quot;</span><span class="p">]</span>
+
+    <span class="n">value_inside_plottable_list</span> <span class="o">=</span> <span class="n">StringVar</span><span class="p">(</span><span class="n">gui</span><span class="p">)</span>
+    <span class="n">value_inside_plottable_list</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;Attribute to plot&quot;</span><span class="p">)</span>
+
+    <span class="n">attributes_menu</span> <span class="o">=</span> <span class="n">OptionMenu</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">value_inside_plottable_list</span><span class="p">,</span>
+                                <span class="o">*</span><span class="n">plottable_attributes</span><span class="p">)</span>
+    
+    <span class="c1">#rownumber += 1</span>
+    <span class="n">attributes_menu</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">output_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">listdir</span><span class="p">()</span> <span class="k">if</span> <span class="n">isfile</span><span class="p">(</span><span class="n">file</span><span class="p">)]</span>
+    <span class="n">value_inside_output_data</span> <span class="o">=</span> <span class="n">StringVar</span><span class="p">(</span><span class="n">gui</span><span class="p">)</span>
+    <span class="n">value_inside_output_data</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;Select an output file&quot;</span><span class="p">)</span>
+
+    <span class="n">output_data_menu</span> <span class="o">=</span> <span class="n">OptionMenu</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">value_inside_output_data</span><span class="p">,</span>
+                               <span class="o">*</span><span class="n">output_data</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">output_data_handler</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">output_data_menu</span><span class="o">=</span><span class="n">output_data_menu</span><span class="p">,</span> <span class="n">value_inside_output_data</span><span class="o">=</span><span class="n">value_inside_output_data</span><span class="p">):</span>   
+        <span class="k">return</span> <span class="n">update_output_txt_list</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">output_data_menu</span><span class="p">,</span> <span class="n">value_inside_output_data</span><span class="p">)</span>
+    <span class="n">output_data_menu</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s1">&#39;&lt;Button-1&gt;&#39;</span><span class="p">,</span> <span class="n">output_data_handler</span><span class="p">)</span>  
+
+    <span class="n">output_data_menu</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Visualise results button</span>
+    <span class="n">plot_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Plot data&#39;</span><span class="p">,</span>
+                            <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">visualise_2D</span><span class="p">(</span><span class="n">value_inside_plottable_list</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">value_inside_output_data</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">ax_canvas</span><span class="p">,</span> <span class="n">text_box</span><span class="p">,</span> <span class="n">tabframe1</span> <span class="p">,</span><span class="kc">False</span><span class="p">,</span><span class="n">plot_title</span><span class="p">))</span>
+
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">plot_button</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">Button</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Open plot in new window&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">visualise_2D</span><span class="p">(</span><span class="n">value_inside_plottable_list</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">value_inside_output_data</span><span class="o">.</span><span class="n">get</span><span class="p">(),</span> <span class="n">ax_canvas</span><span class="p">,</span> <span class="n">text_box</span><span class="p">,</span> <span class="n">tabframe1</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">plot_title</span><span class="o">=</span><span class="s2">&quot;Attribute&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span><span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="n">rownumber</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">output_traj_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">listdir</span><span class="p">()</span> <span class="k">if</span> <span class="n">isfile</span><span class="p">(</span><span class="n">file</span><span class="p">)]</span>
+    <span class="n">value_inside_trajoutput_data</span> <span class="o">=</span> <span class="n">StringVar</span><span class="p">(</span><span class="n">gui</span><span class="p">)</span>
+    <span class="n">value_inside_trajoutput_data</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;Select a trajectory file&quot;</span><span class="p">)</span>
+
+    <span class="n">output_traj_menu</span> <span class="o">=</span> <span class="n">OptionMenu</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">value_inside_trajoutput_data</span><span class="p">,</span>
+                               <span class="o">*</span><span class="n">output_traj_files</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">output_traj_handler</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">output_traj_menu</span><span class="o">=</span><span class="n">output_traj_menu</span><span class="p">,</span> <span class="n">value_inside_trajoutput_data</span><span class="o">=</span><span class="n">value_inside_trajoutput_data</span><span class="p">):</span>   
+        <span class="k">return</span> <span class="n">update_output_traj_list</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">output_traj_menu</span><span class="p">,</span> <span class="n">value_inside_trajoutput_data</span><span class="p">)</span>
+    <span class="n">output_traj_menu</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s1">&#39;&lt;Button-1&gt;&#39;</span><span class="p">,</span> <span class="n">output_traj_handler</span><span class="p">)</span>  
+
+    <span class="n">output_traj_menu</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    
+
+
+    <span class="n">trajbutton</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Look at trajectory&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">animate_traj</span><span class="p">(</span><span class="n">value_inside_trajoutput_data</span><span class="o">.</span><span class="n">get</span><span class="p">()))</span>
+    <span class="n">trajbutton</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">rownumber</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    
+    
+    <span class="c1"># Quit</span>
+    <span class="n">quit_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">data_frame</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Exit Program&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">gui</span><span class="o">.</span><span class="n">quit</span><span class="p">)</span>
+    <span class="n">quit_button</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+
+    <span class="n">Button</span><span class="p">(</span><span class="n">tabframe1</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Clear Graph&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">clear_canvas</span><span class="p">(</span><span class="n">ax_canvas</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ax_canvas</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">plot_title</span><span class="p">))</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">pady</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">gui</span></div>
+
+
+<div class="viewcode-block" id="update_input_config_list"><a class="viewcode-back" href="../../source/User_interface.html#User_interface.user_interface.update_input_config_list">[docs]</a><span class="k">def</span> <span class="nf">update_input_config_list</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">config_files_menu</span><span class="p">,</span> <span class="n">value_inside_config_files_list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Updates the config selection dropdown menu.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        event(tkinter.Event): Handles input events, in our case mouse left click</span>
+<span class="sd">        config_files_menu(tkinter.OptionMenu): Dropdown menu which will be updated</span>
+<span class="sd">        value_inside_config_files_list(tkinter.StringVar): A variable which is set</span>
+<span class="sd">            when the user selects an item in the dropdown menu. The variable is a </span>
+<span class="sd">            string which specifies the filename of the selected item</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/../Input_config_files/&#39;</span>
+    <span class="n">all_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">if</span> <span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="o">+</span><span class="n">file</span><span class="p">)]</span>
+    <span class="n">config_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">all_files</span> <span class="k">if</span> <span class="n">file</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span> <span class="o">==</span> <span class="s2">&quot;.ini&quot;</span><span class="p">]</span>
+    <span class="n">menu</span> <span class="o">=</span> <span class="n">config_files_menu</span><span class="p">[</span><span class="s2">&quot;menu&quot;</span><span class="p">]</span>
+    <span class="n">menu</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">config_file</span> <span class="ow">in</span> <span class="n">config_files</span><span class="p">:</span>
+        <span class="n">menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">config_file</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span> <span class="n">value</span><span class="o">=</span><span class="n">config_file</span><span class="p">:</span> <span class="n">value_inside_config_files_list</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="update_input_traj_list"><a class="viewcode-back" href="../../source/User_interface.html#User_interface.user_interface.update_input_traj_list">[docs]</a><span class="k">def</span> <span class="nf">update_input_traj_list</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">traj_menu</span><span class="p">,</span> <span class="n">value_inside_traj_list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Updates the trajectory selection dropdown menu.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        event(tkinter.Event): Handles input events, in our case mouse left click</span>
+<span class="sd">        traj_menu(tkinter.OptionMenu): Dropdown menu which will be updated</span>
+<span class="sd">        value_inside_traj_list(tkinter.StringVar): A variable which is set</span>
+<span class="sd">            when the user selects an item in the dropdown menu. The variable is a </span>
+<span class="sd">            string which specifies the filename of the selected item</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/../Input_trajectory_files/&#39;</span>
+    <span class="n">all_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">if</span> <span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="o">+</span><span class="n">file</span><span class="p">)]</span>
+    <span class="n">traj_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">all_files</span> <span class="k">if</span> <span class="n">file</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">:]</span> <span class="o">==</span> <span class="s2">&quot;.traj&quot;</span><span class="p">]</span>
+    <span class="n">menu</span> <span class="o">=</span> <span class="n">traj_menu</span><span class="p">[</span><span class="s2">&quot;menu&quot;</span><span class="p">]</span>
+    <span class="n">menu</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">traj_file</span> <span class="ow">in</span> <span class="n">traj_files</span><span class="p">:</span>
+        <span class="n">menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">traj_file</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span> <span class="n">value</span><span class="o">=</span><span class="n">traj_file</span><span class="p">:</span> <span class="n">value_inside_traj_list</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>    </div>
+
+
+<div class="viewcode-block" id="update_output_txt_list"><a class="viewcode-back" href="../../source/User_interface.html#User_interface.user_interface.update_output_txt_list">[docs]</a><span class="k">def</span> <span class="nf">update_output_txt_list</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">output_data_menu</span><span class="p">,</span> <span class="n">value_inside_output_data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Updates the output selection dropdown menu.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        event(tkinter.Event): Handles input events, in our case mouse left click</span>
+<span class="sd">        output_data_menu(tkinter.OptionMenu): Dropdown menu which will be updated</span>
+<span class="sd">        value_inside_output_data(tkinter.StringVar): A variable which is set</span>
+<span class="sd">            when the user selects an item in the dropdown menu. The variable is a </span>
+<span class="sd">            string which specifies the filename of the selected item</span>
+<span class="sd">ax.set_xlabel(&quot;Time [femto seconds]&quot;)</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/../Output_text_files/&#39;</span>
+    <span class="n">all_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">if</span> <span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="o">+</span><span class="n">file</span><span class="p">)]</span>
+    <span class="n">output_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">all_files</span> <span class="k">if</span> <span class="n">file</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span> <span class="o">==</span> <span class="s2">&quot;.txt&quot;</span><span class="p">]</span>
+    <span class="n">menu</span> <span class="o">=</span> <span class="n">output_data_menu</span><span class="p">[</span><span class="s2">&quot;menu&quot;</span><span class="p">]</span>
+    <span class="n">menu</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">output_file</span> <span class="ow">in</span> <span class="n">output_files</span><span class="p">:</span>
+        <span class="n">menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">output_file</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span> <span class="n">value</span><span class="o">=</span><span class="n">output_file</span><span class="p">:</span> <span class="n">value_inside_output_data</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>    </div>
+
+
+<div class="viewcode-block" id="update_output_traj_list"><a class="viewcode-back" href="../../source/User_interface.html#User_interface.user_interface.update_output_traj_list">[docs]</a><span class="k">def</span> <span class="nf">update_output_traj_list</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">traj_menu</span><span class="p">,</span> <span class="n">value_inside_traj_list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Updates the trajectory output selection dropdown menu.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        event(tkinter.Event): Handles input events, in our case mouse left click</span>
+<span class="sd">        traj_menu(tkinter.OptionMenu): Dropdown menu which will be updated</span>
+<span class="sd">        value_inside_traj_list(tkinter.StringVar): A variable which is set</span>
+<span class="sd">            when the user selects an item in the dropdown menu. The variable is a </span>
+<span class="sd">            string which specifies the filename of the selected item</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/../Output_trajectory_files/&#39;</span>
+    <span class="n">all_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">if</span> <span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="o">+</span><span class="n">file</span><span class="p">)]</span>
+    <span class="n">traj_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">all_files</span> <span class="k">if</span> <span class="n">file</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">:]</span> <span class="o">==</span> <span class="s2">&quot;.traj&quot;</span><span class="p">]</span>
+    <span class="n">menu</span> <span class="o">=</span> <span class="n">traj_menu</span><span class="p">[</span><span class="s2">&quot;menu&quot;</span><span class="p">]</span>
+    <span class="n">menu</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">traj_file</span> <span class="ow">in</span> <span class="n">traj_files</span><span class="p">:</span>
+        <span class="n">menu</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">traj_file</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span> <span class="n">value</span><span class="o">=</span><span class="n">traj_file</span><span class="p">:</span> <span class="n">value_inside_traj_list</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="write_to_config"><a class="viewcode-back" href="../../source/User_interface.html#User_interface.user_interface.write_to_config">[docs]</a><span class="k">def</span> <span class="nf">write_to_config</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="s1">&#39;default_config&#39;</span><span class="p">,</span> <span class="n">value_inside_ensemble_list</span><span class="o">=</span><span class="s1">&#39;NVE&#39;</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">value_inside_potential_list</span><span class="o">=</span><span class="s1">&#39;EMT&#39;</span><span class="p">,</span>
+                <span class="n">steps</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">time_steps</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">friction</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span> <span class="n">rec_basic_properties</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="n">rec_physical_properties</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">rec_elastic_bulk</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">rec_cohesive_energy</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="n">rec_configuration</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">rec_scaling</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create the configuration file</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    	file_name(string): Name of the file to create</span>
+<span class="sd">        ensemble(string): Ensemble to use in simulation</span>
+<span class="sd">        temperature(int): Initial temperature in simulation</span>
+<span class="sd">        potential(string): Potential to use in simulation</span>
+<span class="sd">        step_number(int): Number of steps to use in simulation</span>
+<span class="sd">        time_step(int): Time step in fs to use in simulation</span>
+<span class="sd">        friction(float): Friction for NVT simulation</span>
+<span class="sd">        record_energy(int): Interval to record energy in simulation</span>
+<span class="sd">        record_cohesive_energy(int): Interval to record cohesive energy in simulation</span>
+<span class="sd">        record_temperature(int): Interval to record temperature in simulation</span>
+<span class="sd">        record_pressure(int): Interval to record pressure in simulation</span>
+<span class="sd">        record_configuration(int): Interval to record configuration in simulation</span>
+<span class="sd">        record_bulk_modulus(int): Interval to record bulk modulus in simulation</span>
+<span class="sd">        record_optimal_scaling(int): Interval to record optimal scaling in simulation</span>
+<span class="sd">        record_elastic(int): Interval to record elastic properties in simulation</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># Check if temperature is valid</span>
+    <span class="k">if</span> <span class="n">temperature</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">temperature</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">messagebox</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Value error&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid temperature&quot;</span><span class="p">)</span> 
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">temperature</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">10000</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">messagebox</span><span class="o">.</span><span class="n">askokcancel</span><span class="p">(</span><span class="s2">&quot;Value doubt&quot;</span><span class="p">,</span> <span class="s2">&quot;This value might result in an unstable simulation, you sure you&#39;d like to continue?&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">messagebox</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Value error&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid temperature&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+   
+    <span class="c1"># Check if number of steps is valid</span>
+    <span class="k">if</span> <span class="n">steps</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">messagebox</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Value error&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid number of steps&quot;</span><span class="p">)</span> 
+            <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">messagebox</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Value error&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid number of steps&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    
+    <span class="c1"># Check if time step is valid</span>
+    <span class="k">if</span> <span class="n">time_steps</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">time_steps</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">messagebox</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Value error&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid time step&quot;</span><span class="p">)</span> 
+            <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">messagebox</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Value error&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid time step&quot;</span><span class="p">)</span> 
+        <span class="k">return</span> <span class="kc">None</span>
+    
+    <span class="c1"># Check if basic properties step is valid</span>
+    <span class="k">if</span> <span class="n">rec_basic_properties</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">rec_basic_properties</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">int</span><span class="p">(</span><span class="n">rec_basic_properties</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">int</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+            <span class="n">messagebox</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Value error&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid basic properies step&quot;</span><span class="p">)</span> 
+            <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">messagebox</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Value error&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid basic properties step&quot;</span><span class="p">)</span> 
+        <span class="k">return</span> <span class="kc">None</span>
+    
+    <span class="c1"># Check if physical properties step is valid</span>
+    <span class="k">if</span> <span class="n">rec_physical_properties</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">rec_physical_properties</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">int</span><span class="p">(</span><span class="n">rec_physical_properties</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">int</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+            <span class="n">messagebox</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Value error&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid physical properies step&quot;</span><span class="p">)</span> 
+            <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">messagebox</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Value error&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid physical properties step&quot;</span><span class="p">)</span> 
+        <span class="k">return</span> <span class="kc">None</span>
+    
+    <span class="c1"># Check if elastic/bulk step is valid</span>
+    <span class="k">if</span> <span class="n">rec_elastic_bulk</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">rec_elastic_bulk</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">int</span><span class="p">(</span><span class="n">rec_elastic_bulk</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">int</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+            <span class="n">messagebox</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Value error&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid elastic/bulk step&quot;</span><span class="p">)</span> 
+            <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">messagebox</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Value error&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid elastic/bulk step&quot;</span><span class="p">)</span> 
+        <span class="k">return</span> <span class="kc">None</span>
+    
+    <span class="c1"># Check if configuration step is valid</span>
+    <span class="k">if</span> <span class="n">rec_configuration</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">rec_configuration</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">int</span><span class="p">(</span><span class="n">rec_configuration</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">int</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+            <span class="n">messagebox</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Value error&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid configuration step&quot;</span><span class="p">)</span> 
+            <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">messagebox</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Value error&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid configuration step&quot;</span><span class="p">)</span> 
+        <span class="k">return</span> <span class="kc">None</span>    
+
+    <span class="c1"># Check if scaling step is valid</span>
+    <span class="k">if</span> <span class="n">rec_scaling</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">rec_scaling</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">int</span><span class="p">(</span><span class="n">rec_scaling</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">int</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+            <span class="n">messagebox</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Value error&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid scaling step&quot;</span><span class="p">)</span> 
+            <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">messagebox</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Value error&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid scaling step&quot;</span><span class="p">)</span> 
+        <span class="k">return</span> <span class="kc">None</span>
+    
+    <span class="n">cfs</span><span class="o">.</span><span class="n">config_file</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">value_inside_ensemble_list</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">value_inside_potential_list</span><span class="p">,</span>
+                <span class="n">steps</span><span class="p">,</span> <span class="n">time_steps</span><span class="p">,</span> <span class="n">friction</span><span class="p">,</span> <span class="n">rec_basic_properties</span><span class="p">,</span>
+                <span class="n">rec_physical_properties</span><span class="p">,</span> <span class="n">rec_elastic_bulk</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="n">rec_configuration</span><span class="p">,</span>
+                <span class="n">rec_scaling</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="send_mat_id_to_gather_data"><a class="viewcode-back" href="../../source/User_interface.html#User_interface.user_interface.send_mat_id_to_gather_data">[docs]</a><span class="k">def</span> <span class="nf">send_mat_id_to_gather_data</span><span class="p">(</span><span class="n">materialID</span><span class="p">,</span> <span class="n">cell_size</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write user input data to config file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        materialID(string): specifies which material is to be downloaded from database</span>
+
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1">#messagebox.showinfo(&quot;Information&quot;, &quot;Please Check the terminal&quot;)</span>
+
+    <span class="n">api_key</span> <span class="o">=</span> <span class="n">get_api_key</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">api_key</span> <span class="o">==</span> <span class="s2">&quot;API key doesnt exist&quot;</span><span class="p">:</span>
+        <span class="n">api_key</span> <span class="o">=</span> <span class="n">prompt_for_api_key</span><span class="p">()</span>
+    
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">Gather_data</span><span class="o">.</span><span class="n">download_data</span><span class="o">.</span><span class="n">make_traj_from_material_id</span><span class="p">(</span><span class="n">materialID</span><span class="p">,</span> <span class="n">api_key</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">cell_size</span><span class="p">))</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">messagebox</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Could not download data&quot;</span><span class="p">,</span> <span class="s2">&quot;Please check if the material ID is correct or if the API-key is correct.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="visualise_2D"><a class="viewcode-back" href="../../source/User_interface.html#User_interface.user_interface.visualise_2D">[docs]</a><span class="k">def</span> <span class="nf">visualise_2D</span><span class="p">(</span><span class="n">attribute_to_plot</span><span class="p">,</span> <span class="n">file_to_plot</span><span class="p">,</span> <span class="n">ax_canvas</span><span class="p">,</span> <span class="n">text_box</span><span class="p">,</span> <span class="n">frame</span><span class="p">,</span> <span class="n">boolean</span><span class="p">,</span> <span class="n">plot_title</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Visualize data in 2D.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        At the time of writing not fully clear.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/../Output_text_files/&#39;</span> <span class="o">+</span> <span class="n">file_to_plot</span>
+
+    <span class="k">if</span> <span class="n">attribute_to_plot</span> <span class="o">==</span> <span class="s2">&quot;Attribute to plot&quot;</span><span class="p">:</span>
+        <span class="n">messagebox</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Missing attribute&quot;</span><span class="p">,</span> <span class="s2">&quot;Choose attribute&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">opened_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="n">messagebox</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Missing text file&quot;</span><span class="p">,</span> <span class="s2">&quot;Choose text file&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">opened_file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+    <span class="n">opened_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">material_data_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="n">config_file</span> <span class="o">=</span> <span class="n">material_data_dict</span><span class="p">[</span><span class="s1">&#39;config_file&#39;</span><span class="p">]</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/../Input_config_files/&#39;</span> <span class="o">+</span> <span class="n">config_file</span>
+    <span class="n">config_data</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="p">()</span>
+    <span class="n">config_data</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="n">config_ensemble</span> <span class="o">=</span> <span class="n">config_data</span><span class="p">[</span><span class="s1">&#39;SimulationSettings&#39;</span><span class="p">][</span><span class="s1">&#39;ensemble&#39;</span><span class="p">]</span>
+    <span class="n">config_temperature</span> <span class="o">=</span> <span class="n">config_data</span><span class="p">[</span><span class="s1">&#39;SimulationSettings&#39;</span><span class="p">][</span><span class="s1">&#39;temperature&#39;</span><span class="p">]</span>
+    <span class="n">config_potential</span> <span class="o">=</span> <span class="n">config_data</span><span class="p">[</span><span class="s1">&#39;SimulationSettings&#39;</span><span class="p">][</span><span class="s1">&#39;potential&#39;</span><span class="p">]</span>
+    <span class="n">config_step_number</span> <span class="o">=</span> <span class="n">config_data</span><span class="p">[</span><span class="s1">&#39;SimulationSettings&#39;</span><span class="p">][</span><span class="s1">&#39;step_number&#39;</span><span class="p">]</span>
+    <span class="n">config_time_step</span> <span class="o">=</span> <span class="n">config_data</span><span class="p">[</span><span class="s1">&#39;SimulationSettings&#39;</span><span class="p">][</span><span class="s1">&#39;time_step&#39;</span><span class="p">]</span>
+    <span class="n">config_friction</span> <span class="o">=</span> <span class="n">config_data</span><span class="p">[</span><span class="s1">&#39;SimulationSettings&#39;</span><span class="p">][</span><span class="s1">&#39;friction&#39;</span><span class="p">]</span>
+
+    <span class="n">attribute</span> <span class="o">=</span> <span class="n">attribute_to_plot</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="n">attribute</span> <span class="o">=</span> <span class="n">attribute</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+    
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">material_data_dict</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">messagebox</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Missing data&quot;</span><span class="p">,</span> <span class="s2">&quot;Attribute not recorded&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    
+    <span class="n">average_attribute</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">material_data_dict</span><span class="p">[</span><span class="n">attribute</span><span class="p">])</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">material_data_dict</span><span class="p">[</span><span class="n">attribute</span><span class="p">]),</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">max_attribute</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">material_data_dict</span><span class="p">[</span><span class="n">attribute</span><span class="p">]),</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">min_attribute</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">material_data_dict</span><span class="p">[</span><span class="n">attribute</span><span class="p">]),</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">data_points</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">material_data_dict</span><span class="p">[</span><span class="n">attribute</span><span class="p">])</span>
+    
+    <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    Simulation inputs:</span>
+<span class="s2">        Config file: </span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span>
+<span class="s2">        Ensemble: </span><span class="si">{</span><span class="n">config_ensemble</span><span class="si">}</span>
+<span class="s2">        Temperature: </span><span class="si">{</span><span class="n">config_temperature</span><span class="si">}</span>
+<span class="s2">        Potential: </span><span class="si">{</span><span class="n">config_potential</span><span class="si">}</span>
+<span class="s2">        Step number: </span><span class="si">{</span><span class="n">config_step_number</span><span class="si">}</span>
+<span class="s2">        Time step: </span><span class="si">{</span><span class="n">config_time_step</span><span class="si">}</span>
+<span class="s2">        Friction: </span><span class="si">{</span><span class="n">config_friction</span><span class="si">}</span>
+
+<span class="s2">    Simulation results:</span>
+<span class="s2">        Average </span><span class="si">{</span><span class="n">attribute</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">average_attribute</span><span class="si">}</span>
+<span class="s2">        Max </span><span class="si">{</span><span class="n">attribute</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">max_attribute</span><span class="si">}</span>
+<span class="s2">        Min </span><span class="si">{</span><span class="n">attribute</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">min_attribute</span><span class="si">}</span>
+<span class="s2">        Data points: </span><span class="si">{</span><span class="n">data_points</span><span class="si">}</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+    
+    <span class="k">if</span> <span class="s2">&quot;avg_MSD&quot;</span> <span class="ow">in</span> <span class="n">material_data_dict</span><span class="p">:</span>
+        <span class="n">avg_MSD</span> <span class="o">=</span> <span class="n">material_data_dict</span><span class="p">[</span><span class="s2">&quot;avg_MSD&quot;</span><span class="p">]</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;Average MSD: </span><span class="si">{</span><span class="n">avg_MSD</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span>
+    
+    <span class="n">text_box</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s2">&quot;normal&quot;</span><span class="p">)</span>
+    <span class="n">text_box</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s1">&#39;1.0&#39;</span><span class="p">,</span> <span class="n">END</span><span class="p">)</span>
+    <span class="n">text_box</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+    <span class="n">text_box</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">font</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;bitstream charter&quot;</span><span class="p">,</span> <span class="mi">15</span><span class="p">))</span>
+    <span class="n">text_box</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+    <span class="n">text_box</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s2">&quot;disabled&quot;</span><span class="p">)</span>
+    
+    <span class="n">record_attribute</span> <span class="o">=</span> <span class="n">attribute</span>
+    <span class="k">if</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;total_energy&quot;</span><span class="p">,</span> <span class="s2">&quot;kinetic_energy&quot;</span><span class="p">,</span> <span class="s2">&quot;potential_energy&quot;</span><span class="p">]:</span>
+        <span class="n">record_attribute</span> <span class="o">=</span> <span class="s2">&quot;energy&quot;</span>
+    <span class="k">elif</span> <span class="n">attribute</span> <span class="o">==</span> <span class="s2">&quot;elastic_tensor&quot;</span><span class="p">:</span>
+        <span class="n">record_attribute</span> <span class="o">=</span> <span class="s2">&quot;elastic&quot;</span>
+ 
+    <span class="n">x_values</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">material_data_dict</span><span class="p">[</span><span class="n">attribute</span><span class="p">]):</span>
+        <span class="n">x_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">config_data</span><span class="p">[</span><span class="s1">&#39;SimulationSettings&#39;</span><span class="p">][</span><span class="s1">&#39;time_step&#39;</span><span class="p">])</span> <span class="o">*</span> 
+                      <span class="nb">int</span><span class="p">(</span><span class="n">config_data</span><span class="p">[</span><span class="s1">&#39;RecordingIntervals&#39;</span><span class="p">][</span><span class="s1">&#39;record_&#39;</span> <span class="o">+</span> <span class="n">record_attribute</span><span class="p">]))</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+    
+    <span class="n">x_lim</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">config_data</span><span class="p">[</span><span class="s1">&#39;SimulationSettings&#39;</span><span class="p">][</span><span class="s1">&#39;time_step&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">config_data</span><span class="p">[</span><span class="s1">&#39;SimulationSettings&#39;</span><span class="p">][</span><span class="s1">&#39;step_number&#39;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">boolean</span><span class="p">:</span>
+        <span class="n">open_window</span><span class="p">(</span><span class="n">x_values</span><span class="p">,</span> <span class="n">material_data_dict</span><span class="p">[</span><span class="n">attribute</span><span class="p">],</span> <span class="n">x_lim</span><span class="p">,</span> <span class="n">attribute_to_plot</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plot_title</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Plotted Attribute: </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">attribute_to_plot</span><span class="p">)</span>
+        <span class="n">plot</span><span class="p">(</span><span class="n">ax_canvas</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">ax_canvas</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x_values</span><span class="p">,</span> <span class="n">material_data_dict</span><span class="p">[</span><span class="n">attribute</span><span class="p">],</span> <span class="n">x_lim</span><span class="p">,</span> <span class="n">attribute_to_plot</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="animate_traj"><a class="viewcode-back" href="../../source/User_interface.html#User_interface.user_interface.animate_traj">[docs]</a><span class="k">def</span> <span class="nf">animate_traj</span><span class="p">(</span><span class="n">traj_file</span><span class="p">):</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/../Output_trajectory_files/&#39;</span>
+    <span class="n">traj</span> <span class="o">=</span> <span class="n">Trajectory</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">traj_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">view</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main_program</span> <span class="o">=</span> <span class="n">initiate_gui</span><span class="p">()</span>
+    <span class="n">main_program</span><span class="o">.</span><span class="n">mainloop</span><span class="p">()</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Computational Physics Project 0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">User_interface.user_interface</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2023, Alice Eriksson, Emelie Eriksson, Jakov Krnic, Issa Nseir, Markus Wallin, Gustav Wassbäck.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    </div>
+  </body>
+</html>

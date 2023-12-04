@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simulation.calc_properties &#8212; Computational Physics Project 0.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=8fc2db88" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=d7c963c3"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Computational Physics Project 0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Simulation.calc_properties</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for Simulation.calc_properties</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This script calculated the intesive and extensive properties.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">configparser</span> <span class="kn">import</span> <span class="n">ConfigParser</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">linalg</span> <span class="k">as</span> <span class="n">LA</span>
+<span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">units</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="kn">import</span> <span class="n">cdist</span>
+<span class="kn">from</span> <span class="nn">heapq</span> <span class="kn">import</span> <span class="n">nsmallest</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/..&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="approx_lattice_constant"><a class="viewcode-back" href="../../source/Simulation.html#Simulation.calc_properties.approx_lattice_constant">[docs]</a><span class="k">def</span> <span class="nf">approx_lattice_constant</span><span class="p">(</span><span class="n">atoms</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the approximate lattice constant</span>
+
+<span class="sd">    This is done by finding the distances to the four nearest neighbours for </span>
+<span class="sd">    every atom, summing the results and dividing by the amount of results</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        atoms(ase atom object): The system to calculate the lattice constant for.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (float): The approximate lattice constant.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">get_positions</span><span class="p">())</span>
+    <span class="n">distances_between_atoms</span> <span class="o">=</span> <span class="n">cdist</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="n">positions</span><span class="p">)</span>
+
+    <span class="n">lattice_contributions</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">distances_between_atoms</span><span class="p">:</span>
+        <span class="c1"># Since 0 is always present for each atom, we calculate the 5 nearest distances</span>
+        <span class="n">lattice_contributions</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">nsmallest</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="n">element</span><span class="p">))</span>
+    
+    <span class="k">return</span> <span class="n">lattice_contributions</span><span class="o">/</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="calc_temp"><a class="viewcode-back" href="../../source/Simulation.html#Simulation.calc_properties.calc_temp">[docs]</a><span class="k">def</span> <span class="nf">calc_temp</span><span class="p">(</span><span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span> <span class="n">output_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;temperature&#39;</span><span class="p">:</span> <span class="p">[]}):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the temperature of atoms object.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        atoms(ase atom object): The system to calculate the temperature for.</span>
+<span class="sd">        output_dict(dict): Dictionary to append the result to.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (float): The calculated temperature.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">temperature</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">get_temperature</span><span class="p">()</span>
+    <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;temperature&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temperature</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">temperature</span></div>
+
+
+<div class="viewcode-block" id="calc_energy"><a class="viewcode-back" href="../../source/Simulation.html#Simulation.calc_properties.calc_energy">[docs]</a><span class="k">def</span> <span class="nf">calc_energy</span><span class="p">(</span><span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span> <span class="n">output_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;total_energy&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;kinetic_energy&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;potential_energy&#39;</span><span class="p">:</span> <span class="p">[]}):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the total, kinetic, and potential energy of atoms object.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        atoms(ase atom object): The system to calculate the energy for.</span>
+<span class="sd">        output_dict(dict): Dictionary to append the result to.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (float): The calculated total energy.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">total_energy</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">get_total_energy</span><span class="p">()</span>
+    <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;total_energy&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">total_energy</span><span class="p">)</span>
+    <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;kinetic_energy&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">get_kinetic_energy</span><span class="p">())</span>
+    <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;potential_energy&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">get_potential_energy</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">total_energy</span></div>
+
+
+<div class="viewcode-block" id="calc_pressure"><a class="viewcode-back" href="../../source/Simulation.html#Simulation.calc_properties.calc_pressure">[docs]</a><span class="k">def</span> <span class="nf">calc_pressure</span><span class="p">(</span><span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span> <span class="n">output_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pressure&#39;</span><span class="p">:</span> <span class="p">[]},</span> <span class="n">external_field</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate pressure of atoms object with or without an external field.</span>
+
+<span class="sd">    The formula used is P=1/3V*(2*E_kin(t)+sum_over_all_atoms{r_i*f_i}) where</span>
+<span class="sd">    r_i and f_i is the position of and force on atom i and V referes to the</span>
+<span class="sd">    volume of the unitcell.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        atoms(ase atom object): The system to calculate the pressure for.</span>
+<span class="sd">        output_dict(dict): Dictionary to append the result to.</span>
+<span class="sd">        external_field(function(Atoms)-&gt;np.array): A function which takes an ase Atom object</span>
+<span class="sd">            and returns the force on each atom as an array in the same format as Atoms.force</span>
+<span class="sd">            function would but converted to an np.array. For N atoms in 3 dimensions:</span>
+<span class="sd">            [[f_x_atom1, f_y_atom1, f_z_atom1], ..., [f_x_atomN, f_y_atomN, f_z_atomN]]</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (float): The calculated pressure in GPa (giga pascal).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">forces</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">get_forces</span><span class="p">(</span><span class="n">apply_constraint</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">md</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="n">positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">get_positions</span><span class="p">())</span>
+
+    <span class="n">volume</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">get_volume</span><span class="p">()</span>        <span class="c1"># in Å^3</span>
+    <span class="n">ekin</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">get_kinetic_energy</span><span class="p">()</span>  <span class="c1"># in eV</span>
+
+    <span class="k">if</span> <span class="n">external_field</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pressure_in_eV_per_Å3</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">ekin</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">forces</span><span class="p">,</span> <span class="n">positions</span><span class="p">)))</span><span class="o">/</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">volume</span><span class="p">)</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pressure_in_eV_per_Å3</span><span class="o">*</span><span class="mf">160.21766208</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pressure_in_eV_per_Å3</span><span class="o">*</span><span class="mf">160.21766208</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">forces</span> <span class="o">+=</span> <span class="n">external_field</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+        <span class="c1"># When having an external field point of origin needs to be centered</span>
+        <span class="n">centered_positions</span> <span class="o">=</span> <span class="n">positions</span><span class="o">-</span><span class="n">positions</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">pressure_in_eV_per_Å3</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">ekin</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">forces</span><span class="p">,</span> <span class="n">centered_positions</span><span class="p">)))</span><span class="o">/</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">volume</span><span class="p">)</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pressure_in_eV_per_Å3</span><span class="o">*</span><span class="mf">160.21766208</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pressure_in_eV_per_Å3</span><span class="o">*</span><span class="mf">160.21766208</span></div>
+
+
+<div class="viewcode-block" id="calculate_specific_heat"><a class="viewcode-back" href="../../source/Simulation.html#Simulation.calc_properties.calculate_specific_heat">[docs]</a><span class="k">def</span> <span class="nf">calculate_specific_heat</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">config_file</span><span class="p">,</span> <span class="n">output_dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate specific heat capacity of atoms object.</span>
+
+<span class="sd">    Two formulas are used here, for NVE or NVT ensemble:</span>
+<span class="sd">    1. For NVE: heat capacity = 3*N*kB / 2*(1-(2*variance of the kinetic energy/Number of atoms^2)/3*kB^2*T^2)</span>
+<span class="sd">    2. For NVT: heat capacity = (variance of the total energy/Number of atoms^2) /kB * T^2</span>
+<span class="sd">    Finally the specific heat capacity = Heat capactiy / sum of the atoms masses</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        atoms(ase atom object): The system to calculate the specific heat capacity for.</span>
+<span class="sd">        config_file(str): Name of the file with user&#39;s parameters.</span>
+<span class="sd">        output_dict(dict): Dictionary to append the result to.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Specific heat capacity(float): The calculated specific heat capacity in Joule/Kilogram * Kelvin (J/Kg*K)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Define the Boltzmann constant (kB)</span>
+    <span class="n">kB</span> <span class="o">=</span> <span class="mf">1.380649e-23</span>  <span class="c1"># Boltzmann constant in J/K</span>
+
+    <span class="c1"># Constants for unit conversion Physics handbook CU-2.4</span>
+    <span class="n">eV_to_Joules</span> <span class="o">=</span> <span class="mf">1.602177e-19</span>  <span class="c1"># Conversion factor from eV to Joules</span>
+    <span class="n">AtomicMass_to_Kg</span> <span class="o">=</span> <span class="mf">1.660539e-27</span>  <span class="c1"># Conversion factor from atomic mass units (u) to kilograms</span>
+
+    <span class="c1"># Read the user config data</span>
+    <span class="n">config_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/../Input_config_files/&#39;</span>
+    <span class="n">config_data</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="p">()</span>
+    <span class="n">config_data</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">config_path</span><span class="o">+</span><span class="n">config_file</span><span class="p">)</span>
+
+    <span class="c1"># Get the average of the instantaneous temperatures</span>
+    <span class="c1"># Ignoring the first 10 unstable values at the begining of the simulation</span>
+    <span class="n">average_temperature</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;temperature&quot;</span><span class="p">][</span><span class="mi">10</span><span class="p">:])</span>
+
+    <span class="k">if</span> <span class="n">config_data</span><span class="p">[</span><span class="s1">&#39;SimulationSettings&#39;</span><span class="p">][</span><span class="s1">&#39;ensemble&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;NVE&quot;</span><span class="p">:</span>
+        <span class="c1"># Ignoring the first 10 unstable values at the begining of the simulation</span>
+        <span class="n">kinetic_energies</span> <span class="o">=</span> <span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;kinetic_energy&quot;</span><span class="p">][</span><span class="mi">10</span><span class="p">:]</span>
+        <span class="n">kinetic_energies_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kinetic_energies</span><span class="p">)</span>
+        <span class="c1"># Unit change from eV to J</span>
+        <span class="n">kinetic_energies_array_joule</span> <span class="o">=</span> <span class="n">kinetic_energies_array</span> <span class="o">*</span> <span class="n">eV_to_Joules</span>
+        <span class="c1"># Calculate the variance of the kinetic energies</span>
+        <span class="n">var_kinetic_energies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">kinetic_energies_array_joule</span><span class="p">)</span>
+
+        <span class="c1"># Formula from lecture 4 slide 49</span>
+        <span class="n">first_term</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span> <span class="o">*</span> <span class="n">kB</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">second_term</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">var_kinetic_energies</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">kB</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">average_temperature</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="n">heat_capacity</span> <span class="o">=</span> <span class="n">first_term</span> <span class="o">*</span> <span class="n">second_term</span>
+
+        <span class="c1"># print(&quot;Heat Capacity: &quot;, heat_capacity)</span>
+        <span class="c1"># Formula from physics handbook F-2.3 c = C/m where c: specific heat capacity and C: heat capacity</span>
+        <span class="n">specific_heat_capacity</span> <span class="o">=</span> <span class="n">heat_capacity</span> <span class="o">/</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">get_masses</span><span class="p">())</span> <span class="o">*</span> <span class="n">AtomicMass_to_Kg</span><span class="p">)</span>
+        <span class="c1"># print(&quot;specific_heat_capacity: &quot; + str(specific_heat_capacity))</span>
+
+    <span class="k">elif</span> <span class="n">config_data</span><span class="p">[</span><span class="s1">&#39;SimulationSettings&#39;</span><span class="p">][</span><span class="s1">&#39;ensemble&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;NVT&quot;</span><span class="p">:</span>
+        <span class="c1"># Ignoring the first 10 unstable values at the begining of the simulation</span>
+        <span class="n">total_energies</span> <span class="o">=</span> <span class="n">output_dict</span><span class="p">[</span><span class="s2">&quot;total_energy&quot;</span><span class="p">][</span><span class="mi">10</span><span class="p">:]</span>
+        <span class="n">total_energies_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">total_energies</span><span class="p">)</span>
+        <span class="c1"># Unit change from eV to J</span>
+        <span class="n">total_energies_array_joule</span> <span class="o">=</span> <span class="n">total_energies_array</span> <span class="o">*</span> <span class="n">eV_to_Joules</span>
+        <span class="c1"># Calculate the variance of the total energies</span>
+        <span class="n">var_total_energies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">total_energies_array_joule</span><span class="p">)</span>
+
+        <span class="c1"># Formula from lecture 4 slide 49</span>
+        <span class="n">heat_capacity</span> <span class="o">=</span> <span class="p">(</span><span class="n">var_total_energies</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">kB</span> <span class="o">*</span> <span class="n">average_temperature</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="c1"># Formula from physics handbook F-2.3 c = C/m where c: specific heat capacity and C: heat capacity</span>
+        <span class="n">specific_heat_capacity</span> <span class="o">=</span> <span class="n">heat_capacity</span> <span class="o">/</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">get_masses</span><span class="p">())</span> <span class="o">*</span> <span class="n">AtomicMass_to_Kg</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">specific_heat_capacity</span></div>
+
+
+<div class="viewcode-block" id="calc_mean_square_displacement"><a class="viewcode-back" href="../../source/Simulation.html#Simulation.calc_properties.calc_mean_square_displacement">[docs]</a><span class="k">def</span> <span class="nf">calc_mean_square_displacement</span><span class="p">(</span><span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span> <span class="n">output_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;mean_square_displacement&#39;</span><span class="p">:</span> <span class="p">[]}):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the mean square displacement of atoms object.</span>
+
+<span class="sd">    The formula used is MSD=1/N*sum{(r_i(t_n)-r_i(t_0))^2 where r_i is the</span>
+<span class="sd">    position of atom i at time t_n and N is the number of atoms</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        atoms(ase atom object): the system to calculate the mean square displacement for</span>
+<span class="sd">        external_field(function(Atoms)-&gt;np.array): A function which takes an ase Atom object</span>
+<span class="sd">            and returns the force on each atom as an array in the same format as Atoms.force</span>
+<span class="sd">            function would but converted to an np.array. For N atoms in 3 dimensions:</span>
+<span class="sd">            [[f_x_atom1, f_y_atom1, f_z_atom1], ..., [f_x_atomN, f_y_atomN, f_z_atomN]]</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (float): the calculated mean square displacement</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">get_positions</span><span class="p">())</span>
+    <span class="n">MSD</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;mean_square_displacement&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="p">[]:</span>
+        <span class="c1"># Append initial position array which is used for all future iterations</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;mean_square_displacement&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">atom_pos_diffs</span> <span class="o">=</span> <span class="n">positions</span><span class="o">-</span><span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;mean_square_displacement&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">MSD_sum</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">atom_pos_diffs</span><span class="p">:</span>
+            <span class="n">MSD_sum</span> <span class="o">+=</span> <span class="n">LA</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">MSD</span> <span class="o">=</span> <span class="n">MSD_sum</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span>
+        <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;mean_square_displacement&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MSD</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">MSD</span></div>
+
+
+<div class="viewcode-block" id="lindemann_criterion"><a class="viewcode-back" href="../../source/Simulation.html#Simulation.calc_properties.lindemann_criterion">[docs]</a><span class="k">def</span> <span class="nf">lindemann_criterion</span><span class="p">(</span><span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span> <span class="n">output_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;lindemann_criterion&#39;</span><span class="p">:</span> <span class="p">[]},</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the Lindemann criterion of atoms object.</span>
+
+<span class="sd">    The formula used is L = 1/d*(MSD)^(1/2).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        atoms(ase atom object): the system to calculate the lindemann criterion for</span>
+<span class="sd">        external_field(function(Atoms)-&gt;np.array): A function which takes an ase Atom object</span>
+<span class="sd">            and returns the force on each atom as an array in the same format as Atoms.force</span>
+<span class="sd">            function would but converted to an np.array. For N atoms in 3 dimensions:</span>
+<span class="sd">            [[f_x_atom1, f_y_atom1, f_z_atom1], ..., [f_x_atomN, f_y_atomN, f_z_atomN]]</span>
+<span class="sd">        d(int): the nearest neighbour distance between the atoms</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (float): the calculated Lindemann criterion</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">lindemann</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;lindemann_criterion&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="p">[]:</span>
+        <span class="n">lindemann</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;mean_square_displacement&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="n">d</span>
+
+    <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;lindemann_criterion&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lindemann</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">lindemann</span></div>
+
+
+<div class="viewcode-block" id="self_diffusion_coefficent"><a class="viewcode-back" href="../../source/Simulation.html#Simulation.calc_properties.self_diffusion_coefficent">[docs]</a><span class="k">def</span> <span class="nf">self_diffusion_coefficent</span><span class="p">(</span><span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span> <span class="n">output_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;lindemann_criterion&#39;</span><span class="p">:</span> <span class="p">[]},</span> <span class="n">time_elapsed_per_interval</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the self-diffusion coefficient of atoms object.</span>
+
+<span class="sd">    The formula used is D = 1/(6*t)*MSD where t is time elapsed at a certian iteration</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        atoms(ase atom object): the system to calculate the self-diffusion coefficient for</span>
+<span class="sd">        external_field(function(Atoms)-&gt;np.array): A function which takes an ase Atom object</span>
+<span class="sd">            and returns the force on each atom as an array in the same format as Atoms.force</span>
+<span class="sd">            function would but converted to an np.array. For N atoms in 3 dimensions:</span>
+<span class="sd">            [[f_x_atom1, f_y_atom1, f_z_atom1], ..., [f_x_atomN, f_y_atomN, f_z_atomN]]</span>
+<span class="sd">        time_elapsed_per_interval(s): number of seconds that have passed per iteration</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (float): the calculated self-diffusion coefficient</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">self_diffusion_coefficient</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;self_diffusion_coefficient&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="p">[]:</span>
+        <span class="c1"># t is calculated by using how many calculations of calc_self_diffusion_coefficient have</span>
+        <span class="c1"># been performed, and multiplying this by how long the intervals are.</span>
+        <span class="n">self_diffusion_coefficient</span> <span class="o">=</span> <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;mean_square_displacement&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="mi">6</span><span class="o">*</span><span class="n">time_elapsed_per_interval</span><span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;mean_square_displacement&#39;</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">units</span><span class="o">.</span><span class="n">fs</span><span class="p">)</span>
+
+    <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;self_diffusion_coefficient&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">self_diffusion_coefficient</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">self_diffusion_coefficient</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Computational Physics Project 0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Simulation.calc_properties</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2023, Alice Eriksson, Emelie Eriksson, Jakov Krnic, Issa Nseir, Markus Wallin, Gustav Wassbäck.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    </div>
+  </body>
+</html>

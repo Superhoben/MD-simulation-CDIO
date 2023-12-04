@@ -70,6 +70,7 @@ def random_mix(chemical_symbols: list, add_element: str, amount: int):
     Returns:
         chemical_symbols(list[str]): The new list with randomly inserted
             elements.
+
     """
     insert_indexes = random.sample(range(0, len(chemical_symbols)), amount)
     for index in insert_indexes:
@@ -80,10 +81,10 @@ def random_mix(chemical_symbols: list, add_element: str, amount: int):
 
 def create_mix_from_concentration(traj_name: str, add_element: str, concentration):
     """Mix an element into existing structure from concentration.
-    
+
     This creates one trajectory file by mixing add_element into the structure
     in the input file with the given concentration.
-    
+
     Args:
         traj_name(str): Name of trajectory file of atoms object to mix
                         with add_element.

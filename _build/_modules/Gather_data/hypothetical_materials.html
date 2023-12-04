@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gather_data.hypothetical_materials &#8212; Computational Physics Project 0.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=8fc2db88" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=d7c963c3"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Computational Physics Project 0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Gather_data.hypothetical_materials</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for Gather_data.hypothetical_materials</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This is for making hypothetical materials.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
+<span class="kn">from</span> <span class="nn">ase.io.trajectory</span> <span class="kn">import</span> <span class="n">Trajectory</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/..&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="mix_materials"><a class="viewcode-back" href="../../source/Gather_data.html#Gather_data.hypothetical_materials.mix_materials">[docs]</a><span class="k">def</span> <span class="nf">mix_materials</span><span class="p">(</span><span class="n">traj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">add_element</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mix an element into existing structure.</span>
+
+<span class="sd">    This function mixes add_element evenly into the atoms object in the</span>
+<span class="sd">    trajectory file by replacing atoms in it. It creates several different</span>
+<span class="sd">    trajectory files for different amounts of atoms added. Interval specifies</span>
+<span class="sd">    how many atoms to add each step; high interval means few trajectory files</span>
+<span class="sd">    will be made, low interval means many trajectory files will be made.</span>
+
+<span class="sd">    When using this, the structure in the traj-file should be similar to the</span>
+<span class="sd">    structure of the material to add, and they should work with the same</span>
+<span class="sd">    potential, otherwise this is very unreasonable to do. Also the lattice</span>
+<span class="sd">    constants need to be similar.</span>
+
+<span class="sd">    TODO: Rescale each step to decrease the internal pressure that will be</span>
+<span class="sd">          created from the mixing.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        traj_name(str): Name of trajectory file of atoms object to mix</span>
+<span class="sd">                        with add_element.</span>
+<span class="sd">        add_element(str): Name of element to mix.</span>
+<span class="sd">        interval(int): How many of add_element to add at each step.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">traj_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> \
+        <span class="s1">&#39;/../Input_trajectory_files/&#39;</span>
+    <span class="n">traj</span> <span class="o">=</span> <span class="n">Trajectory</span><span class="p">(</span><span class="n">traj_path</span><span class="o">+</span><span class="n">traj_name</span><span class="p">)</span>
+    <span class="n">atoms</span> <span class="o">=</span> <span class="n">traj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">original_symbols</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">get_chemical_symbols</span><span class="p">()</span>
+    <span class="n">nr_of_atoms</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+    <span class="n">traj_name</span> <span class="o">=</span> <span class="n">traj_path</span> <span class="o">+</span> <span class="n">traj_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">add_element</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nr_of_atoms</span><span class="p">,</span> <span class="n">interval</span><span class="p">):</span>
+        <span class="n">atoms_positions</span> <span class="o">=</span> <span class="n">original_symbols</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">random_mix</span><span class="p">(</span><span class="n">atoms_positions</span><span class="p">,</span> <span class="n">add_element</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="n">atoms</span><span class="o">.</span><span class="n">set_chemical_symbols</span><span class="p">(</span><span class="n">atoms_positions</span><span class="p">)</span>
+        <span class="c1"># TODO: add scaling = optimize_scaling(atoms) here</span>
+        <span class="n">traj</span> <span class="o">=</span> <span class="n">Trajectory</span><span class="p">(</span><span class="n">traj_name</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;.traj&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">traj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="random_mix"><a class="viewcode-back" href="../../source/Gather_data.html#Gather_data.hypothetical_materials.random_mix">[docs]</a><span class="k">def</span> <span class="nf">random_mix</span><span class="p">(</span><span class="n">chemical_symbols</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">add_element</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Switch a given number of instances from a given list to a given string.</span>
+
+<span class="sd">    This can be used to create &#39;alloys&#39;: use atoms.get_chemical_symbols to</span>
+<span class="sd">    get the chemical symbols of the atoms object, then send this into this</span>
+<span class="sd">    function together with the element to mix with, and how many to add.</span>
+<span class="sd">    Then use atoms.set_chemical_symbols to set the new chemical symbols.</span>
+
+<span class="sd">    For this to make sense, the added element needs to be similar to the</span>
+<span class="sd">    host material in terms of structure and size.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        chemical_symbols(list[str]): List of chemical symbols.</span>
+<span class="sd">        add_element(str): The element to add to the list.</span>
+<span class="sd">        amount(int): The amount of elements to add to the list.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        chemical_symbols(list[str]): The new list with randomly inserted</span>
+<span class="sd">            elements.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">insert_indexes</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">chemical_symbols</span><span class="p">)),</span> <span class="n">amount</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">insert_indexes</span><span class="p">:</span>
+        <span class="n">chemical_symbols</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">add_element</span>
+
+    <span class="k">return</span> <span class="n">chemical_symbols</span></div>
+
+
+<div class="viewcode-block" id="create_mix_from_concentration"><a class="viewcode-back" href="../../source/Gather_data.html#Gather_data.hypothetical_materials.create_mix_from_concentration">[docs]</a><span class="k">def</span> <span class="nf">create_mix_from_concentration</span><span class="p">(</span><span class="n">traj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">add_element</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">concentration</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mix an element into existing structure from concentration.</span>
+
+<span class="sd">    This creates one trajectory file by mixing add_element into the structure</span>
+<span class="sd">    in the input file with the given concentration.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        traj_name(str): Name of trajectory file of atoms object to mix</span>
+<span class="sd">                        with add_element.</span>
+<span class="sd">        add_element(str): Name of element to mix.</span>
+<span class="sd">        concentration(float): The desired concentration of add_element.</span>
+<span class="sd">                              Should be between 0 and 1.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">traj_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> \
+        <span class="s1">&#39;/../Input_trajectory_files/&#39;</span>
+    <span class="n">traj</span> <span class="o">=</span> <span class="n">Trajectory</span><span class="p">(</span><span class="n">traj_path</span><span class="o">+</span><span class="n">traj_name</span><span class="p">)</span>
+    <span class="n">atoms</span> <span class="o">=</span> <span class="n">traj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">original_symbols</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">get_chemical_symbols</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">atoms</span><span class="o">.</span><span class="n">set_chemical_symbols</span><span class="p">(</span><span class="n">random_mix</span><span class="p">(</span><span class="n">original_symbols</span><span class="p">,</span> <span class="n">add_element</span><span class="p">,</span>
+                               <span class="nb">int</span><span class="p">(</span><span class="n">concentration</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">))))</span>
+    <span class="c1"># TODO: optimize_scaling here?</span>
+    <span class="n">traj_name</span> <span class="o">=</span> <span class="n">traj_path</span> <span class="o">+</span> <span class="n">traj_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">add_element</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">concentration</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.traj&quot;</span>
+    <span class="n">traj</span> <span class="o">=</span> <span class="n">Trajectory</span><span class="p">(</span><span class="n">traj_name</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="n">traj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Computational Physics Project 0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Gather_data.hypothetical_materials</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2023, Alice Eriksson, Emelie Eriksson, Jakov Krnic, Issa Nseir, Markus Wallin, Gustav Wassbäck.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    </div>
+  </body>
+</html>

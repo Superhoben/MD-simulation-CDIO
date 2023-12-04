@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simulation.lattice_constant &#8212; Computational Physics Project 0.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=8fc2db88" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=d7c963c3"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Computational Physics Project 0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Simulation.lattice_constant</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for Simulation.lattice_constant</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/..&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">Simulation</span> <span class="kn">import</span> <span class="n">simple_simulation</span>
+<span class="kn">from</span> <span class="nn">ase.lattice.cubic</span> <span class="kn">import</span> <span class="n">FaceCenteredCubic</span>
+<span class="kn">from</span> <span class="nn">ase.md.verlet</span> <span class="kn">import</span> <span class="n">VelocityVerlet</span>
+<span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">units</span>
+<span class="kn">from</span> <span class="nn">asap3</span> <span class="kn">import</span> <span class="n">EMT</span>
+<span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
+
+
+<div class="viewcode-block" id="optimize_scaling"><a class="viewcode-back" href="../../source/Simulation.html#Simulation.lattice_constant.optimize_scaling">[docs]</a><span class="k">def</span> <span class="nf">optimize_scaling</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">output_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;optimal_scaling&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;iterations_to_find_scaling&#39;</span><span class="p">:</span> <span class="p">[]},</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the optimal scaling of the lattice constant using a gradient descent method.</span>
+
+<span class="sd">    The gradient descent method is modified by a sigmoid function since energy changes</span>
+<span class="sd">    can become very extreme as some potential depend on the -12th power of the distance</span>
+<span class="sd">    so starting with half the correct distance can result in approximately 4000 times the</span>
+<span class="sd">    energy which would make a normal gradient search go crazy even with a reasonable</span>
+<span class="sd">    learning rate. The new scaling s_(k+1) is calculated as:</span>
+<span class="sd">    e_gradient = (e_(k) - e_(k-1)) / (s_(k) - s_(k-1))</span>
+<span class="sd">    s_(k+1) = s_(k) - learning_rate*sigmoid(e_gradient)</span>
+<span class="sd">    The energy at a certain scaling is calculated by using the simulation_function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        atoms(ASE atoms object): The configuration to find an optimal lattice constant for</span>
+<span class="sd">        output_dict(dict): Dictionary to append the result to.</span>
+<span class="sd">        learning_rate(float): The scaling converges quicker for larger values but if</span>
+<span class="sd">             it&#39;s too large the scaling will oscillate and not converge at all</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        scaling(float): Return the scaling factor which would give the inputed atoms object</span>
+<span class="sd">            the lowest possible energy</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">old_scaling</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">scaling</span> <span class="o">=</span> <span class="mf">1.001</span>
+    <span class="n">e_scaling_gradient</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">number_of_iterations</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">old_energy_per_atom</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">get_total_energy</span><span class="p">()</span>
+    <span class="c1"># Improve the lattice constant performing gradient descent until the gradient becomes</span>
+    <span class="c1"># sufficiently small. A maximum of 100</span>
+    <span class="k">while</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">e_scaling_gradient</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.01</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">number_of_iterations</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">):</span>
+        <span class="n">atoms_scaled</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">atoms_scaled</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">calc</span>
+        <span class="n">atoms_scaled</span><span class="o">.</span><span class="n">set_cell</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">cell</span><span class="o">*</span><span class="n">scaling</span><span class="p">,</span> <span class="n">scale_atoms</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">energy_per_atom</span> <span class="o">=</span> <span class="n">atoms_scaled</span><span class="o">.</span><span class="n">get_total_energy</span><span class="p">()</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms_scaled</span><span class="p">)</span>
+        <span class="n">e_scaling_gradient</span> <span class="o">=</span> <span class="p">(</span><span class="n">energy_per_atom</span><span class="o">-</span><span class="n">old_energy_per_atom</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">scaling</span><span class="o">-</span><span class="n">old_scaling</span><span class="p">)</span>
+        <span class="n">old_scaling</span> <span class="o">=</span> <span class="n">scaling</span>
+        <span class="n">scaling</span> <span class="o">=</span> <span class="n">old_scaling</span> <span class="o">-</span> <span class="n">learning_rate</span><span class="o">*</span><span class="n">e_scaling_gradient</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">+</span><span class="nb">abs</span><span class="p">(</span><span class="n">e_scaling_gradient</span><span class="p">))</span>
+<span class="c1">#        print(&quot;Scaling gradient: &quot;, e_scaling_gradient)</span>
+<span class="c1">#        print(&quot;Energy per atom: &quot;, energy_per_atom)</span>
+<span class="c1">#        print(&quot;New scaling: &quot;, scaling)</span>
+        <span class="n">old_energy_per_atom</span> <span class="o">=</span> <span class="n">energy_per_atom</span>
+        <span class="n">number_of_iterations</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">number_of_iterations</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">):</span>
+            <span class="n">scaling</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">break</span>
+    <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;optimal_scaling&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scaling</span><span class="p">)</span>
+    <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;iterations_to_find_scaling&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">number_of_iterations</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">scaling</span></div>
+
+
+<div class="viewcode-block" id="optimize_scaling_using_simulation"><a class="viewcode-back" href="../../source/Simulation.html#Simulation.lattice_constant.optimize_scaling_using_simulation">[docs]</a><span class="k">def</span> <span class="nf">optimize_scaling_using_simulation</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">simulation_settings</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">output_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;optimal_scaling&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;iterations_to_find_scaling&#39;</span><span class="p">:</span> <span class="p">[]},</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the optimal scaling of the lattice constant using a gradient descent method.</span>
+
+<span class="sd">    The gradient descent method is modified by a sigmoid function since energy changes</span>
+<span class="sd">    can become very extreme as some potential depend on the -12th power of the distance</span>
+<span class="sd">    so starting with half the correct distance can result in approximately 4000 times the</span>
+<span class="sd">    energy which would make a normal gradient search go crazy even with a reasonable</span>
+<span class="sd">    learning rate. The new scaling s_(k+1) is calculated as:</span>
+<span class="sd">    e_gradient = (e_(k) - e_(k-1)) / (s_(k) - s_(k-1))</span>
+<span class="sd">    s_(k+1) = s_(k) - learning_rate*sigmoid(e_gradient)</span>
+<span class="sd">    The energy at a certain scaling is calculated by using the simulation_function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        atoms(ASE atoms object): The configuration to find an optimal lattice constant for</span>
+<span class="sd">        simulation_settings(dict): Dictionary of simulation settings to use.</span>
+<span class="sd">        output_dict(dict): Dictionary to append the result to.</span>
+<span class="sd">        learning_rate(float): The scaling converges quicker for larger values but if</span>
+<span class="sd">             it&#39;s too large the scaling will oscillate and not converge at all</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        scaling(float): Return the scaling factor which would give the inputed atoms object</span>
+<span class="sd">            the lowest possible energy</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">old_scaling</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">scaling</span> <span class="o">=</span> <span class="mf">1.001</span>
+    <span class="n">e_scaling_gradient</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">number_of_iterations</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">old_energy_per_atom</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">get_total_energy</span><span class="p">()</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+    <span class="n">best_scaling</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">best_energy_per_atom</span> <span class="o">=</span> <span class="n">old_energy_per_atom</span>
+    <span class="c1"># Improve the lattice constant performing gradient descent until the gradient becomes</span>
+    <span class="c1"># sufficiently small. A maximum of 100</span>
+    <span class="k">while</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">e_scaling_gradient</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.01</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">number_of_iterations</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">):</span>
+        <span class="n">atoms_scaled</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="c1"># Perhaps we should calculate time average of energy instead of energy at the end</span>
+        <span class="c1"># of each simulation.</span>
+        <span class="n">atoms_scaled</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">calc</span>
+        <span class="n">atoms_scaled</span><span class="o">.</span><span class="n">set_cell</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">cell</span><span class="o">*</span><span class="n">scaling</span><span class="p">,</span> <span class="n">scale_atoms</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">atoms_scaled</span><span class="p">,</span> <span class="n">energy_per_atom</span> <span class="o">=</span> <span class="n">simple_simulation</span><span class="o">.</span><span class="n">run_simple_md_simulation</span><span class="p">(</span><span class="n">atoms_scaled</span><span class="p">,</span> <span class="n">simulation_settings</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">e_scaling_gradient</span> <span class="o">=</span> <span class="p">(</span><span class="n">energy_per_atom</span><span class="o">-</span><span class="n">old_energy_per_atom</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">scaling</span><span class="o">-</span><span class="n">old_scaling</span><span class="p">)</span>
+        <span class="n">old_scaling</span> <span class="o">=</span> <span class="n">scaling</span>
+        <span class="n">scaling</span> <span class="o">=</span> <span class="n">old_scaling</span> <span class="o">-</span> <span class="n">learning_rate</span><span class="o">*</span><span class="n">e_scaling_gradient</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">+</span><span class="nb">abs</span><span class="p">(</span><span class="n">e_scaling_gradient</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Scaling gradient: &quot;</span><span class="p">,</span> <span class="n">e_scaling_gradient</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Energy per atom: &quot;</span><span class="p">,</span> <span class="n">energy_per_atom</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;New scaling: &quot;</span><span class="p">,</span> <span class="n">scaling</span><span class="p">)</span>
+        <span class="n">old_energy_per_atom</span> <span class="o">=</span> <span class="n">energy_per_atom</span>
+        <span class="n">number_of_iterations</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">energy_per_atom</span> <span class="o">&lt;</span> <span class="n">best_energy_per_atom</span><span class="p">:</span>
+            <span class="n">best_scaling</span> <span class="o">=</span> <span class="n">old_scaling</span>
+            <span class="n">best_energy_per_atom</span> <span class="o">=</span> <span class="n">energy_per_atom</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">number_of_iterations</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">):</span>
+            <span class="n">scaling</span> <span class="o">=</span> <span class="n">best_scaling</span>
+            <span class="k">break</span>
+    <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;optimal_scaling&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scaling</span><span class="p">)</span>
+    <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;iterations_to_find_scaling&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">number_of_iterations</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">scaling</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">atoms</span> <span class="o">=</span> <span class="n">FaceCenteredCubic</span><span class="p">(</span><span class="n">directions</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span>
+                              <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">symbol</span><span class="o">=</span><span class="s1">&#39;Cu&#39;</span><span class="p">,</span> <span class="n">pbc</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">atoms</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">EMT</span><span class="p">()</span>
+    <span class="n">optimize_scaling</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;optimal_scaling&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;iterations_to_find_scaling&#39;</span><span class="p">:</span> <span class="p">[]})</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Computational Physics Project 0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Simulation.lattice_constant</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2023, Alice Eriksson, Emelie Eriksson, Jakov Krnic, Issa Nseir, Markus Wallin, Gustav Wassbäck.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    </div>
+  </body>
+</html>

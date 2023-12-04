@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simulation.calc_bulk_properties &#8212; Computational Physics Project 0.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nature.css?v=8fc2db88" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=d7c963c3"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Computational Physics Project 0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Simulation.calc_bulk_properties</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for Simulation.calc_bulk_properties</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;The file is for calculation of bulk properties.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">ase</span> <span class="kn">import</span> <span class="n">Atoms</span>
+<span class="kn">from</span> <span class="nn">ase.io.trajectory</span> <span class="kn">import</span> <span class="n">Trajectory</span>
+<span class="kn">from</span> <span class="nn">ase.calculators.emt</span> <span class="kn">import</span> <span class="n">EMT</span>
+<span class="kn">from</span> <span class="nn">ase.io</span> <span class="kn">import</span> <span class="n">read</span>
+<span class="kn">from</span> <span class="nn">ase.eos</span> <span class="kn">import</span> <span class="n">EquationOfState</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">ase.units</span> <span class="kn">import</span> <span class="n">kJ</span>
+<span class="kn">from</span> <span class="nn">elastic</span> <span class="kn">import</span> <span class="n">get_pressure</span><span class="p">,</span> <span class="n">BMEOS</span><span class="p">,</span> <span class="n">get_strain</span>
+<span class="kn">from</span> <span class="nn">elastic</span> <span class="kn">import</span> <span class="n">get_elementary_deformations</span><span class="p">,</span> <span class="n">scan_volumes</span>
+<span class="kn">from</span> <span class="nn">elastic</span> <span class="kn">import</span> <span class="n">get_BM_EOS</span><span class="p">,</span> <span class="n">get_elastic_tensor</span>
+<span class="kn">from</span> <span class="nn">elastic.elastic</span> <span class="kn">import</span> <span class="n">get_cij_order</span>
+<span class="kn">import</span> <span class="nn">ase.units</span> <span class="k">as</span> <span class="nn">units</span>
+
+
+<div class="viewcode-block" id="calc_bulk_modulus"><a class="viewcode-back" href="../../source/Simulation.html#Simulation.calc_bulk_properties.calc_bulk_modulus">[docs]</a><span class="k">def</span> <span class="nf">calc_bulk_modulus</span><span class="p">(</span><span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span> <span class="n">output_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;bulk_modulus&#39;</span><span class="p">:</span> <span class="p">[]}):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the equilibrium bulk modulus B for solids using the equation of state.</span>
+
+<span class="sd">    It is directly connnected to the second derivative given by the equation</span>
+<span class="sd">    B = V * (d^2E/dV^2), bulk modulus (incompressibility constant) is a measure of</span>
+<span class="sd">    substance&#39;s resistance to changes in volume when subject to compressive force from</span>
+<span class="sd">    all directions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        atoms(ase atom object): The system to calculate the bulk modulus for</span>
+<span class="sd">        traj_file: List of configuration files which provide us with volumes and potential energies</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (float): The optimal bulk modulus in eV/Ångstrom^3</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cell</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">get_cell</span><span class="p">()</span>
+    <span class="n">volumes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">energies</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">atoms_copy</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">atoms_copy</span><span class="o">.</span><span class="n">calc</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">get_calculator</span><span class="p">()</span>
+    <span class="c1"># Create for example only 10 differnet configuration for different lattice constant</span>
+    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.999</span><span class="p">,</span> <span class="mf">1.001</span><span class="p">,</span> <span class="mi">10</span><span class="p">):</span>
+        <span class="n">atoms_copy</span><span class="o">.</span><span class="n">set_cell</span><span class="p">(</span><span class="n">cell</span> <span class="o">*</span> <span class="n">element</span><span class="p">,</span> <span class="n">scale_atoms</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">volumes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atoms_copy</span><span class="o">.</span><span class="n">get_volume</span><span class="p">())</span>
+        <span class="n">energies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atoms_copy</span><span class="o">.</span><span class="n">get_potential_energy</span><span class="p">())</span>
+    <span class="c1"># Equation of state</span>
+    <span class="n">eos</span> <span class="o">=</span> <span class="n">EquationOfState</span><span class="p">(</span><span class="n">volumes</span><span class="p">,</span> <span class="n">energies</span><span class="p">)</span>
+    <span class="n">v0</span><span class="p">,</span> <span class="n">e0</span><span class="p">,</span> <span class="n">B</span> <span class="o">=</span> <span class="n">eos</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">B</span> <span class="o">/</span> <span class="n">kJ</span> <span class="o">*</span> <span class="mf">1.0e24</span>
+    <span class="c1"># print(B, &quot;GPa&quot;)</span>
+    <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;bulk_modulus&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">B</span></div>
+
+
+<div class="viewcode-block" id="calculate_cohesive_energy"><a class="viewcode-back" href="../../source/Simulation.html#Simulation.calc_bulk_properties.calculate_cohesive_energy">[docs]</a><span class="k">def</span> <span class="nf">calculate_cohesive_energy</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">output_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;cohesive_energy&#39;</span><span class="p">:</span> <span class="p">[]}):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the cohesive energy of an Atoms object, molecule, cluster or Bulk).</span>
+
+<span class="sd">    Keep in mind that the attached calculator should support the atoms object your are trying to create</span>
+<span class="sd">    To calculate the cohesive energy of an Atoms object, crystal(cluster/Bulk), etc.</span>
+<span class="sd">    we need first to find the energy required to separate its components</span>
+<span class="sd">    into neutral free atoms at rest and at infinite separation,</span>
+<span class="sd">    Formula: Cohesive energy=(isolated atoms potential energies-total atoms potential energy)/nr of atoms</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        atoms (ASE atoms object): The ASE atoms object for which to calculate the cohesive energy.</span>
+<span class="sd">        output_dict(dict): Dictionary to append the result to.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (float): The Cohesive energy in eV.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check if the atoms object is a single atom to begin with</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">cohesive_energy</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">get_potential_energy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">cohesive_energy</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Get the current calculator for the atoms objectmolecule</span>
+        <span class="n">original_calculator</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">get_calculator</span><span class="p">()</span>
+
+        <span class="c1"># Get the potential energy for the entire atoms object as whole:</span>
+        <span class="n">total_atoms_potential_energy</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">get_potential_energy</span><span class="p">()</span>
+        <span class="c1"># print(&quot;Total atoms potential energy:&quot;, total_atoms_potential_energy)</span>
+
+        <span class="c1"># Loop for calculating the potential energy of each atom in the atoms object</span>
+        <span class="n">isolated_atoms_potential_energies</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">)):</span>
+            <span class="n">isolated_atom</span> <span class="o">=</span> <span class="n">Atoms</span><span class="p">([</span><span class="n">atoms</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+            <span class="c1"># Set the  original calculator for the isolated atom</span>
+            <span class="n">isolated_atom</span><span class="o">.</span><span class="n">set_calculator</span><span class="p">(</span><span class="n">original_calculator</span><span class="p">)</span>
+            <span class="n">isolated_atom_potential_energy</span> <span class="o">=</span> <span class="n">isolated_atom</span><span class="o">.</span><span class="n">get_potential_energy</span><span class="p">()</span>
+            <span class="n">isolated_atoms_potential_energies</span> <span class="o">+=</span> <span class="n">isolated_atom_potential_energy</span>
+        <span class="c1"># print(&quot;isolated_atoms_potential_energies &quot;+ str(isolated_atoms_potential_energies))</span>
+
+        <span class="c1"># Calculate cohesive energy</span>
+        <span class="n">cohesive_energy</span> <span class="o">=</span> <span class="p">(</span><span class="n">isolated_atoms_potential_energies</span> <span class="o">-</span> <span class="n">total_atoms_potential_energy</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cohesive_energy</span></div>
+
+
+<div class="viewcode-block" id="calc_elastic"><a class="viewcode-back" href="../../source/Simulation.html#Simulation.calc_bulk_properties.calc_elastic">[docs]</a><span class="k">def</span> <span class="nf">calc_elastic</span><span class="p">(</span><span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span> <span class="n">output_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;elastic_tensor_c11&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;bulk_modulus_from_tensor&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;shear_modulus&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;youngs_modulus&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;poisson_ratio&#39;</span><span class="p">:</span> <span class="p">[]}):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the elastic tensor C11.</span>
+
+<span class="sd">    This is somewhat computationally heavy for large systems. Computational</span>
+<span class="sd">    cost increases exponentially with the size of the system.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        atoms(ase atoms object): Atoms object to calculate the tensor for.</span>
+<span class="sd">        output_dict(dict): Dictionary to append the result to.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (float): Elastic tensor C11 in GPa.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">systems</span> <span class="o">=</span> <span class="n">get_elementary_deformations</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">0.33</span><span class="p">)</span>
+
+    <span class="n">Cij</span><span class="p">,</span> <span class="n">Bij</span> <span class="o">=</span> <span class="n">get_elastic_tensor</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">systems</span><span class="p">)</span>
+    <span class="n">cij_order</span> <span class="o">=</span> <span class="n">get_cij_order</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+
+    <span class="n">bulk_modulus</span> <span class="o">=</span> <span class="p">(</span><span class="n">Cij</span><span class="p">[</span><span class="n">cij_order</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;C_11&#39;</span><span class="p">)]</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">Cij</span><span class="p">[</span><span class="n">cij_order</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;C_12&#39;</span><span class="p">)])</span><span class="o">/</span><span class="mi">3</span>
+    <span class="n">shear_modulus</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">Cij</span><span class="p">[</span><span class="n">cij_order</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;C_44&#39;</span><span class="p">)]</span><span class="o">+</span><span class="n">Cij</span><span class="p">[</span><span class="n">cij_order</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;C_11&#39;</span><span class="p">)]</span><span class="o">-</span><span class="n">Cij</span><span class="p">[</span><span class="n">cij_order</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;C_12&#39;</span><span class="p">)])</span><span class="o">/</span><span class="mi">5</span>
+    <span class="n">youngs_modulus</span> <span class="o">=</span> <span class="mi">9</span><span class="o">*</span><span class="n">bulk_modulus</span><span class="o">*</span><span class="n">shear_modulus</span><span class="o">/</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">bulk_modulus</span><span class="o">+</span><span class="n">shear_modulus</span><span class="p">)</span>
+    <span class="n">poisson_ratio</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">-</span><span class="n">youngs_modulus</span><span class="o">/</span><span class="p">(</span><span class="mi">6</span><span class="o">*</span><span class="n">bulk_modulus</span><span class="p">)</span>
+
+    <span class="c1"># Elastic tensors Cij and Birch coefficients Bij are lists/tuples (that are</span>
+    <span class="c1"># different in length depending on the structure) and currently this does</span>
+    <span class="c1"># not work with the creation of the json file. Don&#39;t know if we want to</span>
+    <span class="c1"># look at these but this is why we currently are not appending them.</span>
+
+    <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;elastic_tensor_c11&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Cij</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">units</span><span class="o">.</span><span class="n">GPa</span><span class="p">)</span>
+    <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;bulk_modulus_from_tensor&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bulk_modulus</span><span class="o">/</span><span class="n">units</span><span class="o">.</span><span class="n">GPa</span><span class="p">)</span>
+    <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;shear_modulus&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shear_modulus</span><span class="o">/</span><span class="n">units</span><span class="o">.</span><span class="n">GPa</span><span class="p">)</span>
+    <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;youngs_modulus&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">youngs_modulus</span><span class="o">/</span><span class="n">units</span><span class="o">.</span><span class="n">GPa</span><span class="p">)</span>
+    <span class="n">output_dict</span><span class="p">[</span><span class="s1">&#39;poisson_ratio&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">poisson_ratio</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Cij</span><span class="o">/</span><span class="n">units</span><span class="o">.</span><span class="n">GPa</span><span class="p">,</span> <span class="n">Bij</span><span class="p">,</span> <span class="n">cij_order</span><span class="p">,</span> <span class="n">bulk_modulus</span><span class="o">/</span><span class="n">units</span><span class="o">.</span><span class="n">GPa</span><span class="p">,</span> <span class="n">shear_modulus</span><span class="o">/</span><span class="n">units</span><span class="o">.</span><span class="n">GPa</span><span class="p">,</span> <span class="n">youngs_modulus</span><span class="o">/</span><span class="n">units</span><span class="o">.</span><span class="n">GPa</span><span class="p">,</span> <span class="n">poisson_ratio</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Computational Physics Project 0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Simulation.calc_bulk_properties</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2023, Alice Eriksson, Emelie Eriksson, Jakov Krnic, Issa Nseir, Markus Wallin, Gustav Wassbäck.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    </div>
+  </body>
+</html>
