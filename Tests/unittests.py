@@ -14,6 +14,7 @@ from Simulation.run_md_simulation import run_single_md_simulation
 from Gather_data.download_data import get_ASE_atoms_from_material_id
 from User_interface.user_interface import initiate_gui
 from API_key import start_program
+import json
 
 
 class UnitTests(unittest.TestCase):
@@ -125,6 +126,102 @@ class UnitTests(unittest.TestCase):
         # There will be further testing when other methods connected to the gui has been developed.
         gui = initiate_gui()
         self.assertTrue(type(gui) == Tk)
+
+    def test_specific_heat_capacity(self):
+        # Get the directory path
+        path = os.path.dirname(os.path.abspath(__file__)) + '/../Premade_simulation_data/'
+
+        # Get a list of all files in the directory
+        all_files = os.listdir(path)
+
+        for file_name in all_files:
+            # NVE ensemble tests
+            # Copper
+            if "NVE_copper_heat_capa_3timestep.txt" in file_name:
+                file_path = os.path.join(path, file_name)
+                with open(file_path, 'r') as txt_file:
+                    # Load JSON data from the file
+                    data = json.load(txt_file)
+
+                    # Extract specific_heat_capacity from the data
+                    specific_heat_capacity = data.get("specific_heat_capacity", [])[0]
+                    #print("spec heat capa: ", specific_heat_capacity)
+
+                    # Check if the value is within the specified range
+                    # The experimental value from Physics handbook T-1.1 at 300K for copper = 385 J/Kg*K
+                    self.assertTrue(383 <= specific_heat_capacity <= 393)
+
+            # Silver
+            if "NVE_silver_heat_capa_3timestep.txt" in file_name:
+                file_path = os.path.join(path, file_name)
+                with open(file_path, 'r') as txt_file:
+                    # Load JSON data from the file
+                    data = json.load(txt_file)
+
+                    # Extract specific_heat_capacity from the data
+                    specific_heat_capacity = data.get("specific_heat_capacity", [])[0]
+                    # print("spec heat capa: ", specific_heat_capacity)
+
+                    # The experimental value from Physics handbook T-1.1 at 300K for silver = 235 J/Kg*K
+                    self.assertTrue(230 <= specific_heat_capacity <= 240)
+
+            # Aluminium
+            if "NVE_aluminium_heat_capa_3timestep.txt" in file_name:
+                file_path = os.path.join(path, file_name)
+                with open(file_path, 'r') as txt_file:
+                    # Load JSON data from the file
+                    data = json.load(txt_file)
+
+                    # Extract specific_heat_capacity from the data
+                    specific_heat_capacity = data.get("specific_heat_capacity", [])[0]
+                    # print("spec heat capa: ", specific_heat_capacity)
+
+                    # The experimental value from Physics handbook T-1.1 at 300K for Aluminium = 897 J/Kg*K
+                    self.assertTrue(895 <= specific_heat_capacity <= 930)
+
+            # NVT ensemble testS
+            # Copper (Better value than NVE ensemble)
+            if "NVT_copper_heat_capa_3timestep.txt" in file_name:
+                file_path = os.path.join(path, file_name)
+                with open(file_path, 'r') as txt_file:
+                    # Load JSON data from the file
+                    data = json.load(txt_file)
+
+                    # Extract specific_heat_capacity from the data
+                    specific_heat_capacity = data.get("specific_heat_capacity", [])[0]
+                    # print("spec heat capa: ", specific_heat_capacity)
+
+                    # Check if the value is within the specified range
+                    # The experimental value from Physics handbook T-1.1 at 300K for copper = 385 J/Kg*K
+                    self.assertTrue(383 <= specific_heat_capacity <= 393)
+            
+            # Silver (worse value than NVE ensemble)
+            if "NVT_silver_heat_capa_3timestep.txt" in file_name:
+                file_path = os.path.join(path, file_name)
+                with open(file_path, 'r') as txt_file:
+                    # Load JSON data from the file
+                    data = json.load(txt_file)
+
+                    # Extract specific_heat_capacity from the data
+                    specific_heat_capacity = data.get("specific_heat_capacity", [])[0]
+                    # print("spec heat capa: ", specific_heat_capacity)
+
+                    # The experimental value from Physics handbook T-1.1 at 300K for silver = 235 J/Kg*K
+                    self.assertTrue(200 <= specific_heat_capacity <= 240)
+
+            # Aluminium (So much worse value than NVE ensemble))
+            if "NVT_aluminium_heat_capa_3timestep.txt" in file_name:
+                file_path = os.path.join(path, file_name)
+                with open(file_path, 'r') as txt_file:
+                    # Load JSON data from the file
+                    data = json.load(txt_file)
+
+                    # Extract specific_heat_capacity from the data
+                    specific_heat_capacity = data.get("specific_heat_capacity", [])[0]
+                    # print("spec heat capa: ", specific_heat_capacity)
+
+                    # The experimental value from Physics handbook T-1.1 at 300K for Aluminium = 897 J/Kg*K
+                    self.assertTrue(730 <= specific_heat_capacity <= 900)
 
 
 if __name__ == "__main__":
