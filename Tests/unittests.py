@@ -11,6 +11,7 @@ from Simulation.lattice_constant import optimize_scaling
 from Simulation.calc_properties import calc_temp, calc_pressure, approx_lattice_constant
 from Simulation.calc_bulk_properties import calc_bulk_modulus, calculate_cohesive_energy, calc_elastic
 from Simulation.run_md_simulation import run_single_md_simulation
+from Simulation.simple_simulation import run_simple_md_simulation
 from Gather_data.download_data import get_ASE_atoms_from_material_id
 from User_interface.user_interface import initiate_gui
 from API_key import start_program
@@ -167,6 +168,31 @@ class UnitTests(unittest.TestCase):
         self.assertTrue(228*0.5 < bulk_modulus_Pt < 228*1.5)
         self.assertTrue(61*0.5 < shear_modulus_Pt < 61*1.5)
         self.assertTrue(0.3*0.6 < poisson_ratio_Pt < 0.3*1.4)
+    
+    
+    def test_lattice_constant(self):
+        # Lattice constant for Cu (fcc) is 3.61 Å, which gives a nearest neighbor distance of 2.55 Å
+        atom_Cu = FaceCenteredCubic(symbol="Cu", size=(5, 5, 5), pbc=True)
+        self.assertTrue(2.4 <= approx_lattice_constant(atom_Cu) <= 2.7)
+        # Lattice constant for Ag (fcc) is 4.09 Å, which gives a nearest neighbor distance of 2.89 Å
+        atom_Ag = FaceCenteredCubic(symbol="Ag", size=(5, 5, 5), pbc=True)
+        self.assertTrue(2.8 <= approx_lattice_constant(atom_Ag) <= 3.05)
+        
+        dict1 = {'potential': 'EMT', 'ensemble': 'NVT', 'temperature': 300, 
+                 'step_number': 2000, 'time_step': 1, 'friction': 0.005}
+        
+        value_dict1 = {'mean_square_displacement': [atom_Cu.get_positions()],
+                    'lindemann_criterion': [0],
+                    'self_diffusion_coefficient': [0]}
+        
+        mod_atom_Cu = run_simple_md_simulation(atom_Cu, dict1)
+        self.assertTrue(2.3 <= approx_lattice_constant(mod_atom_Cu) <= 2.7)
+        mod_atom_Ag = run_simple_md_simulation(atom_Ag, dict1)
+        self.assertTrue(2.7 <= approx_lattice_constant(mod_atom_Ag) <= 3.05)
+        
+        # The nearest neighbour distance varied between 2.48-2.39 for Copper and
+        # between 2.81-2.70 for Gold when varying temperature between 300-1900 K.
+        # That is lattice constant for Cu: 3.50-3.37 Å and Ag: 3.97-3.81 Å.
 
 
 if __name__ == "__main__":
