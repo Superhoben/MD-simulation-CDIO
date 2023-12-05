@@ -54,7 +54,7 @@ def plot_backbone(frame):
     fig = matplotlib.figure.Figure()
     ax = fig.add_subplot()
 
-    label = Label(frame, text="Attribute to be plotted")
+    label = Label(frame, text="Attribute to be plotted", bg="lemon chiffon")
     label.config(font=("Courier", 12))
     label.pack(pady=40)
 
