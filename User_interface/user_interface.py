@@ -464,6 +464,11 @@ def user_guide():
     user_guide_window = Tk()
     user_guide_window.title("User Guide")
     user_guide_window.geometry("700x450")
+
+    canvas = Canvas(user_guide_window, width= 10020, height= 750, bg="SpringGreen2")
+    canvas.create_text(300, 50, text="HELLO WORLD", fill="black", font=('Helvetica 15 bold'))
+    canvas.pack()
+
     
     user_guide_window.mainloop()
     user_guide_window.quit()
