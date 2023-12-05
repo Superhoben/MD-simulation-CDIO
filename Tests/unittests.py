@@ -10,7 +10,7 @@ from tkinter import Tk
 from Simulation.simple_simulation import run_simple_md_simulation
 from Simulation.lattice_constant import optimize_scaling
 from Simulation.calc_properties import approx_lattice_constant, calc_temp, calc_pressure, calc_mean_square_displacement, lindemann_criterion, self_diffusion_coefficent
-from Simulation.calc_bulk_properties import calc_bulk_modulus, calculate_cohesive_energy
+from Simulation.calc_bulk_properties import calc_bulk_modulus, calculate_cohesive_energy, calc_elastic
 from Simulation.run_md_simulation import run_single_md_simulation
 from Gather_data.download_data import get_ASE_atoms_from_material_id
 from User_interface.user_interface import initiate_gui
@@ -159,6 +159,48 @@ class UnitTests(unittest.TestCase):
         # There will be further testing when other methods connected to the gui has been developed.
         gui = initiate_gui()
         self.assertTrue(type(gui) == Tk)
+
+    def test_elastic(self):
+        # Elastic properties for different materials.
+        # Young's- Bulk- and Shear modulus from Physics Handbook T-1.1
+        # Poisson's ratio from https://www.engineeringtoolbox.com/metals-poissons-ratio-d_1268.html (can anyone find a better source?)
+        # Element | Young's modulus (GPa) | Bulk modulus (GPa) | Shear modulus (GPa) | Poisson's ratio |
+        # Cu      |        129.8          |        137.8       |        48.3         |       0.36      |
+        # Ag      |         82.7          |        103.6       |        30.3         |       0.37      |
+        # Pt      |          168          |          228       |          61         |        0.3      |
+
+        # Cu
+        atoms_Cu = FaceCenteredCubic(symbol="Cu", size=(2, 2, 2), pbc=True, latticeconstant = 3.61)
+        atoms_Cu.calc = EMT()
+        Cij_Cu, Bij_Cu, cij_order_Cu, bulk_modulus_Cu, shear_modulus_Cu, \
+        youngs_modulus_Cu, poisson_ratio_Cu = calc_elastic(atoms_Cu)
+
+        self.assertTrue(129.8*0.8 < youngs_modulus_Cu < 129.8*1.2)
+        self.assertTrue(137.8*0.8 < bulk_modulus_Cu < 137.8*1.2)
+        self.assertTrue(48.3*0.75 < shear_modulus_Cu < 48.3*1.25)
+        self.assertTrue(0.36*0.8 < poisson_ratio_Cu < 0.36*1.2)
+
+        # Ag
+        atoms_Ag = FaceCenteredCubic(symbol="Ag", size=(2, 2, 2), pbc=True)
+        atoms_Ag.calc = EMT()
+        Cij_Ag, Bij_Ag, cij_order_Ag, bulk_modulus_Ag, shear_modulus_Ag, \
+        youngs_modulus_Ag, poisson_ratio_Ag = calc_elastic(atoms_Ag)
+
+        self.assertTrue(82.7*0.8 < youngs_modulus_Ag < 82.7*1.2)
+        self.assertTrue(103.6*0.8 < bulk_modulus_Ag < 103.6*1.2)
+        self.assertTrue(30.3*0.75 < shear_modulus_Ag < 30.3*1.25)
+        self.assertTrue(0.37*0.9 < poisson_ratio_Ag < 0.37*1.1)
+
+        # Pt
+        atoms_Pt = FaceCenteredCubic(symbol="Pt", size=(2, 2, 2), pbc=True)
+        atoms_Pt.calc = EMT()
+        Cij_Pt, Bij_Pt, cij_order_Pt, bulk_modulus_Pt, shear_modulus_Pt, \
+        youngs_modulus_Pt, poisson_ratio_Pt = calc_elastic(atoms_Pt)
+
+        self.assertTrue(168*0.8 < youngs_modulus_Pt < 168*1.2)
+        self.assertTrue(228*0.5 < bulk_modulus_Pt < 228*1.5)
+        self.assertTrue(61*0.5 < shear_modulus_Pt < 61*1.5)
+        self.assertTrue(0.3*0.6 < poisson_ratio_Pt < 0.3*1.4)
 
 
 if __name__ == "__main__":
