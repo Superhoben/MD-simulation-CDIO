@@ -114,7 +114,9 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
     interval_to_record_bulk_modulus = int(recording_intervals['record_bulk_modulus'])
     if interval_to_record_bulk_modulus:
         output_dict['bulk_modulus'] = []
+        output_dict["debye_temperature"] = []
         dyn.attach(calc_bulk_properties.calc_bulk_modulus, interval_to_record_bulk_modulus, atoms, output_dict)
+        dyn.attach(calc_properties.time_average_of_debye_temperature, interval_to_record_bulk_modulus, atoms, output_dict)
 
     interval_to_record_optimal_scaling = int(recording_intervals['record_optimal_scaling'])
     if interval_to_record_optimal_scaling:
@@ -172,7 +174,11 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
         time_avg_MSD = 0
         for MSD in output_dict['mean_square_displacement']:
             time_avg_MSD = time_avg_MSD + MSD
-        output_dict["avg_MSD"] = time_avg_MSD/int(simulation_settings['step_number'])
+        output_dict["avg_MSD"] = time_avg_MSD/int(config_data['SimulationSettings']['step_number'])
+    
+    # Time average of debye temperature.
+    if interval_to_record_bulk_modulus:
+        output_dict["time_average_of_debye_temperature"] = np.mean(output_dict['debye_temperature'])
 
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/'
     with open(path + output_name + '.txt', 'w') as file:

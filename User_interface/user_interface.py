@@ -14,6 +14,7 @@ from asap3 import EMT
 from ase.visualize import view
 from pathlib import Path
 from User_interface.plot_in_gui import *
+from User_interface.create_arbitrary_atoms import create_atom, create_view_and_save_crystal_guided
 import Gather_data.configuration_file_script as cfs
 import Gather_data.download_data 
 from Simulation.run_md_simulation import run_single_md_simulation
@@ -150,7 +151,7 @@ def initiate_gui():
     Hovertip(rec_basic_properties_label, "Energy\nTemperature\nPressure", hover_delay=0)
     
     rownumber += 1
-    rec_physical_properties_label = Label(data_frame, text="Physical Properties", width=20)
+    rec_physical_properties_label = Label(data_frame, text="Displacement prop.", width=20)
     rec_physical_properties_label.grid(row=rownumber, column=0)
     rec_physical_properties_entry = Entry(data_frame)
     rec_physical_properties_entry.grid(row=rownumber, column=2)
@@ -158,15 +159,17 @@ def initiate_gui():
     Hovertip(rec_physical_properties_label, "Mean Square Displacement\nLindemann criterion\nSelf-diffusion coefficient", hover_delay=0)
     
     rownumber += 1
-    rec_elasticbulk_label = Label(data_frame, text="Elastic/bulk", width=20)
+    rec_elasticbulk_label = Label(data_frame, text="Elastic properties", width=20)
     rec_elasticbulk_label.grid(row=rownumber, column=0)
     rec_elasticbulk_entry = Entry(data_frame)
     rec_elasticbulk_entry.grid(row=rownumber, column=2)
     rec_elasticbulk_entry.insert(0, 0)
-    Hovertip(rec_elasticbulk_label, "Elastic tensor\nBulk modulus", hover_delay=0)
+    
+    Hovertip(rec_elasticbulk_label, "Elastic tensor\nBulk modulus\nShear modulus\nYoungs modulus\nPoisson ratio", hover_delay=0)
+
 
     rownumber += 1
-    rec_configuration_label = Label(data_frame, text="Configuration", width=20)
+    rec_configuration_label = Label(data_frame, text="Atom configuration", width=20)
     rec_configuration_label.grid(row=rownumber, column=0)
     rec_configuration_entry = Entry(data_frame)
     rec_configuration_entry.grid(row=rownumber, column=2)
@@ -235,6 +238,10 @@ def initiate_gui():
     update_api_key = Button(data_frame, text='Update API key ',
                                 command=lambda: prompt_for_api_key())
     update_api_key.grid(row=rownumber, column=0, pady=10)
+    
+    rownumber += 1
+    create_atom_button = Button(data_frame, text = "Create atom", command=create_atom)
+    create_atom_button.grid(row=rownumber, column=1, pady=10)
     
     rownumber += 1
     sep_label2 = Label(data_frame, text="-"*100, bg = "medium aquamarine")
@@ -709,6 +716,7 @@ def animate_traj(traj_file):
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files/'
     traj = Trajectory(path + traj_file, "r")
     view(traj)
+
 
 if __name__ == "__main__":
     main_program = initiate_gui()

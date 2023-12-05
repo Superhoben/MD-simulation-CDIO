@@ -1,5 +1,6 @@
 import os
-from math import floor, cbrt
+from math import floor
+from numpy import cbrt
 from ase.io.trajectory import Trajectory
 from ase import Atoms
 from ase.visualize import view
