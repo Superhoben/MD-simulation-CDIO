@@ -1,5 +1,5 @@
 Content of the Premade_simulation_data Directory:
-6 fiesl: 2 Ensemble for each element, number of elements 3 ==> 2 * 3 = 6 files
+6 files: 2 Ensemble for each element, number of elements 3 ==> 2 * 3 = 6 files
 
 General information:
 Those files are a premade simulation files that was done by Issa on a 
