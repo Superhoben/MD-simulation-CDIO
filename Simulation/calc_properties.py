@@ -192,7 +192,6 @@ def calc_mean_square_displacement(atoms: Atoms, output_dict={'mean_square_displa
     MSD = 0
 
     if output_dict['mean_square_displacement'] == []:
-        # Append initial position array which is used for all future iterations
         output_dict['mean_square_displacement'].append(positions)
     else:
         atom_pos_diffs = positions-output_dict['mean_square_displacement'][0]
@@ -224,7 +223,7 @@ def lindemann_criterion(atoms: Atoms, output_dict={'lindemann_criterion': []}, d
     """
     lindemann = 0
 
-    if output_dict['lindemann_criterion'] != []:
+    if (len(output_dict['mean_square_displacement']) > 21):
         lindemann = np.sqrt(output_dict['mean_square_displacement'][-1])/d
 
     output_dict['lindemann_criterion'].append(lindemann)
@@ -250,7 +249,7 @@ def self_diffusion_coefficent(atoms: Atoms, output_dict={'lindemann_criterion': 
     """
     self_diffusion_coefficient = 0
 
-    if output_dict['self_diffusion_coefficient'] != []:
+    if (len(output_dict['self_diffusion_coefficient']) > 21):
         # t is calculated by using how many calculations of calc_self_diffusion_coefficient have
         # been performed, and multiplying this by how long the intervals are.
         self_diffusion_coefficient = output_dict['mean_square_displacement'][-1]/(6*time_elapsed_per_interval*(len(output_dict['mean_square_displacement']) - 1)*units.fs)
