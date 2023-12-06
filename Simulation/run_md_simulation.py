@@ -169,6 +169,8 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
 
     if int(recording_intervals['record_mean_square_displacement']):
         output_dict['mean_square_displacement'][0] = 0
+        output_dict['mean_square_displacement'][1] = 0
+        output_dict['lindemann_criterion'][1] = 0
         time_avg_MSD = 0
         for MSD in output_dict['mean_square_displacement']:
             time_avg_MSD = time_avg_MSD + MSD
