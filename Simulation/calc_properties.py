@@ -226,7 +226,7 @@ def calc_mean_square_displacement(atoms: Atoms, output_dict={'mean_square_displa
     return MSD
 
 
-def lindemann_criterion(atoms: Atoms, output_dict={'lindemann_criterion': []}, d = 1):
+def lindemann_criterion(output_dict={'lindemann_criterion': []}, d = 1):
     """Calculate the Lindemann criterion of atoms object.
 
     The formula used is L = 1/d*(MSD)^(1/2).
@@ -252,7 +252,7 @@ def lindemann_criterion(atoms: Atoms, output_dict={'lindemann_criterion': []}, d
     return lindemann
 
 
-def self_diffusion_coefficent(atoms: Atoms, output_dict={'lindemann_criterion': []}, time_elapsed_per_interval = 1):
+def self_diffusion_coefficent(output_dict={'lindemann_criterion': []}, time_elapsed_per_interval = 1):
     """Calculate the self-diffusion coefficient of atoms object.
 
     The formula used is D = 1/(6*t)*MSD where t is time elapsed at a certian iteration
@@ -276,6 +276,7 @@ def self_diffusion_coefficent(atoms: Atoms, output_dict={'lindemann_criterion': 
         self_diffusion_coefficient = output_dict['mean_square_displacement'][-1]/(6*time_elapsed_per_interval*(len(output_dict['mean_square_displacement']) - 1)*units.fs)
 
     output_dict['self_diffusion_coefficient'].append(self_diffusion_coefficient)
+
 
     return self_diffusion_coefficient
 
@@ -325,3 +326,4 @@ def time_average_of_debye_temperature(atoms: Atoms, output_dict={'debye_temperat
     # Calculate the time average, usless line of code
     # time_average_of_debye_temperature = np.mean(output_dict['debye_temperature'])
     return debye_temperature
+
