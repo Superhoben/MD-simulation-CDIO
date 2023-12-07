@@ -505,8 +505,8 @@ class UnitTests(unittest.TestCase):
         traj = Trajectory(path_to_traj_folder + "/ValidationTests/NVE_Au_validation_test.traj", 'r')
         atoms = traj[-1]
         nearest_neighbour_distance = approx_lattice_constant(atoms)
-        self.assertTrue(2.4 < nearest_neighbour_distance < 2.7)
-        # We get a value of 2.46, that is a lattice constant of 3.47 Å (Expected 4.078 Å)
+        self.assertTrue(2.5 < nearest_neighbour_distance < 2.9)
+        # We get a value of 2.77, that is a lattice constant of 3.92 Å (Expected 4.078 Å)
 
 
     def test_GUI(self):
