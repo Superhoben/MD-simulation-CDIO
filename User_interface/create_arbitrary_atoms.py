@@ -17,7 +17,9 @@ from ase.build import make_supercell
 
 def inbetweener(system, window, **kwargs):
     """Transition from to create_view_and_save_crystal_guide and destroy window"""
+
     window.destroy()
+    window.quit()
     create_view_and_save_crystal_guided(system, **kwargs)
 
 
@@ -93,7 +95,7 @@ def create_view_and_save_crystal_guided(system, a=0, b=0, c=0, alpha=0, beta=0, 
         primitive_cell = FaceCenteredCubic(symbol=elements[0], latticeconstant=lattice_constant)
         primitive_cell.set_chemical_symbols(elements)
 
-    view(primitive_cell, block = False)
+    view(primitive_cell, block=False)
 
     new_window = Tk()
     new_window.title("Create trajectory file")

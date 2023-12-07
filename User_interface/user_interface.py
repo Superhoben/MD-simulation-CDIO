@@ -368,7 +368,7 @@ def initiate_gui():
 
     # Quit
     quit_button = Button(data_frame, text="Exit Program", command=gui.quit)
-    quit_button.grid(pady=50)
+    quit_button.grid(pady=30)
 
     Button(tabframe1, text="Clear Graph", command=lambda: clear_canvas(ax_canvas[0], ax_canvas[1], plot_title)).pack(pady=10)
 
@@ -470,13 +470,17 @@ def update_output_traj_list(event, traj_menu, value_inside_traj_list):
 def user_guide():
     user_guide_window = Tk()
     user_guide_window.title("User Guide")
-    user_guide_window.geometry("700x450")
+    user_guide_window.geometry("700x650")
+    user_guide_window.resizable(width=False, height=False)
 
-    canvas = Canvas(user_guide_window, width= 10020, height= 750, bg="SpringGreen2")
-    canvas.create_text(300, 50, text="HELLO WORLD", fill="black", font=('Helvetica 15 bold'))
-    canvas.pack()
-
+    canvas = Canvas(user_guide_window, width=700, height=650, bg="papaya whip")
     
+    f= open("User_interface/guide.txt", "r")
+    guide_text = f.read()
+    
+    canvas.pack(anchor=CENTER, expand=True)
+
+    canvas.create_text(340,330, text=guide_text, fill="black", font=('Helvetica 15'))
     user_guide_window.mainloop()
     user_guide_window.quit()
 
