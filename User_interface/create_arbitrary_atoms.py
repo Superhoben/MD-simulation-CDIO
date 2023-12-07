@@ -19,9 +19,6 @@ def inbetweener(system, window, **kwargs):
     """Transition from to create_view_and_save_crystal_guide and destroy window"""
     
     window.destroy()
-    
-    
-    
     create_view_and_save_crystal_guided(system, **kwargs)
 
 
