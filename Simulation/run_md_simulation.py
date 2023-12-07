@@ -2,6 +2,7 @@
 import os
 import sys
 import shutil
+from math import ceil
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.md.verlet import VelocityVerlet
@@ -19,11 +20,13 @@ import numpy as np
 from scipy.spatial.distance import cdist
 from multiprocessing import Process
 from ase.lattice.cubic import FaceCenteredCubic
+from Gather_data.hypothetical_materials import mix_materials
 
 def print_and_increase_progress(progress, sim_number):
     if sim_number:
         print("Simulation ", sim_number, ": Progress "+str(progress[0])+"%")
-    print("Progress "+str(progress[0])+"%")
+    else:
+        print("Progress "+str(progress[0])+"%")
     progress[0] += 10
 
 def run_single_md_simulation(config_file: str, traj_file: str, output_name: str, sim_number=0):
@@ -91,7 +94,7 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
     d = calc_properties.approx_lattice_constant(atoms)
 
     output_dict = {}
-    output_dict["config_file"] = config_file
+    output_dict["config_file"] = [config_file]
 
     # Attach recorders that calculate a certain property and store in the output_dict
     interval_to_record_energy = int(recording_intervals['record_energy'])
@@ -114,7 +117,9 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
     interval_to_record_bulk_modulus = int(recording_intervals['record_bulk_modulus'])
     if interval_to_record_bulk_modulus:
         output_dict['bulk_modulus'] = []
+        output_dict["debye_temperature"] = []
         dyn.attach(calc_bulk_properties.calc_bulk_modulus, interval_to_record_bulk_modulus, atoms, output_dict)
+        dyn.attach(calc_properties.time_average_of_debye_temperature, interval_to_record_bulk_modulus, atoms, output_dict)
 
     interval_to_record_optimal_scaling = int(recording_intervals['record_optimal_scaling'])
     if interval_to_record_optimal_scaling:
@@ -165,14 +170,14 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
     dyn.run(int(simulation_settings['step_number']))
 
     if interval_to_record_energy:
-        output_dict['specific_heat_capacity'] = [calc_properties.calculate_specific_heat(atoms, config_file, output_dict)]
+        output_dict['specific_heat_capacity'] = [calc_properties.calculate_specific_heat(atoms, config_data, output_dict)]
 
     if int(recording_intervals['record_mean_square_displacement']):
         output_dict['mean_square_displacement'][0] = 0
-        time_avg_MSD = 0
-        for MSD in output_dict['mean_square_displacement']:
-            time_avg_MSD = time_avg_MSD + MSD
-        output_dict["avg_MSD"] = time_avg_MSD/int(simulation_settings['step_number'])
+
+    # Time average of debye temperature.
+#    if interval_to_record_bulk_modulus:
+#        output_dict["time_average_of_debye_temperature"] = np.mean(output_dict['debye_temperature'])
 
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/'
     with open(path + output_name + '.txt', 'w') as file:
@@ -186,7 +191,8 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
     return atoms
 
 
-def run_md_simulations(config_file_name, trajectory_file_dir, output_dir_name):
+def queue_simulations(config_file_name, trajectory_file_dir, output_dir_name, 
+                      process_list=[], execute=True, sim_number = [1]):
     """Run md simulations for multiple configs and trajectory files.
 
     Args:
@@ -209,29 +215,141 @@ def run_md_simulations(config_file_name, trajectory_file_dir, output_dir_name):
     os.mkdir(base_path + 'Output_trajectory_files/' + output_dir_name)
     traj_files_full_path = base_path + 'Input_trajectory_files/' + trajectory_file_dir
     traj_file_names = os.listdir(traj_files_full_path)
-    process_list = []
-    sim_number = 1
+
     for traj_file_name in traj_file_names:
         os.path.dirname(os.path.abspath(__file__))
         dir_and_traj_file_name = trajectory_file_dir + '/' + traj_file_name
-        output_dir_and_file_name = output_dir_name + traj_file_name
-        simulation_args = [config_file_name, dir_and_traj_file_name, output_dir_and_file_name, sim_number]
-        process_list.append(Process(target=run_single_md_simulation, args=simulation_args))
-        sim_number += 1
+        output_dir_and_name = output_dir_name + '/' + traj_file_name[:-5]
+        sim_args = [config_file_name, dir_and_traj_file_name, output_dir_and_name, sim_number[0]]
+        process_list.append(Process(target=run_single_md_simulation, args=sim_args))
+        sim_number[0] += 1
+
+    if execute:
+        for process in process_list:
+            process.start()
+        for process in process_list:
+            process.join()
+        print("All simulations finished!")
+
+
+def is_float(element: any) -> bool:
+    if element is None: 
+        return False
+    try:
+        float(element)
+        return True
+    except ValueError:
+        return False
+
+
+def get_starting_num_string(file_name):
+    i = 0
+    while is_float(file_name[:i+1]):
+        i += 1
+    return file_name[:i]
+
+
+def summerize_text_files(dir_name):
+    dir_path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/' + dir_name
+    dir_contents = os.listdir(dir_path)
+    text_files = []
+    for content in dir_contents:
+        if os.path.isfile(dir_path+'/'+content) and content.endswith('.txt'):
+            text_files.append(content)
+
+    summary_dict = {'origin_files': text_files}
+    for text_file in text_files:
+        opened_file = open(dir_path+'/'+text_file, 'r')
+        data_dict = json.load(opened_file)
+        opened_file.close()
+        for key in data_dict:
+            if not (key in summary_dict):
+                summary_dict[key] = []
+            data = data_dict[key]
+            number_of_measurements_to_include = ceil(0.2*len(data_dict[key]))
+            if number_of_measurements_to_include == 1:
+                summary_dict[key].append(data[0])
+            else:
+                print(data[-number_of_measurements_to_include:])
+                summary_dict[key].append(np.mean(data[-number_of_measurements_to_include:]))
+
+    with open(dir_path+'.txt', 'w') as file:
+        file.seek(0)
+        json.dump(summary_dict, file)
+
+
+def summerize_traj_files(dir_name):
+    dir_path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files/' + dir_name
+    dir_contents = os.listdir(dir_path)
+    dir_contents.sort(key=get_starting_num_string)
+#    parent_of_dir = '/'.join(dir_path.split('/')[:-1])
+    traj_writer = Trajectory(dir_path+'.traj', 'w')
+    for content in dir_contents:
+        if os.path.isfile(dir_path+'/'+content) and content.endswith('.traj'):
+            atoms = Trajectory(dir_path+'/'+content)[-1]
+            traj_writer.write(atoms)
+
+
+def high_throughput_mix_and_simulate(config_file, input_traj_dir, element_to_mix_in, mixing_concentrations, output_dir_name):
+    base_path = os.path.dirname(os.path.abspath(__file__)) + '/../'
+    path_new_output_txt_dir = base_path + 'Output_text_files/' + output_dir_name
+    path_new_output_traj_dir = base_path + 'Output_trajectory_files/' + output_dir_name
+    if os.path.exists(path_new_output_txt_dir):
+        shutil.rmtree(path_new_output_txt_dir)
+    if os.path.exists(path_new_output_traj_dir):
+        shutil.rmtree(path_new_output_traj_dir)
+    os.mkdir(path_new_output_txt_dir)
+    os.mkdir(path_new_output_traj_dir)
+    input_traj_dir_path = base_path + 'Input_trajectory_files/' + input_traj_dir
+    input_traj_dir_contents = os.listdir(input_traj_dir_path)
+    traj_file_names = []
+    for content in input_traj_dir_contents:
+        if os.path.isfile(input_traj_dir_path+'/'+content) and content.endswith('.traj'):
+            traj_file_names.append(content)
+    if len(traj_file_names) == 0:
+        print("No traj files in the input traj dir, no alloys created, no simulations run")
+        return
+
+    config_path = os.path.dirname(os.path.abspath(__file__)) + '/../Input_config_files/'
+    config_data = ConfigParser()
+    config_data.read(config_path+config_file)
+    config_data['SimulationSettings']["record_configuration"] = '0'
+
+    mix_dirs = []
+    process_list = []
+    sim_number = [1] # Simulation number is encapsulated in a list in order to become mutable
+    for traj_file_name in traj_file_names:
+        mix_dir_name =element_to_mix_in + '_mixed_into_' + traj_file_name[:-5]
+        print('Mix_dir_name: \n', mix_dir_name, '\n')
+        mix_materials(input_traj_dir+'/'+traj_file_name, element_to_mix_in, mixing_concentrations,  
+                      input_traj_dir + '/' + mix_dir_name)
+        mix_dirs.append(output_dir_name+'/'+mix_dir_name)
+        queue_simulations(config_file, input_traj_dir+'/'+mix_dir_name, output_dir_name+'/'+mix_dir_name,
+                          process_list, False, sim_number)
 
     for process in process_list:
         process.start()
     for process in process_list:
         process.join()
 
+    for mix_dir in mix_dirs:
+        print(mix_dir)
+        summerize_traj_files(mix_dir)
+        summerize_text_files(mix_dir)
+
     print("All simulations finished!")
 
 
+from ase.visualize import view
 if __name__ == "__main__":
-    atoms = FaceCenteredCubic(directions=[[1, 0, 0], [0, 1, 0], [1, 1, 1]],
-                              size=(2, 2, 3), symbol='Cu', pbc=(1, 1, 0))
-    atoms.calc = EMT()
     #optimize_scaling(atoms, {'optimal_scaling': [], 'iterations_to_find_scaling': []})
-    print(lattice_constant.optimize_scaling_using_simulation(atoms, {'potential': 'EMT', 'time_step': 5, 'temperature': 300, 'ensemble': 'NVE', 'step_number': 250}))
+    #print(lattice_constant.optimize_scaling_using_simulation(atoms, {'potential': 'EMT', 'time_step': 5, 'temperature': 300, 'ensemble': 'NVE', 'step_number': 250}))
 
     #run_md_simulations("example_config.ini", 'Demo_multi_sim', 'Demo_multi_sim')
+    mixing_concentrations = [0.1, 0.2, 0.3]
+    high_throughput_mix_and_simulate("example_config.ini", 'Demo_multi_sim', 'Ni', mixing_concentrations, 'Demo_multi_sim')
+    traj = Trajectory('/Users/gustavwassback/Documents/CDIO/MD-simulation-CDIO/Gather_data/../Output_trajectory_files/Demo_multi_sim/Ni_mixed_into_1728_atoms_of_mp-30.traj', 'r')
+    view(traj)
+    #print(traj[0].get_chemical_symbols().count('Ni'))
+    #print(traj[1].get_chemical_symbols().count('Ni'))
+    #print(traj[2].get_chemical_symbols().count('Ni'))

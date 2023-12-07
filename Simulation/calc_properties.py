@@ -104,7 +104,7 @@ def calc_pressure(atoms: Atoms, output_dict={'pressure': []}, external_field=Non
         return pressure_in_eV_per_Å3*160.21766208
 
 
-def calculate_specific_heat(atoms, config_file, output_dict):
+def calculate_specific_heat(atoms, config_data, output_dict):
     """Calculate specific heat capacity of atoms object.
 
     Two formulas are used here, for NVE or NVT ensemble:
@@ -114,7 +114,7 @@ def calculate_specific_heat(atoms, config_file, output_dict):
 
     Args:
         atoms(ase atom object): The system to calculate the specific heat capacity for.
-        config_file(str): Name of the file with user's parameters.
+        config_data(str): Dictionary with the simulation settings.
         output_dict(dict): Dictionary to append the result to.
 
     Returns:
@@ -126,11 +126,6 @@ def calculate_specific_heat(atoms, config_file, output_dict):
     # Constants for unit conversion Physics handbook CU-2.4
     eV_to_Joules = 1.602177e-19  # Conversion factor from eV to Joules
     AtomicMass_to_Kg = 1.660539e-27  # Conversion factor from atomic mass units (u) to kilograms
-
-    # Read the user config data
-    config_path = os.path.dirname(os.path.abspath(__file__)) + '/../Input_config_files/'
-    config_data = ConfigParser()
-    config_data.read(config_path+config_file)
 
     # Get the average of the instantaneous temperatures
     # Ignoring the first 10 unstable values at the begining of the simulation

@@ -1,14 +1,16 @@
 """This is for making hypothetical materials."""
 import os
 import sys
-import random
-import os.path
-from ase import Atoms
-from ase.io.trajectory import Trajectory
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
+import shutil
+import random
+from ase import Atoms
+from asap3 import EMT
+from Simulation.lattice_constant import optimize_scaling
+from ase.io.trajectory import Trajectory
 
 
-def mix_materials(traj_name: str, add_element: str, interval=10):
+def mix_materials(traj_name: str, add_element: str, target_concs, mix_dir_name=False):
     """Mix an element into existing structure.
 
     This function mixes add_element evenly into the atoms object in the
@@ -22,9 +24,6 @@ def mix_materials(traj_name: str, add_element: str, interval=10):
     potential, otherwise this is very unreasonable to do. Also the lattice
     constants need to be similar.
 
-    TODO: Rescale each step to decrease the internal pressure that will be
-          created from the mixing.
-
     Args:
         traj_name(str): Name of trajectory file of atoms object to mix
                         with add_element.
@@ -33,22 +32,39 @@ def mix_materials(traj_name: str, add_element: str, interval=10):
 
     Returns:
         None
-
     """
-    traj_path = os.path.dirname(os.path.abspath(__file__)) + \
-        '/../Input_trajectory_files/'
-    traj = Trajectory(traj_path+traj_name)
+    input_traj_dir_path = os.path.dirname(os.path.abspath(__file__)) + '/../Input_trajectory_files/'
+    traj = Trajectory(input_traj_dir_path+traj_name)
     atoms = traj[0]
+
+    if mix_dir_name:
+        alloy_dir = input_traj_dir_path+mix_dir_name
+        if os.path.exists(alloy_dir):
+            shutil.rmtree(alloy_dir)
+        os.mkdir(alloy_dir)
+
     original_symbols = atoms.get_chemical_symbols()
-    nr_of_atoms = len(atoms)
-    traj_name = traj_path + traj_name.split(".")[0] + "_" + add_element + "_"
-    for x in range(1, nr_of_atoms, interval):
-        atoms_positions = original_symbols.copy()
-        random_mix(atoms_positions, add_element, x)
-        atoms.set_chemical_symbols(atoms_positions)
-        # TODO: add scaling = optimize_scaling(atoms) here
-        traj = Trajectory(traj_name+str(x)+".traj", "w")
-        traj.write(atoms)
+    mixed_atoms_list = []
+    actual_concs = []
+    for c in target_concs:
+        mixed_symbols = original_symbols.copy()
+        number_of_symbols_to_switch = round(c*len(atoms))
+        c = number_of_symbols_to_switch/len(atoms)
+        actual_concs.append(c)
+        random_mix(mixed_symbols, add_element, round(c*len(atoms)))
+        atoms_copy = atoms.copy()
+        atoms_copy.set_chemical_symbols(mixed_symbols)
+        atoms_copy.calc = EMT()
+        suggested_scaling = optimize_scaling(atoms_copy)
+        print(suggested_scaling)
+        if suggested_scaling != 0:
+            atoms_copy.set_cell(atoms_copy.cell*suggested_scaling, scale_atoms=True)
+        if mix_dir_name:
+            traj = Trajectory(alloy_dir+'/'+str(0.1*round(1000*c))+add_element+'_in_'+traj_name.split("/")[-1], "w")
+            traj.write(atoms_copy)
+        mixed_atoms_list.append(atoms_copy)
+
+    return mixed_atoms_list, actual_concs
 
 
 def random_mix(chemical_symbols: list, add_element: str, amount: int):
@@ -102,3 +118,7 @@ def create_mix_from_concentration(traj_name: str, add_element: str, concentratio
     traj_name = traj_path + traj_name.split(".")[0] + "_" + add_element + "_" + str(concentration) + ".traj"
     traj = Trajectory(traj_name, "w")
     traj.write(atoms)
+
+if __name__ == "__main__":
+    mix_list, actual_conc = mix_materials("1728_atoms_of_mp-30.traj", "Ag", [0.2, 0.5, 0.8], "Cu_Ag_mixes")
+    print(actual_conc)
