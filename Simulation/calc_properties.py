@@ -195,7 +195,6 @@ def calc_mean_square_displacement(atoms: Atoms, output_dict={'mean_square_displa
         output_dict['mean_square_displacement'].append(positions)
     else:
         atom_pos_diffs = positions-output_dict['mean_square_displacement'][0]
-        output_dict['mean_square_displacement'][0] = positions
         MSD_sum = 0
         for atom in atom_pos_diffs:
             MSD_sum += LA.norm(atom)**2
