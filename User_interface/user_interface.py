@@ -8,6 +8,7 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter import ttk
 from tkinter import messagebox
+from tkinter import filedialog
 from ase.build import molecule
 from ase.io.trajectory import Trajectory
 from asap3 import EMT
@@ -25,6 +26,7 @@ from os.path import isfile
 from API_key.start_program import *
 import json
 from idlelib.tooltip import Hovertip
+from Visualization.visualize_data import prep_visualization
 
 
 def initiate_gui():
@@ -362,7 +364,6 @@ def initiate_gui():
     Button(tabframe4, text="Open plot in new window", command=lambda: visualise_2D(value_inside_plottable_list.get(), value_inside_output_data.get(), ax_canvas, text_box, tabframe1, True, plot_title="Attribute")).grid(row=rownumber,column=1,pady=10)
 
     rownumber += 1
-
     output_traj_files = [file for file in listdir() if isfile(file)]
     value_inside_trajoutput_data = StringVar(gui)
     value_inside_trajoutput_data.set("Select a trajectory file")
@@ -375,12 +376,56 @@ def initiate_gui():
     output_traj_menu.bind('<Button-1>', output_traj_handler)  
 
     output_traj_menu.grid(row=rownumber, column=0)
-    
 
 
     trajbutton = Button(tabframe4, text="Look at trajectory", command=lambda: animate_traj(value_inside_trajoutput_data.get()))
     trajbutton.grid(row=rownumber, column=2)
+
+    rownumber += 1
+    sep_label2 = Label(tabframe4, text="-"*100, bg = "medium aquamarine")
+    sep_label2.grid(row=rownumber, column = 0, columnspan = 3)
+
+    rownumber += 1
+    file_selection_data = StringVar(gui)
+    select_data_button = Button(tabframe4, text="Select data file", command=lambda: openfile(file_selection_data))
+    select_data_button.grid(row=rownumber,column=0)
     
+    rownumber += 1
+    select_data_label = Label(tabframe4, text="Values on x-axis")
+    select_data_label.grid(row=rownumber,column=0)
+    
+    plottable_attributes2 = ["Total Energy", "Kinetic Energy", "Potential Energy", 
+                            "Temperature", "Pressure", "Bulk Modulus",
+                            "Optimal Scaling", "Elastic Tensor", "Mean Square Displacement",
+                            "Lindemann Criterion", "Self Diffusion Coefficient"]
+
+    x_values = StringVar(gui)
+    x_values.set("Attribute to plot")
+
+    attributes_menu2 = OptionMenu(tabframe4, x_values,
+                                *plottable_attributes2)
+    attributes_menu2.grid(row=rownumber, column=1)
+    
+    rownumber += 1
+    select_data_label2 = Label(tabframe4, text="Values on y-axis")
+    select_data_label2.grid(row=rownumber,column=0)
+    
+    plottable_attributes3 = ["Total Energy", "Kinetic Energy", "Potential Energy", 
+                            "Temperature", "Pressure", "Bulk Modulus",
+                            "Optimal Scaling", "Elastic Tensor", "Mean Square Displacement",
+                            "Lindemann Criterion", "Self Diffusion Coefficient"]
+
+    y_values = StringVar(gui)
+    y_values.set("Attribute to plot")
+
+    attributes_menu3 = OptionMenu(tabframe4, y_values,
+                                *plottable_attributes3)
+    attributes_menu3.grid(row=rownumber, column=1)
+    
+    rownumber += 1
+    select_data_button = Button(tabframe4, text="Plot", command=prep_visualization)
+    select_data_button.grid(row=rownumber,column=2)
+
 
     # Quit
     quit_button = Button(tabframe3, text="Exit Program", command=gui.quit)
@@ -390,6 +435,10 @@ def initiate_gui():
 
     return gui
 
+
+def openfile(file_selection_data):
+    file_selection_data = filedialog.askopenfilename(initialdir="../Output_text_files",
+                                              title="Select data folder")
 
 
 def update_input_config_list(event, config_files_menu, value_inside_config_files_list):
