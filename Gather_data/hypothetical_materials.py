@@ -56,7 +56,7 @@ def mix_materials(traj_name: str, add_element: str, target_concs, mix_dir_name=F
         atoms_copy.set_chemical_symbols(mixed_symbols)
         atoms_copy.calc = EMT()
         suggested_scaling = optimize_scaling(atoms_copy)
-        print(suggested_scaling)
+#        print(suggested_scaling)
         if suggested_scaling != 0:
             atoms_copy.set_cell(atoms_copy.cell*suggested_scaling, scale_atoms=True)
         if mix_dir_name:
@@ -96,10 +96,10 @@ def random_mix(chemical_symbols: list, add_element: str, amount: int):
 
 def create_mix_from_concentration(traj_name: str, add_element: str, concentration):
     """Mix an element into existing structure from concentration.
-    
+
     This creates one trajectory file by mixing add_element into the structure
     in the input file with the given concentration.
-    
+
     Args:
         traj_name(str): Name of trajectory file of atoms object to mix
                         with add_element.

@@ -5,7 +5,9 @@ import shutil
 from math import ceil
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
+from ase.visualize import view
 from ase.md.verlet import VelocityVerlet
+from ase.md.npt import NPT
 from ase import units
 from ase import Atoms
 from asap3 import EMT, LennardJones
@@ -23,24 +25,28 @@ from ase.lattice.cubic import FaceCenteredCubic
 from Gather_data.hypothetical_materials import mix_materials
 
 def print_and_increase_progress(progress, sim_number):
+    """Prints to the terminal how far a simulations has come"""
     if sim_number:
         print("Simulation ", sim_number, ": Progress "+str(progress[0])+"%")
     else:
         print("Progress "+str(progress[0])+"%")
     progress[0] += 10
 
+
 def run_single_md_simulation(config_file: str, traj_file: str, output_name: str, sim_number=0):
     """Run md simulation for a single trajectory file, with parameters specified in config.
 
+    Snapshoots of the atom state during the simulation will be saved in Output_trajectory_files/output_name.traj
+    and calculated properties in Output_text_files/output_name.txt
+
     Args:
         config_file(str): Name of file with parameters to use in simulation.
-        traj_file(str): Name of trajectory file with the atoms object to use
-                        in simulation
+        traj_file(str): Name of trajectory file with the atoms object to use in simulation
         output_name(str): Name of file to write results to
+        sim_number(int): Used by the function print_and_increase_progress specify the simulation
 
     Returns:
         atoms(ase atoms object): The ase atoms object after simulation.
-
     """
     # Parse the config file to get dictionary of data
     config_path = os.path.dirname(os.path.abspath(__file__)) + '/../Input_config_files/'
@@ -84,6 +90,12 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
                        friction=(float(simulation_settings['friction']) or 0.005))
         MaxwellBoltzmannDistribution(atoms, temperature_K=2*int(simulation_settings['temperature']))
         Stationary(atoms)
+#    elif ensemble == "NPT":
+#        dyn = NPT(atoms, timestep=int(simulation_settings['time_step'])*units.fs,
+#                  temperature_K=int(simulation_settings['temperature']),
+#                  ttime=float(simulation_settings['ttime']), pfactor=float(simulation_settings['pfactor']))
+#        MaxwellBoltzmannDistribution(atoms, temperature_K=2*int(simulation_settings['temperature']))
+#        Stationary(atoms)
     else:
         # TODO: implement other ensembles
         raise Exception("Running calculations with ensemble '" + ensemble + "' is not implemented yet.")
@@ -166,9 +178,9 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
         print("Simulation ", sim_number, " started")
     else:
         print("Simulation started")
-
     dyn.run(int(simulation_settings['step_number']))
 
+    # The simulation is finished, calculate certain properties based on the collected data from the simulation
     if interval_to_record_energy:
         output_dict['specific_heat_capacity'] = [calc_properties.calculate_specific_heat(atoms, config_data, output_dict)]
 
@@ -193,16 +205,16 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
 
 def queue_simulations(config_file_name, trajectory_file_dir, output_dir_name, 
                       process_list=[], execute=True, sim_number = [1]):
-    """Run md simulations for multiple configs and trajectory files.
+    """For every material in trajectory_file_dir, append a simulation function object to process list
 
     Args:
-        config_file_list(list[str]): List of names of files with parameters to
-                                     use in the simulations.
-        traj_file(str): List of name of trajectory files with the atoms object
-                        to use in the simulations
-
-    Returns:
-        None
+        config_file_name (str): The name of the file with the simulations setting, it will be used for all simulations
+        trajectory_file_dir (str): The directory containing the trajectory files which give the initial atoms objects
+        output_dir_name (str): The name of the directories where the results will be saved, the trajectory files will 
+        be saved in Output_trajectory_files/output_dir_name and the text files in Output_text_fils/output_dir_name
+        process_list (list, optional): The list in which simulation function objects will be appended
+        execute (bool, optional): Runs all simulation function objects from the process list in parallel
+        sim_number (list, optional): The number of the simulation, is counted up for every new simulation function object
     """
     base_path = os.path.dirname(os.path.abspath(__file__)) + '/../'
     path_new_output_txt_dir = base_path + 'Output_text_files/' + output_dir_name
@@ -250,6 +262,7 @@ def get_starting_num_string(file_name):
 
 
 def summerize_text_files(dir_name):
+    """Summarizes the main results of each file in a dir"""
     dir_path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/' + dir_name
     dir_contents = os.listdir(dir_path)
     text_files = []
@@ -270,7 +283,6 @@ def summerize_text_files(dir_name):
             if number_of_measurements_to_include == 1:
                 summary_dict[key].append(data[0])
             else:
-                print(data[-number_of_measurements_to_include:])
                 summary_dict[key].append(np.mean(data[-number_of_measurements_to_include:]))
 
     with open(dir_path+'.txt', 'w') as file:
@@ -279,6 +291,12 @@ def summerize_text_files(dir_name):
 
 
 def summerize_traj_files(dir_name):
+    """Put the last atom state of each trajectory file in the directory Output_trajectory_files/dir_name in one traj files
+
+    Args:
+        dir_name (str): The name of the directory with the trajectory files which should be given relative to
+            Output_trajectory_files. The created trajectory file can be found as Output_trajectory_files/dir_name.traj
+    """
     dir_path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files/' + dir_name
     dir_contents = os.listdir(dir_path)
     dir_contents.sort(key=get_starting_num_string)
@@ -291,6 +309,16 @@ def summerize_traj_files(dir_name):
 
 
 def high_throughput_mix_and_simulate(config_file, input_traj_dir, element_to_mix_in, mixing_concentrations, output_dir_name):
+    """Mixes element_to_mix_in into every material in input_traj_dir then simulates all the mixes in parallell
+
+    Args:
+        config_file (str): Name of the config file which will be used to get the simulation settings
+        input_traj_dir (str): The path to the directory with input trajectory files
+        element_to_mix_in (): The chemical symbol of the elements the we want to mix in such as 'Cu', 'Ni', etc.
+        mixing_concentrations (list(float)): List of the concentration with which we will mix in the element
+        output_dir_name (str): Name for the main output directory that will be created in Output_trajectory_files
+            and Output_text_files
+    """
     base_path = os.path.dirname(os.path.abspath(__file__)) + '/../'
     path_new_output_txt_dir = base_path + 'Output_text_files/' + output_dir_name
     path_new_output_traj_dir = base_path + 'Output_trajectory_files/' + output_dir_name
@@ -320,7 +348,6 @@ def high_throughput_mix_and_simulate(config_file, input_traj_dir, element_to_mix
     sim_number = [1] # Simulation number is encapsulated in a list in order to become mutable
     for traj_file_name in traj_file_names:
         mix_dir_name =element_to_mix_in + '_mixed_into_' + traj_file_name[:-5]
-        print('Mix_dir_name: \n', mix_dir_name, '\n')
         mix_materials(input_traj_dir+'/'+traj_file_name, element_to_mix_in, mixing_concentrations,  
                       input_traj_dir + '/' + mix_dir_name)
         mix_dirs.append(output_dir_name+'/'+mix_dir_name)
@@ -333,23 +360,15 @@ def high_throughput_mix_and_simulate(config_file, input_traj_dir, element_to_mix
         process.join()
 
     for mix_dir in mix_dirs:
-        print(mix_dir)
         summerize_traj_files(mix_dir)
         summerize_text_files(mix_dir)
 
     print("All simulations finished!")
 
 
-from ase.visualize import view
 if __name__ == "__main__":
-    #optimize_scaling(atoms, {'optimal_scaling': [], 'iterations_to_find_scaling': []})
-    #print(lattice_constant.optimize_scaling_using_simulation(atoms, {'potential': 'EMT', 'time_step': 5, 'temperature': 300, 'ensemble': 'NVE', 'step_number': 250}))
-
-    #run_md_simulations("example_config.ini", 'Demo_multi_sim', 'Demo_multi_sim')
     mixing_concentrations = [0.1, 0.2, 0.3]
     high_throughput_mix_and_simulate("example_config.ini", 'Demo_multi_sim', 'Ni', mixing_concentrations, 'Demo_multi_sim')
-    traj = Trajectory('/Users/gustavwassback/Documents/CDIO/MD-simulation-CDIO/Gather_data/../Output_trajectory_files/Demo_multi_sim/Ni_mixed_into_1728_atoms_of_mp-30.traj', 'r')
+    traj = Trajectory('/Users/gustavwassback/Documents/CDIO/MD-simulation-CDIO/Gather_data/../' +
+                      'Output_trajectory_files/Demo_multi_sim/Ni_mixed_into_1728_atoms_of_mp-30.traj', 'r')
     view(traj)
-    #print(traj[0].get_chemical_symbols().count('Ni'))
-    #print(traj[1].get_chemical_symbols().count('Ni'))
-    #print(traj[2].get_chemical_symbols().count('Ni'))
