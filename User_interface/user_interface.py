@@ -386,44 +386,52 @@ def initiate_gui():
     sep_label2.grid(row=rownumber, column = 0, columnspan = 3)
 
     rownumber += 1
-    file_selection_data = StringVar(gui)
-    select_data_button = Button(tabframe4, text="Select data file", command=lambda: openfile(file_selection_data))
+    data_selection = StringVar(gui)
+    select_data_button = Button(tabframe4, text="Select data file", command=lambda: openfile(data_selection))
     select_data_button.grid(row=rownumber,column=0)
     
+    select_folder_button = Button(tabframe4, text="Select data folder", command=lambda: openfolder(data_selection))
+    select_folder_button.grid(row=rownumber,column=2)
+    
     rownumber += 1
-    select_data_label = Label(tabframe4, text="Values on x-axis")
+    select_data_label = Label(tabframe4, text="Values on y-axis")
     select_data_label.grid(row=rownumber,column=0)
     
     plottable_attributes2 = ["Total Energy", "Kinetic Energy", "Potential Energy", 
                             "Temperature", "Pressure", "Bulk Modulus",
                             "Optimal Scaling", "Elastic Tensor", "Mean Square Displacement",
-                            "Lindemann Criterion", "Self Diffusion Coefficient"]
+                            "Lindemann Criterion", "Self Diffusion Coefficient",
+                            "Mix percentage"]
 
-    x_values = StringVar(gui)
-    x_values.set("Attribute to plot")
+    y_values = StringVar(gui)
+    y_values.set("Attribute to plot")
 
-    attributes_menu2 = OptionMenu(tabframe4, x_values,
+    attributes_menu2 = OptionMenu(tabframe4, y_values,
                                 *plottable_attributes2)
     attributes_menu2.grid(row=rownumber, column=1)
     
     rownumber += 1
-    select_data_label2 = Label(tabframe4, text="Values on y-axis")
+    select_data_label2 = Label(tabframe4, text="Values on x-axis")
     select_data_label2.grid(row=rownumber,column=0)
     
     plottable_attributes3 = ["Total Energy", "Kinetic Energy", "Potential Energy", 
                             "Temperature", "Pressure", "Bulk Modulus",
                             "Optimal Scaling", "Elastic Tensor", "Mean Square Displacement",
-                            "Lindemann Criterion", "Self Diffusion Coefficient"]
+                            "Lindemann Criterion", "Self Diffusion Coefficient",
+                            "Mix percentage"]
 
-    y_values = StringVar(gui)
-    y_values.set("Attribute to plot")
+    x_values = StringVar(gui)
+    x_values.set("Attribute to plot")
 
-    attributes_menu3 = OptionMenu(tabframe4, y_values,
+    attributes_menu3 = OptionMenu(tabframe4, x_values,
                                 *plottable_attributes3)
     attributes_menu3.grid(row=rownumber, column=1)
     
     rownumber += 1
-    select_data_button = Button(tabframe4, text="Plot", command=prep_visualization)
+    select_data_button = Button(tabframe4, text="Plot", 
+                                command=lambda: prep_visualization(data_selection.get(),
+                                                                   x_values.get(),
+                                                                   y_values.get()))
     select_data_button.grid(row=rownumber,column=2)
 
 
@@ -436,9 +444,14 @@ def initiate_gui():
     return gui
 
 
-def openfile(file_selection_data):
-    file_selection_data = filedialog.askopenfilename(initialdir="../Output_text_files",
-                                              title="Select data folder")
+def openfile(data_selection):
+    data_selection.set(filedialog.askopenfilename(initialdir="../Output_text_files",
+                                                     title="Select data file"))
+
+
+def openfolder(data_selection):
+    data_selection.set(filedialog.askdirectory(initialdir="../Output_text_files",
+                                                 title="Select data folder"))
 
 
 def update_input_config_list(event, config_files_menu, value_inside_config_files_list):
