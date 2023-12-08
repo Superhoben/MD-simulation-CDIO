@@ -6,11 +6,11 @@ on:
   pull_request:
     branches: [ "main", "develop" ]
 
-permissions:
-  contents: write
+  workflow_dispatch:
+
 
 jobs:
-  docs:
+  build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -20,16 +20,12 @@ jobs:
         python-version: "3.10"
     - name: Install dependencies
       run: |
-        pip install sphinx sphinx_rtd_theme myst_parser
-    - name: Sphinx build
-      run: |
-        sphinx-apidoc -o source/ ./
-        sphinx-build . _build
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-      with:
-        publish_branch: gh-pages
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: _build/
-        force_orphan: true
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Build HTML
+      run: | 
+        cd docs/
+        make html
+    - name: Run ghp-import
+      run: | 
+        ghp-import -n -p -f docs/_build/html
