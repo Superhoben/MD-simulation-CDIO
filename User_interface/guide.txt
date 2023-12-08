@@ -1,0 +1,28 @@
+This program is used to simulate material data with the help
+of the ase python library. The user interface is divided into 
+3 different sections. The inputs/output section, the 
+visualisation section and the data output section. 
+
+In the input/output section the workflow is the following:
+first choose what potential, ensemble and temperature to have
+for the system. Then choose for how many time steps to simulate
+and how much time between each time step.
+
+Under "Intervals for recording attributes" it is possible to 
+choose how often to record a property. For example, putting 
+in the number 10 in "basic properties" will give measurement 
+every 10 time steps. When everything is in order, write to the 
+config file.
+
+In the next subsection, already made materials can be downloaded.
+It is also possible to create custom atom configurations. 
+
+When a config file and an initial atom configuration has been created,
+a simulation can be started. This will then simulate based on the 
+settings in the configuration file.
+
+When the simulation is done, the attributes that are recorded
+can be plotted in the visualization section and if atom configurations 
+are recorded a film of the atoms dynamics can be shown. Additional
+information about the simulation can be found in the data output section,
+labeled "Data output".
