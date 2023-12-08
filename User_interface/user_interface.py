@@ -683,10 +683,6 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
         Data points: {data_points}
         """
     
-    if "avg_MSD" in material_data_dict:
-        avg_MSD = material_data_dict["avg_MSD"]
-        message += f"""Average MSD: {avg_MSD}"""
-    
     text_box.config(state="normal")
     text_box.delete('1.0', END)
     text_box.insert("end", message)
