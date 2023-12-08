@@ -39,9 +39,12 @@ def calc_bulk_modulus(atoms: Atoms, output_dict={'bulk_modulus': []}):
         volumes.append(atoms_copy.get_volume())
         energies.append(atoms_copy.get_potential_energy())
     # Equation of state
-    eos = EquationOfState(volumes, energies)
-    v0, e0, B = eos.fit()
-    B = B / kJ * 1.0e24
+    try:
+        eos = EquationOfState(volumes, energies)
+        _, _, B = eos.fit()
+        B = B / kJ * 1.0e24
+    except:
+        B = 0 # Means that bulk calculation failed
     # print(B, "GPa")
     output_dict['bulk_modulus'].append(B)
     return B

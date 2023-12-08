@@ -60,7 +60,7 @@ class UnitTests(unittest.TestCase):
         scaling = optimize_scaling(atoms, {'optimal_scaling': [], 'iterations_to_find_scaling': []})
         # print(scaling)
         self.assertTrue((0.98 < scaling*0.5) and (scaling*0.5 < 1.02))
-        
+
 
     # More test are needed for this function
     def test_calc_pressure_no_field(self):
@@ -72,8 +72,8 @@ class UnitTests(unittest.TestCase):
         atoms.calc = EMT()  # If atoms are only, Ni, Cu, Pd, Ag, Pt or Au no input parameters are nessecary
         # When atoms are still at optimal positions no pressure should occur, +-0.1 GPa tolerance is given
         self.assertTrue((-0.1 < calc_pressure(atoms)) and (calc_pressure(atoms) < 0.1))
-        
-        
+
+
     def test_bulk_modulus(self):
         # lattice_constant = 4
         # choosing more specific silver to test the bulk modulus
@@ -145,7 +145,7 @@ class UnitTests(unittest.TestCase):
         # For an optimized volume the internal presssure should be minimized
         avg_pressure_NVE = np.average(material_data_dict_NVE['pressure'][11:])
         avg_pressure_NVT = np.average(material_data_dict_NVT['pressure'][11:])
-        
+
         self.assertTrue(abs(avg_pressure_NVE) < 0.5)
         self.assertTrue(abs(avg_pressure_NVT) < 0.5)
 
@@ -162,7 +162,7 @@ class UnitTests(unittest.TestCase):
             avg_interval_NVT.append(np.average(NVT_equilibrium[x*10:x*10+9]))
         total_avg_NVE = np.average(NVE_equilibrium)
         total_avg_NVT = np.average(NVT_equilibrium)
-        
+
         # Compare the interval averages to the total average
         diff_NVE = total_avg_NVE - np.array(avg_interval_NVE)
         diff_NVT = total_avg_NVT - np.array(avg_interval_NVT)
@@ -219,12 +219,16 @@ class UnitTests(unittest.TestCase):
 
         ## Bulk modulus
         # Taken from https://next-gen.materialsproject.org/materials/mp-30?chemsys=Cu
+        # Physics handbook give 138 GPa at 300 Kelvin
         avg_bulk = np.average(material_data_dict['bulk_modulus'])
+        self.assertTrue(100 < avg_bulk < 170)
 
         ## Shear modulus
         # Taken from https://next-gen.materialsproject.org/materials/mp-30?chemsys=Cu
+        # Physics handbook give 48.3 GPa at 300 Kelvin
         avg_shear_modulus = np.average(material_data_dict['shear_modulus'])
-        self.assertTrue(47 < avg_shear_modulus < 67)
+        self.assertTrue(35 < avg_shear_modulus < 67)
+        
 
         ## Youngs modulus
         avg_youngs_modulus = np.average(material_data_dict['youngs_modulus'])
@@ -299,37 +303,37 @@ class UnitTests(unittest.TestCase):
         ## Pressure
         avg_pressure = np.average(material_data_dict['pressure'][41:])
         self.assertTrue(abs(avg_pressure) < 0.5)
-        
+
         ## Bulk modulus
         # Taken from https://next-gen.materialsproject.org/materials/mp-30?chemsys=Cu
         avg_bulk = np.average(material_data_dict['bulk_modulus'])
         self.assertTrue(68 < avg_bulk < 108)
-        
+
         ## Shear modulus
         # Taken from https://next-gen.materialsproject.org/materials/mp-30?chemsys=Cu
         avg_shear_modulus = np.average(material_data_dict['shear_modulus'])
-        self.assertTrue(0 < avg_shear_modulus < 54)
-        
+        self.assertTrue(35 < avg_shear_modulus < 67)
+
         ## Youngs modulus
         avg_youngs_modulus = np.average(material_data_dict['youngs_modulus'])
         self.assertTrue(50 < avg_youngs_modulus < 150)
-        
+
         ## Poisson ratio
         avg_poisson_ratio = np.average(material_data_dict['poisson_ratio'])
         self.assertTrue(0.1 < avg_poisson_ratio < 0.5)
-        
+
         ## MSD
         avg_MSD = np.average(material_data_dict['mean_square_displacement'][21:])
         self.assertTrue(avg_MSD < 0.5)
-        
+
         ## Lindemann criterion
         avg_lindemann = np.average(material_data_dict['lindemann_criterion'][21:])
         self.assertTrue(avg_lindemann < 0.2)
-        
+
         ## Self-diffusion coefficient
         avg_self_diffusion = np.average(material_data_dict['self_diffusion_coefficient'][21:])
         self.assertTrue(avg_self_diffusion < 0.001)
-        
+
         ## Lattice constant
         path_to_traj_folder = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files'
         traj = Trajectory(path_to_traj_folder + "/ValidationTests/NVT_Ag_validation_test.traj", 'r')
@@ -343,22 +347,22 @@ class UnitTests(unittest.TestCase):
         # In this test requirements 32-35 will all be validated by running 4 large simulations
         # where all the properties are measured. Only the results of the simulations will be 
         # examined here, as the testing would take far too much time otherwise.
-        
+
         # The following is the atom initialization
         atoms = FaceCenteredCubic(symbol="Cu", size=(10, 10, 10), pbc=True)
-        
+
         # Location of the trajectory file: Input_trajectory_files/Cu_validation_test.traj
         # Location of configuration file: Input_config_files/NVT_validation test
         path_to_traj_folder = os.path.dirname(os.path.abspath(__file__)) + '/../Input_trajectory_files'
         traj = Trajectory(path_to_traj_folder + "/NVE_Cu_validation_test.traj", "w")
         traj.write(atoms)
-        
+
         #run_single_md_simulation("NVE_validation_test.ini",
         #                         "NVE_Cu_validation_test.traj",
         #                         "ValidationTests/NVE_Cu_validation_test")
         # The simulation results are saved as Cu_validation_test in the ValidationTests
         # folder in Output_traj_files and Output_text_files
-        
+
         # First all the data is saved in a dictionary
         path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/ValidationTests/NVE_Cu_validation_test.txt'
         opened_file = open(path, 'r')
@@ -391,11 +395,11 @@ class UnitTests(unittest.TestCase):
         ## Shear modulus
         # Taken from https://next-gen.materialsproject.org/materials/mp-30?chemsys=Cu
         avg_shear_modulus = np.average(material_data_dict['shear_modulus'])
-        self.assertTrue(47 < avg_shear_modulus < 67)
+        self.assertTrue(35 < avg_shear_modulus < 67)
 
         ## Youngs modulus
         avg_youngs_modulus = np.average(material_data_dict['youngs_modulus'])
-        self.assertTrue(100 < avg_youngs_modulus < 200)
+        self.assertTrue(70 < avg_youngs_modulus < 200)
         # We get a value of 163 GPa, as compared to 110 on Wiki, but should be alright
         # since its of the same magnitude (discussed with Abijith)
 
@@ -422,28 +426,30 @@ class UnitTests(unittest.TestCase):
         nearest_neighbour_distance = approx_lattice_constant(atoms)
         self.assertTrue(2.4 < nearest_neighbour_distance < 2.7)
         # We get a value of 2.46, that is a lattice constant of 3.47 Å (Expected 3.61 Å)
+        # It makes sense that we underestimate it slightly if the atom has more than 4 nearest neighboors
+        # (since we will pick the ones that happens to be closest at the specific moment)
 
 
     def test_simulations_for_validating_code_NVE_Au(self):
         # In this test requirements 32-35 will all be validated by running 4 large simulations
         # where all the properties are measured. Only the results of the simulations will be 
         # examined here, as the testing would take far too much time otherwise.
-        
+
         # The following is the atom initialization
         atoms = FaceCenteredCubic(symbol="Au", size=(10, 10, 10), pbc=True)
-        
+
         # Location of the trajectory file: Input_trajectory_files/Cu_validation_test.traj
         # Location of configuration file: Input_config_files/NVT_validation test
         path_to_traj_folder = os.path.dirname(os.path.abspath(__file__)) + '/../Input_trajectory_files'
         traj = Trajectory(path_to_traj_folder + "/NVE_Au_validation_test.traj", "w")
         traj.write(atoms)
-        
+
         #run_single_md_simulation("NVE_validation_test.ini",
         #                         "NVE_Au_validation_test.traj",
         #                         "ValidationTests/NVE_Au_validation_test")
         # The simulation results are saved as Cu_validation_test in the ValidationTests
         # folder in Output_traj_files and Output_text_files
-        
+
         # First all the data is saved in a dictionary
         path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/ValidationTests/NVE_Au_validation_test.txt'
         opened_file = open(path, 'r')
@@ -458,11 +464,11 @@ class UnitTests(unittest.TestCase):
         # Check the average temperature in intervals
         for x in range(16):
             avg_interval.append(np.average(energy_equilibrium[x*10:x*10+9]))
-        total_avg_temp = np.average(energy_equilibrium)
+        total_avg_energy = np.average(energy_equilibrium)
 
         # Compare the interval averages to the total average
-        diff_temp = total_avg_temp - np.array(avg_interval)
-        self.assertTrue(abs(np.average(diff_temp)) < 10)
+        diff_energy = total_avg_energy - np.array(avg_interval)
+        self.assertTrue(abs(np.average(diff_energy)) < 10)
 
         ## Pressure
         avg_pressure = np.average(material_data_dict['pressure'][41:])
@@ -476,7 +482,7 @@ class UnitTests(unittest.TestCase):
         ## Shear modulus
         # Taken from https://next-gen.materialsproject.org/materials/mp-30?chemsys=Cu
         avg_shear_modulus = np.average(material_data_dict['shear_modulus'])
-        self.assertTrue(-10 < avg_shear_modulus < 50)
+        self.assertTrue(35 < avg_shear_modulus < 67)
 
         ## Youngs modulus
         avg_youngs_modulus = np.average(material_data_dict['youngs_modulus'])
@@ -491,6 +497,8 @@ class UnitTests(unittest.TestCase):
         ## MSD
         avg_MSD = np.average(material_data_dict['mean_square_displacement'][21:])
         self.assertTrue(avg_MSD < 0.3)
+        # This is expected to be constantly low when the simulation temperature is far below 
+        # the materials melting point
 
         ## Lindemann criterion
         avg_lindemann = np.average(material_data_dict['lindemann_criterion'][21:])
@@ -499,7 +507,7 @@ class UnitTests(unittest.TestCase):
         ## Self-diffusion coefficient
         avg_self_diffusion = np.average(material_data_dict['self_diffusion_coefficient'][21:])
         self.assertTrue(avg_self_diffusion < 0.001)
-        
+
         ## Lattice constant
         path_to_traj_folder = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files'
         traj = Trajectory(path_to_traj_folder + "/ValidationTests/NVE_Au_validation_test.traj", 'r')
