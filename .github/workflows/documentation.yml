@@ -38,7 +38,7 @@ jobs:
         sphinx-build . _build
     
     - name: Deploy to GitHub Pages
-      uses: Superhoben/actions-gh-pages@v3
+      uses: Superhoben/181-set-up-github-documentation-with-sphinx@v3
       if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
       with:
         publish_branch: gh-pages
