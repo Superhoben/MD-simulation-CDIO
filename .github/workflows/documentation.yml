@@ -39,8 +39,8 @@ jobs:
     
     - name: Deploy to GitHub Pages
       if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-      with:
-        publish_branch: gh-pages
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: _build/
-        force_orphan: true
+      run: |
+          git checkout --orphan gh-pages
+          git --work-tree=_build add --all
+          git --work-tree=_build commit -m "Deploy documentation to gh-pages"
+          git push origin HEAD:gh-pages --force
