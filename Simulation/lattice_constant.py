@@ -1,13 +1,9 @@
 import os
 import sys
-import shutil
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 from Simulation import simple_simulation
 from ase.lattice.cubic import FaceCenteredCubic
-from ase.md.verlet import VelocityVerlet
-from ase import units
 from asap3 import EMT
-from ase import Atoms
 
 
 def optimize_scaling(atoms, output_dict={'optimal_scaling': [], 'iterations_to_find_scaling': []}, learning_rate=0.05):
@@ -66,7 +62,8 @@ def optimize_scaling(atoms, output_dict={'optimal_scaling': [], 'iterations_to_f
     return scaling
 
 
-def optimize_scaling_using_simulation(atoms, simulation_settings: dict, output_dict={'optimal_scaling': [], 'iterations_to_find_scaling': []}, learning_rate=0.05):
+def optimize_scaling_using_simulation(atoms, simulation_settings: dict,
+                                      output_dict={'optimal_scaling': [], 'iterations_to_find_scaling': []}, learning_rate=0.05):
     """Find the optimal scaling of the lattice constant using a gradient descent method.
 
     The gradient descent method is modified by a sigmoid function since energy changes
@@ -125,7 +122,6 @@ def optimize_scaling_using_simulation(atoms, simulation_settings: dict, output_d
 
 
 if __name__ == "__main__":
-    atoms = FaceCenteredCubic(directions=[[1, 0, 0], [0, 1, 0], [1, 1, 1]],
-                              size=(2, 2, 3), symbol='Cu', pbc=(1, 1, 0))
+    atoms = FaceCenteredCubic(size=(2, 2, 3), symbol='Cu', pbc=(1, 1, 0))
     atoms.calc = EMT()
     optimize_scaling(atoms, {'optimal_scaling': [], 'iterations_to_find_scaling': []})
