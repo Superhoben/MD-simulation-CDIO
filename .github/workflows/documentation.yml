@@ -40,7 +40,7 @@ jobs:
     - name: Deploy to GitHub Pages
       if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
       run: |
-          git checkout --orphan gh-pages
+          git checkout --orphan 181-set-up-github-documentation-with-sphinx
           git --work-tree=_build add --all
-          git --work-tree=_build commit -m "Deploy documentation to gh-pages"
+          git --work-tree=_build commit -m "Deploy documentation to 181-set-up-github-documentation-with-sphinx"
           git push origin HEAD:gh-pages --force
