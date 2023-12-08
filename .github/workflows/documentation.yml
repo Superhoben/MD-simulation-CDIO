@@ -7,10 +7,13 @@ on:
     branches: [ "main", "develop", "181-set-up-github-documentation-with-sphinx" ]
 
   workflow_dispatch:
+  
+permissions:
+  contents: write
 
 
 jobs:
-  build:
+  docs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -31,8 +34,7 @@ jobs:
     
     - name: Sphinx build
       run: | 
-        sphinx-apidoc -o source/ ./
-        sphinx-build . _build
+        sphinx-build doc _build
     
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
