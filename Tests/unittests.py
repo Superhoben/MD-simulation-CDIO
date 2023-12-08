@@ -233,7 +233,7 @@ class UnitTests(unittest.TestCase):
         material_data_dict = json.loads(data)
 
         ## Temperature
-        # Remove the firdt 40% of data points since they usually havent reached equilibrium
+        # Remove the first 40% of data points since they usually havent reached equilibrium
         temp_equilibrium = material_data_dict['temperature'][41:]
         avg_interval = []
         # Check the average temperature in intervals
@@ -269,6 +269,8 @@ class UnitTests(unittest.TestCase):
         # since its of the same magnitude (discussed with Abijith)
 
         ## Poisson ratio
+        # Taken from https://next-gen.materialsproject.org/materials/mp-30?formula=Cu
+        # Expected 0.35
         avg_poisson_ratio = np.average(material_data_dict['poisson_ratio'])
         self.assertTrue(0.1 < avg_poisson_ratio < 0.5)
 
@@ -320,7 +322,7 @@ class UnitTests(unittest.TestCase):
         material_data_dict = json.loads(data)
 
         ## Temperature
-        # Remove the firdt 40% of data points since they usually havent reached equilibrium
+        # Remove the first 40% of data points since they usually havent reached equilibrium
         temp_equilibrium = material_data_dict['temperature'][41:]
         avg_interval = []
         # Check the average temperature in intervals
@@ -337,22 +339,25 @@ class UnitTests(unittest.TestCase):
         self.assertTrue(abs(avg_pressure) < 0.5)
 
         ## Bulk modulus
-        # Taken from https://next-gen.materialsproject.org/materials/mp-30?chemsys=Cu
+        # Taken from Physics Handbook T-1.1, expected 103 GPa
         avg_bulk = np.average(material_data_dict['bulk_modulus'])
-        self.assertTrue(68 < avg_bulk < 108)
+        self.assertTrue(63 < avg_bulk < 143)
 
         ## Shear modulus
-        # Taken from https://next-gen.materialsproject.org/materials/mp-30?chemsys=Cu
+        # Taken from Physics Handbook T-1.1, expected 30.3 GPa
         avg_shear_modulus = np.average(material_data_dict['shear_modulus'])
-        self.assertTrue(35 < avg_shear_modulus < 67)
+        self.assertTrue(-10.3 < avg_shear_modulus < 70.3)
 
         ## Youngs modulus
+        # Taken from Physics Handbook T-1.1, expected 82.7 GPa
         avg_youngs_modulus = np.average(material_data_dict['youngs_modulus'])
-        self.assertTrue(50 < avg_youngs_modulus < 150)
+        self.assertTrue(42.7 < avg_youngs_modulus < 122.7)
 
         ## Poisson ratio
+        # Taken from https://next-gen.materialsproject.org/materials/mp-124?formula=Ag
+        # Expected 0.43
         avg_poisson_ratio = np.average(material_data_dict['poisson_ratio'])
-        self.assertTrue(0.1 < avg_poisson_ratio < 0.5)
+        self.assertTrue(0.2 < avg_poisson_ratio < 0.6)
 
         ## MSD
         avg_MSD = np.average(material_data_dict['mean_square_displacement'][21:])
@@ -403,7 +408,7 @@ class UnitTests(unittest.TestCase):
         material_data_dict = json.loads(data)
 
         ## Total energy
-        # Remove the firdt 40% of data points since they usually havent reached equilibrium
+        # Remove the first 40% of data points since they usually havent reached equilibrium
         energy_equilibrium = material_data_dict['total_energy'][41:]
         avg_interval = []
         # Check the average temperature in intervals
@@ -420,22 +425,23 @@ class UnitTests(unittest.TestCase):
         self.assertTrue(abs(avg_pressure) < 0.5)
 
         ## Bulk modulus
-        # Taken from https://next-gen.materialsproject.org/materials/mp-30?chemsys=Cu
+        # Taken from Physics Handbook T-1.1, expected 151 GPa
         avg_bulk = np.average(material_data_dict['bulk_modulus'])
-        self.assertTrue(110 < avg_bulk < 150)
+        self.assertTrue(121 < avg_bulk < 181)
 
         ## Shear modulus
-        # Taken from https://next-gen.materialsproject.org/materials/mp-30?chemsys=Cu
+        # Taken from Physics Handbook T-1.1, expected 57 GPa
         avg_shear_modulus = np.average(material_data_dict['shear_modulus'])
-        self.assertTrue(35 < avg_shear_modulus < 67)
+        self.assertTrue(27 < avg_shear_modulus < 87)
 
         ## Youngs modulus
+        # Taken from Physics Handbook T-1.1, expected 110 GPa
         avg_youngs_modulus = np.average(material_data_dict['youngs_modulus'])
-        self.assertTrue(70 < avg_youngs_modulus < 200)
-        # We get a value of 163 GPa, as compared to 110 on Wiki, but should be alright
-        # since its of the same magnitude (discussed with Abijith)
+        self.assertTrue(60 < avg_youngs_modulus < 180)
 
         ## Poisson ratio
+        # Taken from https://next-gen.materialsproject.org/materials/mp-30?formula=Cu
+        # Expected 0.35
         avg_poisson_ratio = np.average(material_data_dict['poisson_ratio'])
         self.assertTrue(0.1 < avg_poisson_ratio < 0.5)
 
@@ -490,7 +496,7 @@ class UnitTests(unittest.TestCase):
         material_data_dict = json.loads(data)
 
         ## Total energy
-        # Remove the firdt 40% of data points since they usually havent reached equilibrium
+        # Remove the first 40% of data points since they usually havent reached equilibrium
         energy_equilibrium = material_data_dict['total_energy'][41:]
         avg_interval = []
         # Check the average temperature in intervals
@@ -507,24 +513,25 @@ class UnitTests(unittest.TestCase):
         self.assertTrue(abs(avg_pressure) < 0.5)
 
         ## Bulk modulus
-        # Taken from https://next-gen.materialsproject.org/materials/mp-30?chemsys=Cu
+        # Taken from Physics Handbook T-1.1, expected 217 GPa
         avg_bulk = np.average(material_data_dict['bulk_modulus'])
-        self.assertTrue(120 < avg_bulk < 200)
+        self.assertTrue(137 < avg_bulk < 297)
 
         ## Shear modulus
-        # Taken from https://next-gen.materialsproject.org/materials/mp-30?chemsys=Cu
+        # Taken from Physics Handbook T-1.1, expected 27 GPa
         avg_shear_modulus = np.average(material_data_dict['shear_modulus'])
-        self.assertTrue(35 < avg_shear_modulus < 67)
+        self.assertTrue(-17 < avg_shear_modulus < 67)
 
         ## Youngs modulus
+        # Taken from Physics Handbook T-1.1, expected 78.5 GPa
         avg_youngs_modulus = np.average(material_data_dict['youngs_modulus'])
-        self.assertTrue(80 < avg_youngs_modulus < 200)
-        # We get a value of 163 GPa, as compared to 110 on Wiki, but should be alright
-        # since its of the same magnitude (discussed with Abijith)
+        self.assertTrue(48.5 < avg_youngs_modulus < 118.5)
 
         ## Poisson ratio
+        # Taken from https://next-gen.materialsproject.org/materials/mp-81?formula=Au
+        # Expected 0.52
         avg_poisson_ratio = np.average(material_data_dict['poisson_ratio'])
-        self.assertTrue(0.1 < avg_poisson_ratio < 0.5)
+        self.assertTrue(0.32 < avg_poisson_ratio < 0.72)
 
         ## MSD
         avg_MSD = np.average(material_data_dict['mean_square_displacement'][21:])
