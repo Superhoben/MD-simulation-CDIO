@@ -255,6 +255,15 @@ def is_float(element: any) -> bool:
 
 
 def get_starting_num_string(file_name):
+    """Get the number at the start of a string, intended to be used with certain file names
+
+    Args:
+        file_name(str): Using high_throughput_mix_and_simulate the start of a files name 
+            will be the concentration of the mixed in material.
+
+    Return:
+        concentration(int): Given in percentage of the mixed in material
+    """
     i = 0
     while is_float(file_name[:i+1]):
         i += 1
@@ -262,7 +271,11 @@ def get_starting_num_string(file_name):
 
 
 def summerize_text_files(dir_name):
-    """Summarizes the main results of each file in a dir"""
+    """Summarizes the main results of each file in dir_name and save it in the parent directory
+
+    Args:
+        dir_name(str): Should be given relative to the Output_text_files directory
+    """
     dir_path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/' + dir_name
     dir_contents = os.listdir(dir_path)
     text_files = []

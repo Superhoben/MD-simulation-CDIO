@@ -114,7 +114,7 @@ def calculate_specific_heat(atoms, config_data, output_dict):
 
     Args:
         atoms(ase atom object): The system to calculate the specific heat capacity for.
-        config_data(str): Dictionary with the simulation settings.
+        config_data(dict): Dictionary with the simulation settings.
         output_dict(dict): Dictionary to append the result to.
 
     Returns:

@@ -11,27 +11,27 @@ from ase.io.trajectory import Trajectory
 
 
 def mix_materials(traj_name: str, add_element: str, target_concs, mix_dir_name=False):
-    """Mix an element into existing structure.
+    """Mix an element into an existing structure at diffrent concentrations
 
-    This function mixes add_element evenly into the atoms object in the
-    trajectory file by replacing atoms in it. It creates several different
-    trajectory files for different amounts of atoms added. Interval specifies
-    how many atoms to add each step; high interval means few trajectory files
-    will be made, low interval means many trajectory files will be made.
+    This function mixes add_element randomly into the atoms object in the trajectory file 
+    by replacing atoms in it. It creates several different trajectory files for different 
+    amounts of atoms added. 
 
     When using this, the structure in the traj-file should be similar to the
     structure of the material to add, and they should work with the same
     potential, otherwise this is very unreasonable to do. Also the lattice
-    constants need to be similar.
+    constants should be similar if the original structure is supposed to be preserved.
 
     Args:
-        traj_name(str): Name of trajectory file of atoms object to mix
-                        with add_element.
+        traj_name(str): Name of trajectory file of atoms object to mix with add_element.
         add_element(str): Name of element to mix.
-        interval(int): How many of add_element to add at each step.
+        target_concs(list(float)): The concentration which will be aimed at for each mixing.
+        mix_dir_name(str or bool): Should be a string with the directory in which we want to
+            save the mixed materials, if we don't want to save them it can be set to false.
 
     Returns:
-        None
+        mixed_atoms_list(list(Atoms)): A list with the mixed materials created.
+        actual_concs(list(float)): A list with the final concetration of the mixed in element.
     """
     input_traj_dir_path = os.path.dirname(os.path.abspath(__file__)) + '/../Input_trajectory_files/'
     traj = Trajectory(input_traj_dir_path+traj_name)
