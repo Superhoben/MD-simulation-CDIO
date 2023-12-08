@@ -28,9 +28,16 @@ jobs:
         pip install setuptools_scm
         pip install elastic
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Build HTML
+    
+    - name: Sphinx build
       run: | 
-        make html
-    - name: Run ghp-import
-      run: | 
-        ghp-import -n -p -f docs/_build/html
+        sphinx-build doc _build
+    
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      with:
+        publish_branch: gh-pages
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: _build/
+        force_orphan: true
