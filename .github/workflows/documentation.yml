@@ -35,7 +35,7 @@ jobs:
         pip install ghp-import
     - name: Sphinx build
       run: |
-        sphinx-apidoc -o source/ ./ --exclude=User_interface,Tests
+        sphinx-apidoc -o source/ ./ --exclude-pattern "User_interface"
         sphinx-build . _build
     - name: Build and deploy documentation
       run: |
