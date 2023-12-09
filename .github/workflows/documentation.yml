@@ -34,7 +34,7 @@ jobs:
       run: |
         pip install ghp-import
     - name: Sphinx build
-      run: | 
+      run: |
         sphinx-build . _build 
     - name: Build and deploy documentation
       run: |
