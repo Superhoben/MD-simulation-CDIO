@@ -36,7 +36,8 @@ jobs:
     - name: Sphinx build
       run: |
         sphinx-apidoc -o source/ ./
-        find source/ -type f -name 'User_interface.rst' -exec rm {} +
+        grep -rl 'User_interface' source/ | xargs rm
+        grep -rl 'Tests' source/ | xargs rm
         sphinx-build . _build
     - name: Build and deploy documentation
       run: |
