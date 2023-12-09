@@ -5,12 +5,10 @@ on:
     branches: [ "main", "develop", "181-set-up-github-documentation-with-sphinx" ]
   pull_request:
     branches: [ "main", "develop", "181-set-up-github-documentation-with-sphinx" ]
-
   workflow_dispatch:
-  
+
 permissions:
   contents: write
-
 
 jobs:
   docs:
@@ -32,15 +30,12 @@ jobs:
         pip install setuptools_scm
         pip install elastic
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    
+    - name: Install additional dependencies
+      run: |
+        pip install ghp-import
     - name: Sphinx build
       run: | 
         sphinx-build . _build
-    
-    - name: Deploy to GitHub Pages
-      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    - name: Build and deploy documentation
       run: |
-          git checkout --orphan 181-set-up-github-documentation-with-sphinx
-          git --work-tree=_build add --all
-          git --work-tree=_build commit -m "Deploy documentation to 181-set-up-github-documentation-with-sphinx"
-          git push origin HEAD:gh-pages --force
+        ghp-import -n -p -f _build
