@@ -125,7 +125,7 @@ def initiate_gui():
     value_inside_ensemble_list.set("NVE")
     ensemble_menu = OptionMenu(tabframe3, value_inside_ensemble_list,
                                *ensamble_list)
-    ensemble_menu.grid(row=rownumber, column=2)
+    ensemble_menu.grid(row=rownumber, column=2, pady=5)
 
     rownumber += 1
     temperature_label = Label(tabframe3, text="Temperature (K)", width=20)
@@ -303,27 +303,27 @@ def initiate_gui():
         return update_input_traj_list(event, traj_menu, value_inside_traj_list)
     input_traj_menu.bind('<Button-1>', input_traj_handler)  
 
-    input_traj_menu.grid(row=rownumber, column=2)
+    input_traj_menu.grid(row=rownumber, column=2, pady=5)
 
     rownumber += 1
     # Load traj file data
-    output_name_label = Label(tabframe3, text="Output name", width=20)
+    output_name_label = Label(tabframe3, text="Output name")
     output_name_label.grid(row=rownumber, column=0)
 
     output_name_entry = Entry(tabframe3)
     output_name_entry.grid(row=rownumber, column=2)
 
     # Start sim button 
+    rownumber += 1
     md_sim_button = Button(tabframe3, text='Start Simulation',
                            command=lambda: run_single_md_simulation(value_inside_config_files_list.get(), 
                                                                     value_inside_traj_list.get(),
                                                                     output_name_entry.get()))
-    rownumber += 1
     md_sim_button.grid(row=rownumber, column=1)
-
-    #rownumber += 1
-    #sep_label3 = Label(data_frame, text="-"*100, bg = "medium aquamarine")
-    #sep_label3.grid(row=rownumber, column = 0, columnspan = 3)
+    
+    rownumber += 1
+    info_label1 = Label(tabframe4, text="Visualize data in GUI", width=30)
+    info_label1.grid(row=rownumber, column=1, pady=5)
 
     rownumber += 1
     plottable_attributes = ["Total Energy", "Kinetic Energy", "Potential Energy", 
@@ -338,7 +338,7 @@ def initiate_gui():
                                 *plottable_attributes)
     
     #rownumber += 1
-    attributes_menu.grid(row=rownumber, column=0)
+    attributes_menu.grid(row=rownumber, column=0, pady=5)
 
     output_data = [file for file in listdir() if isfile(file)]
     value_inside_output_data = StringVar(gui)
@@ -382,8 +382,12 @@ def initiate_gui():
     trajbutton.grid(row=rownumber, column=2)
 
     rownumber += 1
-    sep_label2 = Label(tabframe4, text="-"*100, bg = "medium aquamarine")
+    sep_label2 = Label(tabframe4, text="-"*100, bg = "medium aquamarine", height=5)
     sep_label2.grid(row=rownumber, column = 0, columnspan = 3)
+    
+    rownumber += 1
+    info_label2 = Label(tabframe4, text="High throughput data", width=30)
+    info_label2.grid(row=rownumber, column=1)
 
     rownumber += 1
     data_selection = StringVar(gui)
@@ -398,10 +402,11 @@ def initiate_gui():
     select_data_label.grid(row=rownumber,column=0)
     
     plottable_attributes2 = ["Total Energy", "Kinetic Energy", "Potential Energy", 
-                            "Temperature", "Pressure", "Bulk Modulus",
-                            "Optimal Scaling", "Elastic Tensor", "Mean Square Displacement",
+                            "Temperature", "Pressure", "Bulk Modulus", "Debye Temperature",
+                            "Optimal Scaling", "Elastic Tensor C11", "Shear Modulus", 
+                            "Youngs modulus", "Poisson Ratio", "Mean Square Displacement",
                             "Lindemann Criterion", "Self Diffusion Coefficient",
-                            "Mix percentage"]
+                            "Specific Heat Capacity", "Mix percentage"]
 
     y_values = StringVar(gui)
     y_values.set("Attribute to plot")
@@ -413,19 +418,13 @@ def initiate_gui():
     rownumber += 1
     select_data_label2 = Label(tabframe4, text="Values on x-axis")
     select_data_label2.grid(row=rownumber,column=0)
-    
-    plottable_attributes3 = ["Total Energy", "Kinetic Energy", "Potential Energy", 
-                            "Temperature", "Pressure", "Bulk Modulus",
-                            "Optimal Scaling", "Elastic Tensor", "Mean Square Displacement",
-                            "Lindemann Criterion", "Self Diffusion Coefficient",
-                            "Mix percentage"]
 
     x_values = StringVar(gui)
     x_values.set("Attribute to plot")
 
     attributes_menu3 = OptionMenu(tabframe4, x_values,
-                                *plottable_attributes3)
-    attributes_menu3.grid(row=rownumber, column=1)
+                                *plottable_attributes2)
+    attributes_menu3.grid(row=rownumber, column=1, pady=5)
     
     rownumber += 1
     select_data_button = Button(tabframe4, text="Plot", 
@@ -437,7 +436,7 @@ def initiate_gui():
 
     # Quit
     quit_button = Button(tabframe3, text="Exit Program", command=gui.quit)
-    quit_button.grid(pady=50)
+    quit_button.grid(pady=160)
 
     Button(tabframe1, text="Clear Graph", command=lambda: clear_canvas(ax_canvas[0], ax_canvas[1], plot_title)).pack(pady=10)
 

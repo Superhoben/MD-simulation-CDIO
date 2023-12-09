@@ -10,17 +10,17 @@ def prep_visualization(data_path, x_attribute, y_attribute):
         data = opened_file.readline()
         opened_file.close()
         material_data_dict = json.loads(data)
-        
+
         file = data_path[:-4]
         label = file.split("/")[-1]
-        
+
         percentages = []
         for percentage in material_data_dict['origin_files']:
             percentages.append(int(percentage[0:2]))
-            
+   
         mod_x_attribute = x_attribute.lower().replace(" ", "_")
         mod_y_attribute = y_attribute.lower().replace(" ", "_")
-        
+
         x_vals = 0
         y_vals = 0
         if mod_x_attribute == "mix_percentage":
