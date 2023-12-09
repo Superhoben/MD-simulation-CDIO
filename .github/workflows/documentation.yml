@@ -38,7 +38,7 @@ jobs:
         sphinx-apidoc -o source/ ./
         grep -rl 'User_interface' source/ | xargs rm
         grep -rl 'Tests' source/ | xargs rm
-        sphinx-build . _build
+        sphinx-build . _build 
     - name: Build and deploy documentation
       run: |
         ghp-import -n -p -f _build
