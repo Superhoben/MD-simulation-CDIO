@@ -9,9 +9,3 @@ dependencies:
   - scipy
   - setuptools_scm
   - pip
-  - ase
-  - asap3
-  - mp_api
-  - tkinter
-  - custodian
-  - elastic
