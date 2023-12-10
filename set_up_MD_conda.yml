@@ -1,0 +1,17 @@
+name: MD_simulation
+channels:
+  - defaults
+dependencies:
+  - flake8
+  - pytest
+  - wheel
+  - numpy
+  - scipy
+  - setuptools_scm
+  - pip
+  - ase
+  - asap3
+  - mp_api
+  - tkinter
+  - custodian
+  - elastic
