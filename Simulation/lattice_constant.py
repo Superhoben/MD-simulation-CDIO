@@ -115,7 +115,6 @@ def optimize_scaling_using_simulation(atoms, simulation_settings: dict,
             scaling = best_scaling
             break
     output_dict['optimal_scaling'].append(scaling)
-    output_dict['iterations_to_find_scaling'].append(number_of_iterations)
     return scaling
 
 
@@ -126,11 +125,11 @@ if __name__ == "__main__":
     atoms1.calc = EMT()
     atoms2.calc = EMT()
     atoms3.calc = EMT()
-    result_dict = {'optimal_scaling': [], 'iterations_to_find_scaling': []}
-#    print("Run1")
+    result_dict = {'optimal_scaling': []}
+    print("Run1")
     optimize_scaling(atoms1, result_dict)
     print("Run2")
     optimize_scaling(atoms2, result_dict)
     print("Run3")
     optimize_scaling(atoms3, result_dict)
-#    print(result_dict)
+    print(result_dict)
