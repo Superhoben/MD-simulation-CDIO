@@ -41,7 +41,6 @@ def make_traj_from_material_id(material_id: str, api_key: str, target_number_of_
         location_and_name = path_to_traj_folder + size_descripition + material_id + '.traj'
         traj = Trajectory(location_and_name, "w")
         traj.write(atoms)
-        
 
 
 def get_ASE_atoms_from_material_id(material_id: str, api_key: str):
@@ -109,10 +108,41 @@ def find_materials_by_elements_and_bandgap(elements: list[str], band_gap: tuple[
         return material_dictionary
 
 
+def save_materials_of_elements(elements, dir_name, api_key, target_number_of_atoms=300):
+    """_summary_
+
+    Args:
+        elements (list[str]): A list with the chemical symbols which will be included in the material.
+            To be able to use asap3 EMT potential for simulation these material may only include 
+            Ni, Cu, Pd, Ag, Pt and Au.
+        dir_name (str): The directory in which the materials will be saved, given relative to the folder
+            Input_trajectory_files.
+        api_key (_type_): _description_
+        target_number_of_atoms (int, optional): _description_. Defaults to 300.
+    """
+    with MPRester(api_key) as mpr:
+        matching_materials = mpr.materials.summary.search(elements=elements, fields=['material_id', 'structure'])
+        base_path = os.path.dirname(os.path.abspath(__file__)) + '/../'
+        path_input_traj_dir = base_path + 'Input_trajectory_files/' + dir_name
+        if not os.path.exists(path_input_traj_dir):
+            os.mkdir(path_input_traj_dir)
+
+        for material in matching_materials:
+            material_id = str(material.material_id)
+            primitive_cell = AseAtomsAdaptor.get_atoms(material.structure)
+            number_atoms_primitive = primitive_cell.get_number_of_atoms()
+            n = floor(cbrt(target_number_of_atoms/number_atoms_primitive))
+            M = [[n, 0, 0], [0, n, 0], [0, 0, n]]
+            atoms = make_supercell(primitive_cell, M)
+            size_descripition = str(atoms.get_number_of_atoms())+'_atoms_of_'
+            location_and_name = path_input_traj_dir + '/' + size_descripition + material_id + '.traj'
+            traj = Trajectory(location_and_name, "w")
+            traj.write(atoms)
+
 # Example to show how it works
 if __name__ == "__main__":
-    api_key = "YOUR_API_KEY_HERE"  # Replace with your Materials Project API key
+    # api_key = "YOUR_API_KEY_HERE"  # Replace with your Materials Project API key
     # materials_dict = find_materials_by_elements_and_bandgap(["Ni", "Sb", "Zr"], (0, 1), ["band_gap"],api_key)
     # print(materials_dict.keys())
     # print(materials_dict.values())
-    # make_traj_from_material_id('mp-24', api_key)
+    save_materials_of_elements(['Cu', 'Ni'], 'CuNi_materials', "Aumz0uNirwQYwJgWgrLVFq3Fr1Z4SfwK", target_number_of_atoms=1000)

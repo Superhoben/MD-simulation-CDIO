@@ -1,0 +1,12 @@
+name: MD_simulation
+channels:
+  - defaults
+dependencies:
+  - python=3.9
+  - flake8
+  - pytest
+  - wheel
+  - numpy
+  - scipy
+  - setuptools_scm
+  - pip
