@@ -26,7 +26,8 @@ In order to verify the simulations, as well as all implemented properties, a num
 
 NVT Copper
 -----------
-This test was run with the following simulation parameters 
+This test was run with the following simulation parameters
+
 .. list-table:: Title
    :widths: 50 50
    :header-rows: 5
@@ -59,6 +60,7 @@ This test was run with the following simulation parameters
      - 50
 
 The following results were obtained
+
 .. list-table:: Title
    :widths: 33 33
    :header-rows: 1
