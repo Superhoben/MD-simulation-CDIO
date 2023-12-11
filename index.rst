@@ -62,7 +62,7 @@ This test was run with the following simulation parameters
 The following results were obtained
 
 .. list-table:: NVT Copper properties
-   :widths: 33 33
+   :widths: 33 33 33
    :header-rows: 1
 
    * - Property
@@ -95,7 +95,6 @@ The following results were obtained
    * - Lattice constant [Å]
      - 3.47
      - 3.61
-
 
 Indices and tables
 ==================
