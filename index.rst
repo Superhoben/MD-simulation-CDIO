@@ -97,6 +97,24 @@ For copper, Cu, the following results were obtained
      - 3.47
      - 3.61
 
+As we can see below, the total energy is pretty much constant.
+
+.. image:: images/NVT_Cu_validation_test_energy.png
+  :width: 500
+  :align: center
+
+The temperature for the NVT simulation is aroud 500 K throughout the simulation, which it should be.
+
+.. image:: images/NVT_Cu_validation_test_temperature.png
+  :width: 500
+  :align: center
+
+The internal preassure during the simulation is around 0 GPa, which is the case for optimized volume.
+
+.. image:: images/NVT_Cu_validation_test_pressure.png
+  :width: 500
+  :align: center
+
 
 For silver, Ag, the following results were obtained
 
@@ -174,7 +192,7 @@ Tests were run with the following simulation parameters
 
 For copper, Cu, the following results were obtained
 
-.. list-table:: NVT Copper properties
+.. list-table:: NVE Copper properties
    :widths: 33 33 33
    :header-rows: 1
 
@@ -247,6 +265,23 @@ For silver, Ag, the following results were obtained
      - 3.921
      - 4.078
 
+As we can see below, the total energy in the NVE simulation is close to constant.
+
+.. image:: images/NVE_Au_validation_test_energy.png
+  :width: 500
+  :align: center
+
+The temperature is aroud 500 K throughout the simulation.
+
+.. image:: images/NVE_Au_validation_test_temperature.png
+  :width: 500
+  :align: center
+
+The internal preassure during the simulation is around 0 GPa, which is the case for optimized volume.
+
+.. image:: images/NVE_Au_validation_test_pressure.png
+  :width: 500
+  :align: center
 
 Indices and tables
 ==================
