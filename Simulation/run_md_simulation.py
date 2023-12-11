@@ -376,7 +376,7 @@ def high_throughput_mix_and_simulate(config_file, input_traj_dir, element_to_mix
 
 
 if __name__ == "__main__":
-    mixing_concentrations = np.arrange(0, 1, 0.001)
+    mixing_concentrations = np.arange(0, 1, 0.001)
     high_throughput_mix_and_simulate("example_config.ini", 'Demo_multi_sim', 'Ni', mixing_concentrations, 'Demo_multi_sim')
     traj = Trajectory('/Users/gustavwassback/Documents/CDIO/MD-simulation-CDIO/Gather_data/../' +
                       'Output_trajectory_files/Demo_multi_sim/Ni_mixed_into_1728_atoms_of_mp-30.traj', 'r')
