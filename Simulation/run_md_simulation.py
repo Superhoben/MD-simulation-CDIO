@@ -334,12 +334,11 @@ def high_throughput_mix_and_simulate(config_file, input_traj_dir, element_to_mix
     base_path = os.path.dirname(os.path.abspath(__file__)) + '/../'
     path_new_output_txt_dir = base_path + 'Output_text_files/' + output_dir_name
     path_new_output_traj_dir = base_path + 'Output_trajectory_files/' + output_dir_name
-    if os.path.exists(path_new_output_txt_dir):
-        shutil.rmtree(path_new_output_txt_dir)
-    if os.path.exists(path_new_output_traj_dir):
-        shutil.rmtree(path_new_output_traj_dir)
-    os.mkdir(path_new_output_txt_dir)
-    os.mkdir(path_new_output_traj_dir)
+    if not os.path.exists(path_new_output_txt_dir):
+        os.mkdir(path_new_output_txt_dir)
+    if not os.path.exists(path_new_output_traj_dir):
+        os.mkdir(path_new_output_traj_dir)
+
     input_traj_dir_path = base_path + 'Input_trajectory_files/' + input_traj_dir
     input_traj_dir_contents = os.listdir(input_traj_dir_path)
     traj_file_names = []
@@ -379,9 +378,12 @@ def high_throughput_mix_and_simulate(config_file, input_traj_dir, element_to_mix
 
 
 if __name__ == "__main__":
+    
     mixing_concentrations = np.arange(0, 1, 0.01)
-    high_throughput_mix_and_simulate("supercomputer_config.ini", 'Supercomputer_demo', 'Ag', mixing_concentrations,
-                                     'Supercomputer_demo', False)
+    high_throughput_mix_and_simulate("supercomputer_config.ini", 'Demo_multi_sim', 'Ag', [0, 0.25, 0.5, 0.75, 1],
+                                     'Demo_multi_sim', True)
+#    high_throughput_mix_and_simulate("supercomputer_config.ini", 'Supercomputer_demo', 'Ag', mixing_concentrations,
+#                                     'Supercomputer_demo', False)
 #    traj = Trajectory('/Users/gustavwassback/Documents/CDIO/MD-simulation-CDIO/Gather_data/../' +
 #                      'Output_trajectory_files/Demo_multi_sim/Ni_mixed_into_1728_atoms_of_mp-30.traj', 'r')
 #    view(traj)
