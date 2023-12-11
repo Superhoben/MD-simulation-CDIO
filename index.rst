@@ -59,6 +59,7 @@ Tests were run with the following simulation parameters
    * - Optimal scaling interval
      - 50
 
+
 For copper, Cu, the following results were obtained
 
 .. list-table:: NVT Copper properties
@@ -95,6 +96,7 @@ For copper, Cu, the following results were obtained
    * - Lattice constant [Å]
      - 3.47
      - 3.61
+
 
 For silver, Ag, the following results were obtained
 
@@ -133,6 +135,7 @@ For silver, Ag, the following results were obtained
      - 4.05
      - 4.08
 
+
 NVE Simulations
 -----------
 Tests were run with the following simulation parameters
@@ -167,6 +170,7 @@ Tests were run with the following simulation parameters
      - 500
    * - Optimal scaling interval
      - 10
+
 
 For copper, Cu, the following results were obtained
 
@@ -205,6 +209,7 @@ For copper, Cu, the following results were obtained
      - 3.47
      - 3.61
 
+
 For silver, Ag, the following results were obtained
 
 .. list-table:: NVT Silver properties
@@ -241,6 +246,7 @@ For silver, Ag, the following results were obtained
    * - Lattice constant [Å]
      - 3.921
      - 4.078
+
 
 Indices and tables
 ==================
