@@ -2,9 +2,9 @@ name: documentation
 
 on:
   push:
-    branches: [ "main", "develop", "181-set-up-github-documentation-with-sphinx" ]
+    branches: [ "main", "develop"]
   pull_request:
-    branches: [ "main", "develop", "181-set-up-github-documentation-with-sphinx" ]
+    branches: [ "main", "develop"]
   workflow_dispatch:
 
 permissions:
