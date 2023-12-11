@@ -353,7 +353,6 @@ def high_throughput_mix_and_simulate(config_file, input_traj_dir, element_to_mix
     config_path = os.path.dirname(os.path.abspath(__file__)) + '/../Input_config_files/'
     config_data = ConfigParser()
     config_data.read(config_path+config_file)
-    config_data['SimulationSettings']["record_configuration"] = '0'
 
     mix_dirs = []
     process_list = []
