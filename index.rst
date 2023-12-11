@@ -29,7 +29,7 @@ NVT Copper
 This test was run with the following simulation parameters 
 .. list-table:: Title
    :widths: 50 50
-   :header-rows: 1
+   :header-rows: 5
 
    * - Setting name
      - Chosen setting
