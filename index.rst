@@ -28,9 +28,9 @@ NVT Copper
 -----------
 This test was run with the following simulation parameters
 
-.. list-table:: Title
+.. list-table:: NVT Copper settings
    :widths: 50 50
-   :header-rows: 5
+   :header-rows: 1
 
    * - Setting name
      - Chosen setting
@@ -61,7 +61,7 @@ This test was run with the following simulation parameters
 
 The following results were obtained
 
-.. list-table:: Title
+.. list-table:: NVT Copper properties
    :widths: 33 33
    :header-rows: 1
 
