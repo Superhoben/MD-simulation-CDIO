@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.abspath('./'))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'Computational Physics Project'
-copyright = '2023, Alice Eriksson, Emelie Eriksson, Jakov Krnic, Issa Nseir, Markus Wallin, Gustav Wassbäck. The software uses the MIT license.'
+copyright = '2023, Alice Eriksson, Emelie Eriksson, Jakov Krnic, Issa Nseir, Markus Wallin, Gustav Wassbäck. The software uses the MIT license'
 author = 'Alice Eriksson, Emelie Eriksson, Jakov Krnic, Issa Nseir, Markus Wallin, Gustav Wassbäck'
 
 master_doc = 'index'
