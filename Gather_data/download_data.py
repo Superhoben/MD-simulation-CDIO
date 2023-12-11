@@ -108,11 +108,15 @@ def find_materials_by_elements_and_bandgap(elements: list[str], band_gap: tuple[
         return material_dictionary
 
 
-def save_materials_of_elements(elements, dir_name, api_key, target_number_of_atoms=300):
+def save_materials_of_elements(required_elements, dir_name, api_key, 
+                               target_number_of_atoms=300, allowed_elements=['Ni', 'Cu', 'Pd', 'Ag', 'Pt', 'Au']):
     """_summary_
 
     Args:
-        elements (list[str]): A list with the chemical symbols which will be included in the material.
+        required_elements (list[str]): A list with the chemical symbols that must be included in the material.
+            To be able to use asap3 EMT potential for simulation these material may only include 
+            Ni, Cu, Pd, Ag, Pt and Au.
+        allowed_elements (list[str]): A list with the chemical symbols that can be included in the material.
             To be able to use asap3 EMT potential for simulation these material may only include 
             Ni, Cu, Pd, Ag, Pt and Au.
         dir_name (str): The directory in which the materials will be saved, given relative to the folder
@@ -120,8 +124,17 @@ def save_materials_of_elements(elements, dir_name, api_key, target_number_of_ato
         api_key (_type_): _description_
         target_number_of_atoms (int, optional): _description_. Defaults to 300.
     """
+    disallowed_elements = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S',
+                           'Cl', 'Ar', 'K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga',
+                           'Ge', 'As', 'Se', 'Br', 'Kr', 'Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd',
+                           'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I', 'Xe', 'Cs', 'Ba', 'La', 'Hf', 'Ta', 'W', 'Re', 
+                           'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Ac', 'Th', 'Pa', 'U', 'Np', 'Pu']
+    for element in allowed_elements:
+        disallowed_elements.remove(element)
+        
     with MPRester(api_key) as mpr:
-        matching_materials = mpr.materials.summary.search(elements=elements, fields=['material_id', 'structure'])
+        matching_materials = mpr.materials.summary.search(elements=required_elements, fields=['material_id', 'structure'],
+                                                          exclude_elements=disallowed_elements)
         base_path = os.path.dirname(os.path.abspath(__file__)) + '/../'
         path_input_traj_dir = base_path + 'Input_trajectory_files/' + dir_name
         if not os.path.exists(path_input_traj_dir):
@@ -145,4 +158,4 @@ if __name__ == "__main__":
     # materials_dict = find_materials_by_elements_and_bandgap(["Ni", "Sb", "Zr"], (0, 1), ["band_gap"],api_key)
     # print(materials_dict.keys())
     # print(materials_dict.values())
-    save_materials_of_elements(['Cu', 'Ni'], 'CuNi_materials', "Aumz0uNirwQYwJgWgrLVFq3Fr1Z4SfwK", target_number_of_atoms=1000)
+    save_materials_of_elements(['Ni', 'Cu'], 'NiCu_only_materials', "Aumz0uNirwQYwJgWgrLVFq3Fr1Z4SfwK", target_number_of_atoms=8000)
