@@ -318,7 +318,15 @@ def time_average_of_debye_temperature(atoms: Atoms, output_dict={'debye_temperat
     # Append the calculated Debye temperature to the output dictionary
     output_dict['debye_temperature'].append(debye_temperature)
 
+    # Skipping the first 80% of the unstable values 
+    total_nr_values = len(output_dict["debye_temperature"])
+    skippable_values = int(0.8 * total_nr_values)
+
+    # Ignoring the first 80% of the unstable values at the beginning of the simulation
+    total_debye_temperature = output_dict["debye_temperature"][skippable_values:]
+
     # Calculate the time average, usless line of code
-    # time_average_of_debye_temperature = np.mean(output_dict['debye_temperature'])
-    return debye_temperature
+    #time_average_of_debye_temperature = np.mean(output_dict['debye_temperature'])
+    time_average_of_debye_temperature = np.mean(total_debye_temperature)
+    return time_average_of_debye_temperature
 
