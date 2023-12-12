@@ -131,7 +131,7 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
         output_dict['bulk_modulus'] = []
         output_dict["debye_temperature"] = []
         dyn.attach(calc_bulk_properties.calc_bulk_modulus, interval_to_record_bulk_modulus, atoms, output_dict)
-        dyn.attach(calc_properties.time_average_of_debye_temperature, interval_to_record_bulk_modulus, atoms, output_dict)
+        dyn.attach(calc_properties.calc_debye_temperature, interval_to_record_bulk_modulus, atoms, output_dict)
 
     interval_to_record_optimal_scaling = int(recording_intervals['record_optimal_scaling'])
     if interval_to_record_optimal_scaling:
@@ -187,6 +187,19 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
 
     if int(recording_intervals['record_mean_square_displacement']):
         output_dict['mean_square_displacement'][0] = 0
+        
+    if int(recording_intervals['record_bulk_modulus']):
+        # Skipping the first 80% of the unstable values 
+        total_nr_values = len(output_dict["debye_temperature"])
+        skippable_values = int(0.8 * total_nr_values)
+
+        # Ignoring the first 80% of the unstable values at the beginning of the simulation
+        total_debye_temperature = output_dict["debye_temperature"][skippable_values:]
+
+        # Calculate the time average, usless line of code
+        #time_average_of_debye_temperature = np.mean(output_dict['debye_temperature'])
+        time_average_of_debye_temperature = np.mean(total_debye_temperature)
+        output_dict['time_average_of_debye_temperature'] = [time_average_of_debye_temperature]
 
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/'
     with open(path + output_name + '.txt', 'w') as file:
@@ -379,13 +392,12 @@ def high_throughput_mix_and_simulate(config_file, input_traj_dir, element_to_mix
 
 if __name__ == "__main__":
     
-    #mixing_concentrations = np.arange(0, 1, 0.01)
-#    high_throughput_mix_and_simulate("supercomputer_config.ini", 'Demo_multi_sim', 'Ag', [0, 0.25, 0.5, 0.75, 1],
-#                                     'Demo_multi_sim', True)
-    #high_throughput_mix_and_simulate("supercomputer_config.ini", 'Supercomputer_demo', 'Ag', mixing_concentrations,
-    #                                 'Supercomputer_demo', True)
-#    traj = Trajectory('/Users/gustavwassback/Documents/CDIO/MD-simulation-CDIO/Gather_data/../' +
-#                      'Output_trajectory_files/Demo_multi_sim/Ni_mixed_into_1728_atoms_of_mp-30.traj', 'r')
-#    view(traj)
-
-    run_single_md_simulation("NVE_test_debye_temp.ini", "125_atoms_of_mp-30.traj", "debye_capa_fix")
+    mixing_concentrations = np.arange(0, 1, 0.01)
+    high_throughput_mix_and_simulate("supercomputer_config.ini", 'Demo_multi_sim', 'Ag', [0, 0.25, 0.5, 0.75, 1],
+                                     'Demo_multi_sim', True)
+    high_throughput_mix_and_simulate("supercomputer_config.ini", 'Supercomputer_demo', 'Ag', mixing_concentrations,
+                                     'Supercomputer_demo', True)
+    traj = Trajectory('/Users/gustavwassback/Documents/CDIO/MD-simulation-CDIO/Gather_data/../' +
+                      'Output_trajectory_files/Demo_multi_sim/Ni_mixed_into_1728_atoms_of_mp-30.traj', 'r')
+    #view(traj)
+    #run_single_md_simulation("NVE_test_debye_temp.ini", "125_atoms_of_mp-30.traj", "debye_capa_fix")

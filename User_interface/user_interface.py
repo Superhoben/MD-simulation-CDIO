@@ -327,7 +327,7 @@ def initiate_gui():
 
     rownumber += 1
     plottable_attributes = ["Total Energy", "Kinetic Energy", "Potential Energy", 
-                            "Temperature", "Pressure", "Bulk Modulus",
+                            "Temperature", "Pressure", "Bulk Modulus", "Debye Temperature",
                             "Optimal Scaling", "Elastic Tensor", "Mean Square Displacement",
                             "Lindemann Criterion", "Self Diffusion Coefficient"]
 
@@ -718,7 +718,7 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
     material_data_dict = json.loads(data)
 
     config_file = material_data_dict['config_file']
-    path = os.path.dirname(os.path.abspath(__file__)) + '/../Input_config_files/' + config_file
+    path = os.path.dirname(os.path.abspath(__file__)) + '/../Input_config_files/' + config_file[0]
     config_data = ConfigParser()
     config_data.read(path)
 
@@ -772,6 +772,8 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
         record_attribute = "energy"
     elif attribute == "elastic_tensor":
         record_attribute = "elastic"
+    elif attribute == "debye_temperature":
+        record_attribute = "bulk_modulus"
  
     x_values = []
     i = 0
