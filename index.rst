@@ -285,6 +285,114 @@ The internal preassure during the simulation is around 0 GPa, which is the case 
   :width: 500
   :align: center
 
+
+Specific heat capacity:
+=======================
+For testing the specific heat capacity 12 different tests were conducted for NVE as well as NVT ensembles (6 for each ensemble) for the following materials: Copper (Cu), Silver (Ag) and Aluminium (Al). Those tests were simulated on Macbook Pro 13-inch, 2017 personal computer with CPU: Intel 2.3 GHz Dual-Core i5. Simulation time was around 15 minutes per simulation.
+
+NVE Simulations for the Specific heat capacity
+=======================
+.. list-table:: NVE Copper, Silver and Aluminuim settings
+   :widths: 50 50
+   :header-rows: 1
+
+   * - Setting name
+     - Chosen setting
+   * - Ensemble
+     - NVE
+   * - Temperature
+     - 600
+   * - Potential
+     - EMT
+   * - Step number
+     - 100000
+   * - Time step
+     - 3
+   * - Friction
+     - 0.005
+   * - Basic properties interval
+     - 1
+   * - Displacement properties interval
+     - 0
+   * - Basic properties interval
+     - 0
+   * - Elastic properties interval
+     - 0
+   * - Configuration interval
+     - 0
+
+Simulation with the parameters above were run for Copper (Cu), Silver (Ag) and Aluminium (Al) with the following lattice constant 3.58 Å, 4.10 Å and 4.04 Å. All of the element had cubic crystal structure. The supercell contained 1728 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. Reference values for the specific heat capacity are from Physics Handbook. Pressure is expected to be close to zero because the volume should be optimized.
+
+.. list-table:: NVE Copper, Silver and Aluminuim properties
+   :widths: 33 33 33
+   :header-rows: 1
+
+   * - Specific heat capacity [J/Kg.K]
+     - Calculated value
+     - Reference value
+   * - Copper (Cu) 
+     - 392.634
+     - 385
+   * - Silver (Ag)
+     - 231.302
+     - 235
+   * - Aluminium (Al) 
+     - 924.719
+     - 897
+
+NVT Simulations for the Specific heat capacity
+=======================
+.. list-table:: NVT Copper, Silver and Aluminuim settings
+   :widths: 50 50
+   :header-rows: 1
+
+   * - Setting name
+     - Chosen setting
+   * - Ensemble
+     - NVT
+   * - Temperature
+     - 600
+   * - Potential
+     - EMT
+   * - Step number
+     - 100000
+   * - Time step
+     - 3
+   * - Friction
+     - 0.005
+   * - Basic properties interval
+     - 1
+   * - Displacement properties interval
+     - 0
+   * - Basic properties interval
+     - 0
+   * - Elastic properties interval
+     - 0
+   * - Configuration interval
+     - 0
+
+Simulation with the parameters above were run for Copper (Cu), Silver (Ag) and Aluminium (Al) with the following lattice constant 3.58 Å, 4.10 Å and 4.04 Å. All of the element had cubic crystal structure. The supercell contained 1728 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. Reference values for the specific heat capacity are from Physics Handbook. Pressure is expected to be close to zero because the volume should be optimized.
+
+.. list-table:: NVT Copper, Silver and Aluminuim properties
+   :widths: 33 33 33
+   :header-rows: 1
+
+   * - Specific heat capacity [J/Kg.K]
+     - Calculated value
+     - Reference value
+   * - Copper (Cu) 
+     - 388.025
+     - 385
+   * - Silver (Ag)
+     - 207.819
+     - 235
+   * - Aluminium (Al) 
+     - 736.693
+     - 897
+
+
+
+
 Indices and tables
 ==================
 
