@@ -87,6 +87,8 @@ def plot(ax, canvas, x, y, x_lim, y_title):
         ax.set_ylabel(y_title + " [" + "K" "]")
     elif y_title == "Pressure":
         ax.set_ylabel(y_title + " [" + "Pa" "]")
+    elif y_title == "Total Energy":
+        ax.set_ylabel(y_title + " [" + "eV" "]")
     ax.set_xlabel("Time [femto seconds]")
     canvas.draw()
 
