@@ -60,7 +60,7 @@ Tests were run with the following simulation parameters
      - 50
 
 
-For copper, Cu, the following results were obtained
+Simulation with the parameters above were run for fcc copper, Cu, with lattice constant 3.61 Å, which is the naturally occurring state of copper. The supercell contained 1000 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. Reference values for bulk modulus, shear modulus, youngs modulus and lattice constant are from Physics Handbook. Pressure is expected to be close to zero because the volume should be optimized. Mean square displacement, Lindemann coefficient and diffusion coefficient are all expected to be low because 500 K is well below the melting temperature for copper (1358 K).
 
 .. list-table:: NVT Copper properties
    :widths: 33 33 33
@@ -97,13 +97,13 @@ For copper, Cu, the following results were obtained
      - 3.47
      - 3.61
 
-As we can see below, the total energy is pretty much constant.
+Below is a graph of the total energy from the simulation. As we can see, the total energy varies a bit in the beginning, but after a while it becomes pretty much constant, indicating that the simulation has reached equillibrium.
 
 .. image:: images/NVT_Cu_validation_test_energy.png
   :width: 500
   :align: center
 
-The temperature for the NVT simulation is aroud 500 K throughout the simulation, which it should be.
+The temperature for the NVT simulation is aroud 500 K throughout the simulation, which it should be since it is an constant temperature simulation. We see some larger variation in temperature at the very beginning of the simulation from the interactiomn with the heat bath.
 
 .. image:: images/NVT_Cu_validation_test_temperature.png
   :width: 500
@@ -116,7 +116,7 @@ The internal preassure during the simulation is around 0 GPa, which is the case 
   :align: center
 
 
-For silver, Ag, the following results were obtained
+Simulation with the same parameters were run for fcc silver (Ag) with lattice constant 4.08 Å, which is the naturally occurring state of silver. The supercell contained 1000 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. Reference values for bulk modulus, shear modulus, youngs modulus and lattice constant are from Physics Handbook. Pressure is expected to be zero because the volume should be optimized. Mean square displacement, Lindemann coefficient and diffusion coefficient are all expected to be low because 500 K is well below the melting temperature for silver (1235 K).
 
 .. list-table:: NVT Silver properties
    :widths: 33 33 33
@@ -190,7 +190,8 @@ Tests were run with the following simulation parameters
      - 10
 
 
-For copper, Cu, the following results were obtained
+Simulation with the parameters above were run for fcc copper, Cu, with lattice constant 3.61 Å, which is the naturally occurring state of copper. The supercell contained 1000 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. Reference values for bulk modulus, shear modulus, youngs modulus and lattice constant are from Physics Handbook. Pressure is expected to be zero because the volume should be optimized. Mean square displacement, Lindemann coefficient and diffusion coefficient are all expected to be low because 500 K is well below the melting temperature for copper (1358 K).
+
 
 .. list-table:: NVE Copper properties
    :widths: 33 33 33
@@ -228,9 +229,9 @@ For copper, Cu, the following results were obtained
      - 3.61
 
 
-For silver, Ag, the following results were obtained
+Simulation with the same parameters were run for fcc gold (Au) with lattice constant 4.08 Å, which is the naturally occurring state of gold. The supercell contained 1000 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. Reference values for bulk modulus, shear modulus, youngs modulus and lattice constant are from Physics Handbook. Pressure is expected to be zero because the volume should be optimized. Mean square displacement, Lindemann coefficient and diffusion coefficient are all expected to be low because 500 K is well below the melting temperature for gold (1337 K).
 
-.. list-table:: NVT Silver properties
+.. list-table:: NVT Gold properties
    :widths: 33 33 33
    :header-rows: 1
 
@@ -265,13 +266,14 @@ For silver, Ag, the following results were obtained
      - 3.921
      - 4.078
 
-As we can see below, the total energy in the NVE simulation is close to constant.
+
+As we can see below, the total energy in the NVE simulation is close to constant, which is what it is supposed to be for a constant energy simulation.
 
 .. image:: images/NVE_Au_validation_test_energy.png
   :width: 500
   :align: center
 
-The temperature is aroud 500 K throughout the simulation.
+The temperature oscillates slightly in the beginning, but then remains around 500 K throughout the simulation, indicating a reach of equillibrium.
 
 .. image:: images/NVE_Au_validation_test_temperature.png
   :width: 500
