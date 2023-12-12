@@ -4,8 +4,8 @@ from ase.lattice.cubic import FaceCenteredCubic
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.build import bulk, molecule
 from ase import Atoms, Atom
-#from asap3 import EMT
-from ase.calculators.emt import EMT
+from asap3 import EMT
+from ase.calculators.emt import EMT as aseEMT
 from tkinter import Tk
 from Simulation.simple_simulation import run_simple_md_simulation
 from Simulation.lattice_constant import optimize_scaling
@@ -79,15 +79,14 @@ class UnitTests(unittest.TestCase):
         # Ni cohesive energy = 4.44
         # Cu cohesive energy = 3.49
         # Create multiple atoms object
-        atom_structure_Ag = Atoms("Ag")
+        atom_structure_Ag = Atoms("Ag", cell=[1, 1, 1], pbc=False)
         atom_structure_Ag.calc = EMT()
-        atom_structure_Au = Atoms("Au")
+        atom_structure_Au = Atoms("Au", cell=[1, 1, 1], pbc=False)
         atom_structure_Au.calc = EMT()
-        atom_structure_Ni = Atoms("Ni")
+        atom_structure_Ni = Atoms("Ni", cell=[1, 1, 1], pbc=False)
         atom_structure_Ni.calc = EMT()
-        atom_structure_Cu = Atoms("Cu")
+        atom_structure_Cu = Atoms("Cu", cell=[1, 1, 1], pbc=False)
         atom_structure_Cu.calc = EMT()
-        # From 
         # you can find every single cohesive energy per atom for each elements in 
         self.assertTrue((2.9 < calculate_cohesive_energy(atom_structure_Ag)) and
                         (calculate_cohesive_energy(atom_structure_Ag) < 3) and 
@@ -101,7 +100,7 @@ class UnitTests(unittest.TestCase):
     def test_cohesive_energy2(self):
         # Create N2 molecule structure
         molecule_structure = molecule('N2')
-        molecule_structure.calc = EMT()
+        molecule_structure.calc = aseEMT()
         # From ase example:https://wiki.fysik.dtu.dk/ase/tutorials/atomization.html, Obs: they 
         # had 2N Atomization energy(cohesive energy)= 9.76 eV, Which means N alone is 9.76/2 = 4.88 ev/atom
         self.assertTrue((4.82 < calculate_cohesive_energy(molecule_structure)) and
