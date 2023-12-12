@@ -1,7 +1,10 @@
 """The file is for calculation of bulk properties."""
+#from asap3 import Atoms
+#from asap3 import *
+from asap3 import EMT
 from ase import Atoms
 from ase.io.trajectory import Trajectory
-from ase.calculators.emt import EMT
+from ase.calculators.emt import EMT as aseEMT
 from ase.io import read
 from ase.eos import EquationOfState
 import numpy as np
@@ -11,6 +14,8 @@ from elastic import get_elementary_deformations, scan_volumes
 from elastic import get_BM_EOS, get_elastic_tensor
 from elastic.elastic import get_cij_order
 import ase.units as units
+from ase.lattice.cubic import FaceCenteredCubic
+
 
 
 def calc_bulk_modulus(atoms: Atoms, output_dict={'bulk_modulus': []}):
@@ -81,9 +86,10 @@ def calculate_cohesive_energy(atoms, output_dict={'cohesive_energy': []}):
         # Loop for calculating the potential energy of each atom in the atoms object
         isolated_atoms_potential_energies = 0
         for i in range(len(atoms)):
-            isolated_atom = Atoms([atoms[i]])
+            isolated_atom = Atoms([atoms[i]], cell = [1,1,1], pbc= False)
             # Set the  original calculator for the isolated atom
             isolated_atom.set_calculator(original_calculator)
+            isolated_atom
             isolated_atom_potential_energy = isolated_atom.get_potential_energy()
             isolated_atoms_potential_energies += isolated_atom_potential_energy
         # print("isolated_atoms_potential_energies "+ str(isolated_atoms_potential_energies))
