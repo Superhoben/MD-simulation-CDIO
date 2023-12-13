@@ -16,6 +16,6 @@ export OMP_NUM_THREADS=1
 source ~/MD-simulation-CDIO/activate_conda.sh
 conda activate new_MD
 
-time mpprun python3 ~/MD-simulation-CDIO/Simulation/run_md_simulation.py
+time python3 ~/MD-simulation-CDIO/Simulation/run_md_simulation.py
 
 echo "job completed"
