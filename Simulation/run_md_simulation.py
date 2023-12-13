@@ -130,8 +130,10 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
     if interval_to_record_bulk_modulus:
         output_dict['bulk_modulus'] = []
         output_dict["debye_temperature"] = []
+        output_dict['cohesive_energy'] = []
         dyn.attach(calc_bulk_properties.calc_bulk_modulus, interval_to_record_bulk_modulus, atoms, output_dict)
         dyn.attach(calc_properties.time_average_of_debye_temperature, interval_to_record_bulk_modulus, atoms, output_dict)
+        dyn.attach(calc_bulk_properties.calculate_cohesive_energy, interval_to_record_bulk_modulus, atoms, output_dict)
 
     interval_to_record_optimal_scaling = int(recording_intervals['record_optimal_scaling'])
     if interval_to_record_optimal_scaling:

@@ -215,13 +215,13 @@ class UnitTests(unittest.TestCase):
         
         # Location of the trajectory file: Input_trajectory_files/Cu_validation_test.traj
         # Location of configuration file: Input_config_files/NVT_validation test
-        #path_to_traj_folder = os.path.dirname(os.path.abspath(__file__)) + '/../Input_trajectory_files'
-        #traj = Trajectory(path_to_traj_folder + "/NVT_Cu_validation_test.traj", "w")
-        #traj.write(atoms)
+        path_to_traj_folder = os.path.dirname(os.path.abspath(__file__)) + '/../Input_trajectory_files'
+        traj = Trajectory(path_to_traj_folder + "/NVT_Cu_validation_test.traj", "w")
+        traj.write(atoms)
         
         #run_single_md_simulation("NVT_validation_test.ini",
-        #                         "NVT_Cu_validation_test.traj",
-        #                         "ValidationTests/NVT_Cu_validation_test")
+         #                        "NVT_Cu_validation_test.traj",
+          #                       "ValidationTests/NVT_Cu_validation_test")
         # The simulation results are saved as Cu_validation_test in the ValidationTests
         # folder in Output_traj_files and Output_text_files
         
@@ -286,6 +286,12 @@ class UnitTests(unittest.TestCase):
         avg_self_diffusion = np.average(material_data_dict['self_diffusion_coefficient'][21:])
         self.assertTrue(avg_self_diffusion < 0.001)
         
+        avg_debye_temperature = np.average(material_data_dict['debye_temperature'][3:])
+        self.assertTrue(330 < avg_debye_temperature < 530)
+        
+        avg_cohesive_energy = np.average(material_data_dict['cohesive_energy'][3:])
+        self.assertTrue(3.34 < avg_cohesive_energy < 3.54)
+        
         ## Lattice constant
         path_to_traj_folder = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files'
         traj = Trajectory(path_to_traj_folder + "/ValidationTests/NVT_Cu_validation_test.traj", 'r')
@@ -309,8 +315,8 @@ class UnitTests(unittest.TestCase):
         traj.write(atoms)
         
         #run_single_md_simulation("NVT_validation_test.ini",
-        #                         "NVT_Ag_validation_test.traj",
-        #                         "ValidationTests/NVT_Ag_validation_test")
+         #                        "NVT_Ag_validation_test.traj",
+          #                       "ValidationTests/NVT_Ag_validation_test")
         # The simulation results are saved as Cu_validation_test in the ValidationTests
         # folder in Output_traj_files and Output_text_files
         
@@ -370,6 +376,12 @@ class UnitTests(unittest.TestCase):
         ## Self-diffusion coefficient
         avg_self_diffusion = np.average(material_data_dict['self_diffusion_coefficient'][21:])
         self.assertTrue(avg_self_diffusion < 0.001)
+        
+        avg_debye_temperature = np.average(material_data_dict['debye_temperature'][3:])
+        self.assertTrue(220 < avg_debye_temperature < 355)
+        
+        avg_cohesive_energy = np.average(material_data_dict['cohesive_energy'][3:])
+        self.assertTrue(2.85 < avg_cohesive_energy < 3.05)
 
         ## Lattice constant
         path_to_traj_folder = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files'
@@ -395,8 +407,8 @@ class UnitTests(unittest.TestCase):
         traj.write(atoms)
 
         #run_single_md_simulation("NVE_validation_test.ini",
-        #                         "NVE_Cu_validation_test.traj",
-        #                         "ValidationTests/NVE_Cu_validation_test")
+         #                        "NVE_Cu_validation_test.traj",
+          #                       "ValidationTests/NVE_Cu_validation_test")
         # The simulation results are saved as Cu_validation_test in the ValidationTests
         # folder in Output_traj_files and Output_text_files
 
@@ -457,6 +469,12 @@ class UnitTests(unittest.TestCase):
         avg_self_diffusion = np.average(material_data_dict['self_diffusion_coefficient'][21:])
         self.assertTrue(avg_self_diffusion < 0.001)
         
+        avg_debye_temperature = np.average(material_data_dict['debye_temperature'][3:])
+        self.assertTrue(330 < avg_debye_temperature < 530)
+        
+        avg_cohesive_energy = np.average(material_data_dict['cohesive_energy'][3:])
+        self.assertTrue(3.34 < avg_cohesive_energy < 3.54)
+        
         ## Lattice constant
         path_to_traj_folder = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files'
         traj = Trajectory(path_to_traj_folder + "/ValidationTests/NVT_Cu_validation_test.traj", 'r')
@@ -483,8 +501,8 @@ class UnitTests(unittest.TestCase):
         traj.write(atoms)
 
         #run_single_md_simulation("NVE_validation_test.ini",
-        #                         "NVE_Au_validation_test.traj",
-        #                         "ValidationTests/NVE_Au_validation_test")
+         #                        "NVE_Au_validation_test.traj",
+          #                       "ValidationTests/NVE_Au_validation_test")
         # The simulation results are saved as Cu_validation_test in the ValidationTests
         # folder in Output_traj_files and Output_text_files
 
@@ -546,6 +564,12 @@ class UnitTests(unittest.TestCase):
         ## Self-diffusion coefficient
         avg_self_diffusion = np.average(material_data_dict['self_diffusion_coefficient'][21:])
         self.assertTrue(avg_self_diffusion < 0.001)
+        
+        avg_debye_temperature = np.average(material_data_dict['debye_temperature'][3:])
+        self.assertTrue(150 < avg_debye_temperature < 350)
+        
+        avg_cohesive_energy = np.average(material_data_dict['cohesive_energy'][3:])
+        self.assertTrue(3.71 < avg_cohesive_energy < 3.91)
 
         ## Lattice constant
         path_to_traj_folder = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files'
