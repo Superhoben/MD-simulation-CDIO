@@ -33,7 +33,7 @@ def print_and_increase_progress(progress, sim_number):
     progress[0] += 10
 
 
-def run_single_md_simulation(config_file: str, traj_file: str, output_name: str, sim_number=0):
+def run_single_md_simulation(config_file: str, traj_file: str, output_name: str, sim_number=0, enable_prints=True):
     """Run md simulation for a single trajectory file, with parameters specified in config.
 
     Snapshoots of the atom state during the simulation will be saved in Output_trajectory_files/output_name.traj
@@ -169,9 +169,10 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
         output_dict['self_diffusion_coefficient'] = []
         dyn.attach(calc_properties.self_diffusion_coefficent, interval_to_record_self_diffusion_coefficient, output_dict, interval_to_record_self_diffusion_coefficient*int(simulation_settings['time_step']))
 
-    progress = [0]
-    ten_percent_interval = int(0.1 * float(simulation_settings['step_number']))
-    dyn.attach(print_and_increase_progress, ten_percent_interval, progress, sim_number)
+    if enable_prints:
+        progress = [0]
+        ten_percent_interval = int(0.1 * float(simulation_settings['step_number']))
+        dyn.attach(print_and_increase_progress, ten_percent_interval, progress, sim_number)
 
     # Run simulation with the attached recorders
     if sim_number:
@@ -200,7 +201,7 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
 
 
 def queue_simulations(config_file_name, trajectory_file_dir, output_dir_name, 
-                      process_list=[], execute=True, sim_number = [1]):
+                      process_list=[], execute=True, sim_number=[1], enable_prints=True):
     """For every material in trajectory_file_dir, append a simulation function object to process list
 
     Args:
@@ -228,7 +229,7 @@ def queue_simulations(config_file_name, trajectory_file_dir, output_dir_name,
         os.path.dirname(os.path.abspath(__file__))
         dir_and_traj_file_name = trajectory_file_dir + '/' + traj_file_name
         output_dir_and_name = output_dir_name + '/' + traj_file_name[:-5]
-        sim_args = [config_file_name, dir_and_traj_file_name, output_dir_and_name, sim_number[0]]
+        sim_args = [config_file_name, dir_and_traj_file_name, output_dir_and_name, sim_number[0], enable_prints]
         process_list.append(Process(target=run_single_md_simulation, args=sim_args))
         sim_number[0] += 1
 
@@ -237,7 +238,8 @@ def queue_simulations(config_file_name, trajectory_file_dir, output_dir_name,
             process.start()
         for process in process_list:
             process.join()
-        print("All simulations finished!")
+        if enable_prints:
+            print("All simulations finished!")
 
 
 def is_float(element: any) -> bool:
@@ -317,7 +319,8 @@ def summerize_traj_files(dir_name):
             traj_writer.write(atoms)
 
 
-def high_throughput_mix_and_simulate(config_file, input_traj_dir, element_to_mix_in, mixing_concentrations, output_dir_name):
+def high_throughput_mix_and_simulate(config_file, input_traj_dir, element_to_mix_in, mixing_concentrations,
+                                     output_dir_name, enable_prints=True):
     """Mixes element_to_mix_in into every material in input_traj_dir then simulates all the mixes in parallell
 
     Args:
@@ -331,12 +334,11 @@ def high_throughput_mix_and_simulate(config_file, input_traj_dir, element_to_mix
     base_path = os.path.dirname(os.path.abspath(__file__)) + '/../'
     path_new_output_txt_dir = base_path + 'Output_text_files/' + output_dir_name
     path_new_output_traj_dir = base_path + 'Output_trajectory_files/' + output_dir_name
-    if os.path.exists(path_new_output_txt_dir):
-        shutil.rmtree(path_new_output_txt_dir)
-    if os.path.exists(path_new_output_traj_dir):
-        shutil.rmtree(path_new_output_traj_dir)
-    os.mkdir(path_new_output_txt_dir)
-    os.mkdir(path_new_output_traj_dir)
+    if not os.path.exists(path_new_output_txt_dir):
+        os.mkdir(path_new_output_txt_dir)
+    if not os.path.exists(path_new_output_traj_dir):
+        os.mkdir(path_new_output_traj_dir)
+
     input_traj_dir_path = base_path + 'Input_trajectory_files/' + input_traj_dir
     input_traj_dir_contents = os.listdir(input_traj_dir_path)
     traj_file_names = []
@@ -350,7 +352,6 @@ def high_throughput_mix_and_simulate(config_file, input_traj_dir, element_to_mix
     config_path = os.path.dirname(os.path.abspath(__file__)) + '/../Input_config_files/'
     config_data = ConfigParser()
     config_data.read(config_path+config_file)
-    config_data['SimulationSettings']["record_configuration"] = '0'
 
     mix_dirs = []
     process_list = []
@@ -361,7 +362,7 @@ def high_throughput_mix_and_simulate(config_file, input_traj_dir, element_to_mix
                       input_traj_dir + '/' + mix_dir_name)
         mix_dirs.append(output_dir_name+'/'+mix_dir_name)
         queue_simulations(config_file, input_traj_dir+'/'+mix_dir_name, output_dir_name+'/'+mix_dir_name,
-                          process_list, False, sim_number)
+                          process_list, False, sim_number, enable_prints)
 
     for process in process_list:
         process.start()
@@ -372,12 +373,19 @@ def high_throughput_mix_and_simulate(config_file, input_traj_dir, element_to_mix
         summerize_traj_files(mix_dir)
         summerize_text_files(mix_dir)
 
-    print("All simulations finished!")
+    if enable_prints:
+        print("All simulations finished!")
 
 
 if __name__ == "__main__":
-    mixing_concentrations = [0.1, 0.2, 0.3]
-    high_throughput_mix_and_simulate("example_config.ini", 'Demo_multi_sim', 'Ni', mixing_concentrations, 'Demo_multi_sim')
-    traj = Trajectory('/Users/gustavwassback/Documents/CDIO/MD-simulation-CDIO/Gather_data/../' +
-                      'Output_trajectory_files/Demo_multi_sim/Ni_mixed_into_1728_atoms_of_mp-30.traj', 'r')
-    view(traj)
+    mixing_concentrations = np.arange(0, 1, 0.05)
+    high_throughput_mix_and_simulate("room_temperature.ini", 'Ni_base', 'Cu', mixing_concentrations,
+                                     'Ni_base_room_temp', True)
+    high_throughput_mix_and_simulate("room_temperature.ini",  'Ni_base', 'Pd', mixing_concentrations,
+                                     'Ni_base_room_temp', True)
+    high_throughput_mix_and_simulate("room_temperature.ini", 'Ni_base', 'Ag', mixing_concentrations,
+                                     'Ni_base_room_temp', True)
+    high_throughput_mix_and_simulate("room_temperature.ini", 'Ni_base', 'Pt', mixing_concentrations,
+                                     'Ni_base_room_temp', True)
+    high_throughput_mix_and_simulate("room_temperature.ini", 'Ni_base', 'Au', mixing_concentrations,
+                                     'Ni_base_room_temp', True)
