@@ -47,7 +47,7 @@ def optimize_scaling(atoms, output_dict={'optimal_scaling': []}, learning_rate=0
         scaling = old_scaling - learning_rate*e_scaling_gradient/(2+abs(e_scaling_gradient))
 #        print("Scaling gradient: ", e_scaling_gradient)
 #        print("Energy per atom: ", energy_per_atom)
-        print("New scaling: ", scaling)
+#        print("New scaling: ", scaling)
         old_energy_per_atom = energy_per_atom
         number_of_iterations += 1
         if energy_per_atom < best_energy_per_atom:

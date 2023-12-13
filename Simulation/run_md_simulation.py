@@ -380,12 +380,12 @@ def high_throughput_mix_and_simulate(config_file, input_traj_dir, element_to_mix
 if __name__ == "__main__":
     mixing_concentrations = np.arange(0, 1, 0.05)
     high_throughput_mix_and_simulate("room_temperature.ini", 'Ni_base', 'Cu', mixing_concentrations,
-                                     'Ni_base_room_temp', True)
+                                     'Ni_base_room_temp', False)
     high_throughput_mix_and_simulate("room_temperature.ini",  'Ni_base', 'Pd', mixing_concentrations,
-                                     'Ni_base_room_temp', True)
+                                     'Ni_base_room_temp', False)
     high_throughput_mix_and_simulate("room_temperature.ini", 'Ni_base', 'Ag', mixing_concentrations,
-                                     'Ni_base_room_temp', True)
+                                     'Ni_base_room_temp', False)
     high_throughput_mix_and_simulate("room_temperature.ini", 'Ni_base', 'Pt', mixing_concentrations,
-                                     'Ni_base_room_temp', True)
+                                     'Ni_base_room_temp', False)
     high_throughput_mix_and_simulate("room_temperature.ini", 'Ni_base', 'Au', mixing_concentrations,
-                                     'Ni_base_room_temp', True)
+                                     'Ni_base_room_temp', False)
