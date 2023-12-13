@@ -400,6 +400,6 @@ if __name__ == "__main__":
     #high_throughput_mix_and_simulate("supercomputer_config.ini", 'Supercomputer_demo', 'Ag', mixing_concentrations,
       #                               'Supercomputer_demo', True)
     traj = Trajectory('/Users/gustavwassback/Documents/CDIO/MD-simulation-CDIO/Gather_data/../' +
-       #               'Output_trajectory_files/Demo_multi_sim/Ni_mixed_into_1728_atoms_of_mp-30.traj', 'r')
+                     'Output_trajectory_files/Demo_multi_sim/Ni_mixed_into_1728_atoms_of_mp-30.traj', 'r')
     #view(traj)
     #run_single_md_simulation("NVE_test_coh_energy.ini", "125_atoms_of_mp-30.traj", "cohesive_ene_fix")

@@ -328,8 +328,9 @@ def initiate_gui():
     rownumber += 1
     plottable_attributes = ["Total Energy", "Kinetic Energy", "Potential Energy", 
                             "Temperature", "Pressure", "Bulk Modulus", "Debye Temperature",
-                            "Optimal Scaling", "Elastic Tensor", "Mean Square Displacement",
-                            "Lindemann Criterion", "Self Diffusion Coefficient"]
+                            "Cohesive energy", "Optimal Scaling", "Elastic Tensor", 
+                            "Mean Square Displacement", "Lindemann Criterion", 
+                            "Self Diffusion Coefficient"]
 
     value_inside_plottable_list = StringVar(gui)
     value_inside_plottable_list.set("Attribute to plot")
@@ -403,6 +404,7 @@ def initiate_gui():
     
     plottable_attributes2 = ["Total Energy", "Kinetic Energy", "Potential Energy", 
                             "Temperature", "Pressure", "Bulk Modulus", "Debye Temperature",
+                            "Cohesive energy",
                             "Optimal Scaling", "Elastic Tensor C11", "Shear Modulus", 
                             "Youngs modulus", "Poisson Ratio", "Mean Square Displacement",
                             "Lindemann Criterion", "Self Diffusion Coefficient",
@@ -772,7 +774,7 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
         record_attribute = "energy"
     elif attribute == "elastic_tensor":
         record_attribute = "elastic"
-    elif attribute == "debye_temperature":
+    elif (attribute == "debye_temperature" or attribute == "cohesive_energy"):
         record_attribute = "bulk_modulus"
  
     x_values = []

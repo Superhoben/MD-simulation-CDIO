@@ -89,6 +89,8 @@ def calculate_cohesive_energy(atoms, output_dict={'cohesive_energy': []}):
 
         # Calculate cohesive energy
         cohesive_energy = (isolated_atoms_potential_energies - total_atoms_potential_energy) / len(atoms)
+        output_dict['cohesive_energy'].append(cohesive_energy)
+
         return cohesive_energy
 
 
