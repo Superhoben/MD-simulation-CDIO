@@ -11,7 +11,7 @@ Welcome to Computational Physics Project's documentation!
    :caption: Contents:
 
 This is the documentation page for the Computational Physics Project in the course TFYA99 at Linköping University.
-To see the documentation for the different modules of the software, click on "index"
+To see the documentation for the different modules of the software, click on "index".
 
 Run the program
 ---------------
