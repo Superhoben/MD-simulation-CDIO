@@ -717,7 +717,7 @@ def visualise_2D(attribute_to_plot, file_to_plot, ax_canvas, text_box, frame, bo
     opened_file.close()
     material_data_dict = json.loads(data)
 
-    config_file = material_data_dict['config_file']
+    config_file = material_data_dict['config_file'][0]
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Input_config_files/' + config_file
     config_data = ConfigParser()
     config_data.read(path)
