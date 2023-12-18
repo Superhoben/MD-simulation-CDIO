@@ -289,7 +289,7 @@ The internal preassure during the simulation is around 0 GPa, which is the case 
 
 Specific heat capacity:
 =======================
-For testing the specific heat capacity, 6 different tests were conducted for NVE as well as NVT ensemble (3 for each ensemble) for the following materials: Copper (Cu), Silver (Ag) and Aluminium (Al). Those tests were simulated on Macbook Pro 13-inch, 2017 personal computer with CPU: Intel 2.3 GHz Dual-Core i5. Simulation time was around 15 minutes per simulation.
+For testing the specific heat capacity, 6 different tests were conducted for NVE as well as NVT ensemble (3 for each ensemble) for the following materials: Copper (Cu), Silver (Ag) and Aluminium (Al). Those tests were simulated on Macbook Pro 13-inch, 2017 personal computer with CPU: Intel 2.3 GHz Dual-Core i5. Simulation time was around 15 minutes per simulation. For additional details, please refer to the "README.txt" file in the GitHub repository path: /MD-simulation-CDIO/Premade_simulation_data/Specific_heat_capacity/. All the simulated files containing the relevant data can be found in the same path mentioned above.
 
 NVE Simulations for the Specific heat capacity
 =======================
@@ -391,10 +391,12 @@ Simulation with the parameters above were run for Copper (Cu), Silver (Ag) and A
      - 736.693
      - 897
 
+The specific heat capacity results for both NVT and NVE ensembles closely align with the reference values. This alignment clarifies that our code is performing as intended. However, the slight deviation from the experimental values can be attributed to various factors. These factors may include the number of atoms simulated, the duration of the simulation, and the frequency of recorded values per number of steps.
+
 
 Time average of Debye temperature:
 =======================
-For testing the Time average of Debye temperature, 6 different tests were conducted for NVE as well as NVT ensemble (3 for each ensemble) for the following materials: Copper (Cu), Silver (Ag) and Aluminium (Al). Those tests were simulated on Macbook Pro 13-inch, 2017 personal computer with CPU: Intel 2.3 GHz Dual-Core i5. Simulation time was around 8 minutes per simulation.
+For testing the Time average of Debye temperature, 6 different tests were conducted for NVE as well as NVT ensemble (3 for each ensemble) for the following materials: Copper (Cu), Silver (Ag) and Aluminium (Al). Those tests were simulated on Macbook Pro 13-inch, 2017 personal computer with CPU: Intel 2.3 GHz Dual-Core i5. Simulation time was around 8 minutes per simulation. For additional details, please refer to the "README.txt" file in the GitHub repository path: /MD-simulation-CDIO/Premade_simulation_data/Debye_temerpature/. All the simulated files containing the relevant data can be found in the same path mentioned above.
 
 NVE Simulations for the Time average of Debye temperature
 =======================
@@ -496,6 +498,8 @@ Simulation with the parameters above were run for Copper (Cu), Silver (Ag) and A
      - 438.527
      - 428
 
+
+The Debye temperature results for both NVT and NVE ensembles do not align well with the reference values. This discrepancy can be attributed to the Debye temperature function, which relies on several variables such as the bulk modulus and the velocity of sound for the simulated elements. Upon closer examination, it is evident that the bulk modulus results, influenced by the equation of states, exhibit a small margin of errors. This error, in turn, affects the Debye temperature and accounts for the observed fluctuations in the results. As mentioned earlier, the accuracy of the results can be marginally improved by considering various factors. These factors may include the number of atoms simulated, the duration of the simulation, and the frequency of recorded values per number of steps.
 
 
 Indices and tables
