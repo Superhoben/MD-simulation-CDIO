@@ -94,7 +94,7 @@ def calculate_cohesive_energy(atoms, output_dict={'cohesive_energy': []}):
 
 
 def calc_elastic(atoms: Atoms, output_dict={'elastic_tensor_c11': [], 'bulk_modulus_from_tensor': [], 'shear_modulus': [], 'youngs_modulus': [], 'poisson_ratio': []}):
-    """Calculate the elastic tensor C11.
+    """Calculate the elastic moduli for an atoms object.
 
     This is somewhat computationally heavy for large systems. Computational
     cost increases exponentially with the size of the system.
