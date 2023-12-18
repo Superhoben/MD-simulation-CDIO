@@ -11,7 +11,6 @@ from ase.md.npt import NPT
 from ase import units
 from ase import Atoms
 from asap3 import EMT, LennardJones
-from ase.calculators.lj import LennardJones
 from ase.md.langevin import Langevin
 from ase.io.trajectory import Trajectory
 from configparser import ConfigParser
@@ -23,6 +22,7 @@ from scipy.spatial.distance import cdist
 from multiprocessing import Process
 from ase.lattice.cubic import FaceCenteredCubic
 from Gather_data.hypothetical_materials import mix_materials
+from ast import literal_eval
 
 def print_and_increase_progress(progress, sim_number):
     """Prints to the terminal how far a simulations has come"""
@@ -72,7 +72,20 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
     elif potential == "LennardJones":
         # Lennard Jones is generally valid for gases and liquid but rarely solids
         # and not metals as far as I understand it //Gustav
-        atoms.calc = LennardJones()
+        custom_LJ_parameters = False
+        try:
+            simulation_settings['elements']
+            simulation_settings['epsilon']
+            simulation_settings['sigma']
+            custom_LJ_parameters = True
+        except:
+            custom_LJ_parameters = False
+
+        if custom_LJ_parameters:
+            atoms.calc = LennardJones(literal_eval(simulation_settings['elements']), literal_eval(simulation_settings['epsilon']), literal_eval(simulation_settings['sigma']))
+        else:
+            from ase.calculators.lj import LennardJones
+            atoms.calc = LennardJones()
     else:
         # TODO: implement running with other potentials, e.g.,:
         # atoms.calc = OtherPotential()
