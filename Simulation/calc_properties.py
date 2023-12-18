@@ -12,19 +12,19 @@ from heapq import nsmallest
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 
 
-def approx_lattice_constant(atoms, number_of_neighbours=4):
-    """Calculates the nearest neighbour distance of a set amount of neighbours.
+def approx_lattice_constant(atoms, number_of_neighbors=4):
+    """Calculates the nearest neighbor distance of a set amount of neighbors.
 
-    This finds the distances to the given amount of nearest neighbours for 
+    This finds the distances to the given amount of nearest neighbors for 
     every atom, summing the results and dividing by the amount of results. During
     the simulations, this will calculate the distance for the four nearest
-    neighbour, which will underestimate the nearest neighbour distances for most
+    neighbors, which will underestimate the nearest neighbor distances for most
     structures. To get a better estimate, this function can be called with the
-    correct amount of nearest neighbours.
+    correct amount of nearest neighbors.
 
     Args:
         atoms(ase atom object): The system to calculate the lattice constant for.
-        number_of_neighbours(int): Number of nearest neighbours to average the
+        number_of_neighbors(int): Number of nearest neighbors to average the
             distance for.
 
     Returns:
@@ -35,10 +35,10 @@ def approx_lattice_constant(atoms, number_of_neighbours=4):
 
     lattice_contributions = 0
     for element in distances_between_atoms:
-        # Since 0 is always present for each atom, we calculate the 5 nearest distances
-        lattice_contributions += sum(nsmallest(number_of_neighbours+1,element))
+        # Since 0 is always present for each atom, we calculate the 1 extra nearest distance
+        lattice_contributions += sum(nsmallest(number_of_neighbors+1,element))
 
-    return lattice_contributions/(number_of_neighbours * len(positions))
+    return lattice_contributions/(number_of_neighbors * len(positions))
 
 
 def calc_temp(atoms: Atoms, output_dict={'temperature': []}):
