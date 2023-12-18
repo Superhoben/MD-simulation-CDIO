@@ -391,3 +391,4 @@ def high_throughput_mix_and_simulate(config_file, input_traj_dir, element_to_mix
 
 
 if __name__ == "__main__":
+    pass
