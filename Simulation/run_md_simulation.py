@@ -6,7 +6,8 @@ from math import ceil
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.visualize import view
-from ase.md.verlet import VelocityVerlet
+#from ase.md.verlet import VelocityVerlet
+from asap3.md.verlet import VelocityVerlet
 from ase.md.npt import NPT
 from ase import units
 from ase import Atoms
