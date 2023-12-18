@@ -41,4 +41,4 @@ jobs:
         sphinx-build . _build 
     - name: Build and deploy documentation
       run: |
-        ghp-import -n -p -f _build
+        ghp-import -n -p -f _build 
