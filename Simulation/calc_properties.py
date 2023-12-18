@@ -12,14 +12,20 @@ from heapq import nsmallest
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 
 
-def approx_lattice_constant(atoms):
-    """Calculate the approximate lattice constant
+def approx_lattice_constant(atoms, number_of_neighbours=4):
+    """Calculates the nearest neighbour distance of a set amount of neighbours.
 
-    This is done by finding the distances to the four nearest neighbours for 
-    every atom, summing the results and dividing by the amount of results
+    This finds the distances to the given amount of nearest neighbours for 
+    every atom, summing the results and dividing by the amount of results. During
+    the simulations, this will calculate the distance for the four nearest
+    neighbour, which will underestimate the nearest neighbour distances for most
+    structures. To get a better estimate, this function can be called with the
+    correct amount of nearest neighbours.
 
     Args:
         atoms(ase atom object): The system to calculate the lattice constant for.
+        number_of_neighbours(int): Number of nearest neighbours to average the
+            distance for.
 
     Returns:
         (float): The approximate lattice constant.
@@ -30,9 +36,9 @@ def approx_lattice_constant(atoms):
     lattice_contributions = 0
     for element in distances_between_atoms:
         # Since 0 is always present for each atom, we calculate the 5 nearest distances
-        lattice_contributions += sum(nsmallest(5,element))
-    
-    return lattice_contributions/(4 * len(positions))
+        lattice_contributions += sum(nsmallest(number_of_neighbours+1,element))
+
+    return lattice_contributions/(number_of_neighbours * len(positions))
 
 
 def calc_temp(atoms: Atoms, output_dict={'temperature': []}):
