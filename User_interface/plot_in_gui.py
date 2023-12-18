@@ -86,7 +86,7 @@ def plot(ax, canvas, x, y, x_lim, y_title):
     if y_title == "Temperature":
         ax.set_ylabel(y_title + " [" + "K" "]")
     elif y_title == "Pressure":
-        ax.set_ylabel(y_title + " [" + "Pa" "]")
+        ax.set_ylabel(y_title + " [" + "GPa" "]")
     ax.set_xlabel("Time [femto seconds]")
     canvas.draw()
 
@@ -107,5 +107,5 @@ def open_window(x, y, x_lim ,y_title):
     if y_title == "Temperature":
         plt.ylabel(y_title + " [" + "K" "]")
     elif y_title == "Pressure":
-        plt.ylabel(y_title + " [" + "Pa" "]")
+        plt.ylabel(y_title + " [" + "GPa" "]")
     plt.show()
