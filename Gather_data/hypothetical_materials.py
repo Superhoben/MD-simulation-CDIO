@@ -39,9 +39,8 @@ def mix_materials(traj_name: str, add_element: str, target_concs, mix_dir_name=F
 
     if mix_dir_name:
         alloy_dir = input_traj_dir_path+mix_dir_name
-        if os.path.exists(alloy_dir):
-            shutil.rmtree(alloy_dir)
-        os.mkdir(alloy_dir)
+        if not os.path.exists(alloy_dir):
+            os.mkdir(alloy_dir)
 
     original_symbols = atoms.get_chemical_symbols()
     mixed_atoms_list = []
