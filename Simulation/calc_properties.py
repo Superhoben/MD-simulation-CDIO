@@ -7,8 +7,8 @@ import sys
 from numpy import linalg as LA
 from ase import units
 import numpy as np
-from scipy.spatial.distance import cdist
 from heapq import nsmallest
+from ase.geometry import get_distances
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 
 
@@ -30,15 +30,15 @@ def approx_lattice_constant(atoms, number_of_neighbors=4):
     Returns:
         (float): The approximate lattice constant.
     """
-    positions = np.array(atoms.get_positions())
-    distances_between_atoms = cdist(positions, positions)
+    distances = atoms.get_all_distances([0])
+    print(distances)
 
     lattice_contributions = 0
-    for element in distances_between_atoms:
+    for element in distances:
         # Since 0 is always present for each atom, we calculate the 1 extra nearest distance
-        lattice_contributions += sum(nsmallest(number_of_neighbors+1,element))
+        lattice_contributions += sum(nsmallest(number_of_neighbors+1, element))
 
-    return lattice_contributions/(number_of_neighbors * len(positions))
+    return lattice_contributions/(number_of_neighbors * len(atoms))
 
 
 def calc_temp(atoms: Atoms, output_dict={'temperature': []}):
@@ -328,3 +328,8 @@ def time_average_of_debye_temperature(atoms: Atoms, output_dict={'debye_temperat
     # time_average_of_debye_temperature = np.mean(output_dict['debye_temperature'])
     return debye_temperature
 
+if __name__ == '__main__':
+    from ase.lattice.cubic import FaceCenteredCubic
+    atoms = FaceCenteredCubic('Cu', size=[8, 8, 8])
+    print(atoms.pbc)
+    print(approx_lattice_constant(atoms, number_of_neighbors=12))
