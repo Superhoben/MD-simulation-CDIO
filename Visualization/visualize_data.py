@@ -90,13 +90,13 @@ def prep_visualization(data_path, x_attribute, y_attribute):
         plt.title(plot_file_label)
         plt.xlabel(x_attribute)
         plt.ylabel(y_attribute)
-        plt.show()
+        #plt.show()
         
         # In case you want to save plots
-        #element = data_path.split("_")[-1]
-        #path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/Plots/' + element + "_base/"
-        #file_name = f"{plot_file_label}_without_outliers_{mod_y_attribute}_{mod_x_attribute}.png" 
-        #plt.savefig(path + file_name)
+        element = data_path.split("_")[-1]
+        path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/Plots/' + element + "_base/"
+        file_name = f"{plot_file_label}_{mod_y_attribute}_{mod_x_attribute}.png" 
+        plt.savefig(path + file_name)
 
     
 if __name__ == "__main__":
