@@ -6,7 +6,7 @@ from ase.lattice.cubic import FaceCenteredCubic, BodyCenteredCubic, SimpleCubic
 from asap3 import EMT
 
 
-def optimize_scaling(atoms, output_dict={'optimal_scaling': []}, learning_rate=0.01):
+def optimize_scaling(atoms, output_dict={'optimal_scaling': []}, learning_rate=0.016):
     """Find the optimal scaling of the lattice constant using a gradient descent method.
 
     The gradient descent method is modified by a sigmoid function since energy changes
@@ -37,7 +37,7 @@ def optimize_scaling(atoms, output_dict={'optimal_scaling': []}, learning_rate=0
     best_energy_per_atom = old_energy_per_atom
     # Improve the lattice constant performing gradient descent until the gradient becomes
     # sufficiently small. A maximum of 100
-    while (abs(e_scaling_gradient) > 0.01) or (number_of_iterations < 3):
+    while (abs(e_scaling_gradient) > 0.002) or (number_of_iterations < 3):
         atoms_scaled = atoms.copy()
         atoms_scaled.calc = atoms.calc
         atoms_scaled.set_cell(atoms.cell*scaling, scale_atoms=True)
@@ -61,7 +61,7 @@ def optimize_scaling(atoms, output_dict={'optimal_scaling': []}, learning_rate=0
 
 
 def optimize_scaling_using_simulation(atoms, simulation_settings: dict,
-                                      output_dict={'optimal_scaling': []}, learning_rate=0.01):
+                                      output_dict={'optimal_scaling': []}, learning_rate=0.016):
     """Find the optimal scaling of the lattice constant using a gradient descent method.
 
     The gradient descent method is modified by a sigmoid function since energy changes
@@ -93,7 +93,7 @@ def optimize_scaling_using_simulation(atoms, simulation_settings: dict,
     best_energy_per_atom = old_energy_per_atom
     # Improve the lattice constant performing gradient descent until the gradient becomes
     # sufficiently small. A maximum of 100
-    while (abs(e_scaling_gradient) > 0.01) or (number_of_iterations < 3):
+    while (abs(e_scaling_gradient) > 0.002) or (number_of_iterations < 3):
         atoms_scaled = atoms.copy()
         # Perhaps we should calculate time average of energy instead of energy at the end
         # of each simulation
