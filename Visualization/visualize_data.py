@@ -45,10 +45,10 @@ def prep_visualization(data_path, x_attribute, y_attribute):
 
     # If user chooses folder to summarize
     else:
+        label = data_path.split("_")
+        plot_file_label = f"{label[-1]} mixed with {label[-2][-2:]}"
         all_data = {}
         for file in os.listdir(data_path):
-            label = f"{file[0:2]} mixed with:"
-            plot_file_label = f"{file[0:2]}_mixed_with"
             if file[-4:] == ".txt":
                 opened_file = open(data_path + "/" + file, 'r')
                 data = opened_file.readline()
@@ -87,7 +87,7 @@ def prep_visualization(data_path, x_attribute, y_attribute):
             plt.scatter(x_vals, y_vals, label=element)
 
         plt.legend(loc="best")
-        plt.title(label)
+        plt.title(plot_file_label)
         plt.xlabel(x_attribute)
         plt.ylabel(y_attribute)
         plt.show()
@@ -95,7 +95,7 @@ def prep_visualization(data_path, x_attribute, y_attribute):
         # In case you want to save plots
         #element = data_path.split("_")[-1]
         #path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/Plots/' + element + "_base/"
-        #file_name = f"{plot_file_label}_{element}_{mod_y_attribute}_{mod_x_attribute}.png" 
+        #file_name = f"{plot_file_label}_without_outliers_{mod_y_attribute}_{mod_x_attribute}.png" 
         #plt.savefig(path + file_name)
 
     
