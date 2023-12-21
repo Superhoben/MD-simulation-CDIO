@@ -214,7 +214,6 @@ def calc_mean_square_displacement(atoms: Atoms, output_dict={'mean_square_displa
     MSD = 0
 
     if output_dict['mean_square_displacement'] == []:
-        # Append initial position array which is used for all future iterations
         output_dict['mean_square_displacement'].append(positions)
     else:
         atom_pos_diffs = positions-output_dict['mean_square_displacement'][0]

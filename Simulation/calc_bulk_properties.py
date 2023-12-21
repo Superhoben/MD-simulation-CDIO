@@ -41,11 +41,10 @@ def calc_bulk_modulus(atoms: Atoms, output_dict={'bulk_modulus': []}):
     # Equation of state
     try:
         eos = EquationOfState(volumes, energies)
-        v0, e0, B = eos.fit()
+        _, _, B = eos.fit()
         B = B / kJ * 1.0e24
     except:
-        B = 0
-    # print(B, "GPa")
+        B = 0 # Means that bulk calculation failed
     output_dict['bulk_modulus'].append(B)
     return B
 
@@ -71,8 +70,8 @@ def calculate_cohesive_energy(atoms, output_dict={'cohesive_energy': []}):
         cohesive_energy = atoms.get_potential_energy()
         return cohesive_energy
     else:
-        # Get the current calculator for the atoms objectmolecule
-        original_calculator = atoms.get_calculator()
+        # Get the current calculator for the atoms object molecule
+        original_calculator = atoms.calc
 
         # Get the potential energy for the entire atoms object as whole:
         total_atoms_potential_energy = atoms.get_potential_energy()
@@ -81,15 +80,16 @@ def calculate_cohesive_energy(atoms, output_dict={'cohesive_energy': []}):
         # Loop for calculating the potential energy of each atom in the atoms object
         isolated_atoms_potential_energies = 0
         for i in range(len(atoms)):
-            isolated_atom = Atoms([atoms[i]])
+            isolated_atom = Atoms([atoms[i]], cell=[1, 1, 1], pbc=False)
             # Set the  original calculator for the isolated atom
-            isolated_atom.set_calculator(original_calculator)
+            isolated_atom.calc = original_calculator
             isolated_atom_potential_energy = isolated_atom.get_potential_energy()
             isolated_atoms_potential_energies += isolated_atom_potential_energy
-        # print("isolated_atoms_potential_energies "+ str(isolated_atoms_potential_energies))
 
         # Calculate cohesive energy
         cohesive_energy = (isolated_atoms_potential_energies - total_atoms_potential_energy) / len(atoms)
+        output_dict['cohesive_energy'].append(cohesive_energy)
+
         return cohesive_energy
 
 
