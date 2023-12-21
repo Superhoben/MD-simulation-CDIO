@@ -21,6 +21,7 @@ from ase import units
 from API_key import start_program
 import json
 import numpy as np
+from ase.visualize import view
 
 
 opened_file_NVE = open("Tests/SimulationOutputs/NVE_300K_for_testing.txt", "r")
@@ -126,7 +127,7 @@ class UnitTests(unittest.TestCase):
     def test_MSD_lindemann_diffusion(self):
         atom1 = FaceCenteredCubic(symbol="Cu", size=(10, 10, 10), pbc=True)
 
-        d = approx_lattice_constant(atom1)
+        d = approx_lattice_constant(atom1, 12)
 
         dict1 = {'potential': 'EMT', 'ensemble': 'NVT', 'temperature': 300, 
                  'step_number': 1000, 'time_step': 1, 'friction': 0.005}
@@ -166,10 +167,10 @@ class UnitTests(unittest.TestCase):
     def test_approx_lattice(self):
         # Lattice constant for Cu (fcc) is 3.61 Å, which gives a nearest neighbor distance of 2.55 Å
         atoms = FaceCenteredCubic(symbol="Cu", size=(5, 5, 5), pbc=True)
-        self.assertTrue(2.4 <= approx_lattice_constant(atoms) <= 2.7)
+        self.assertTrue(2.4 <= approx_lattice_constant(atoms, 12) <= 2.7)
         # Lattice constant for Ag (fcc) is 4.09 Å, which gives a nearest neighbor distance of 2.89 Å
         atoms = FaceCenteredCubic(symbol="Ag", size=(5, 5, 5), pbc=True)
-        self.assertTrue(2.8 <= approx_lattice_constant(atoms) <= 3.05)
+        self.assertTrue(2.8 <= approx_lattice_constant(atoms, 12) <= 3.05)
 
 
     def test_internal_pressure(self):
@@ -285,7 +286,7 @@ class UnitTests(unittest.TestCase):
         ## Self-diffusion coefficient
         avg_self_diffusion = np.average(material_data_dict['self_diffusion_coefficient'][21:])
         self.assertTrue(avg_self_diffusion < 0.001)
-        
+
         avg_debye_temperature = np.average(material_data_dict['debye_temperature'][3:])
         self.assertTrue(330 < avg_debye_temperature < 530)
 
@@ -296,9 +297,9 @@ class UnitTests(unittest.TestCase):
         path_to_traj_folder = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files'
         traj = Trajectory(path_to_traj_folder + "/ValidationTests/NVT_Cu_validation_test.traj", 'r')
         atoms = traj[-1]
-        nearest_neighbour_distance = approx_lattice_constant(atoms)
-        self.assertTrue(2.4 < nearest_neighbour_distance < 2.7)
-        # We get a value of 2.46, that is a lattice constant of 3.47 Å (Expected 3.61 Å)
+        nearest_neighbour_distance = approx_lattice_constant(atoms, 12)
+        self.assertTrue(2.45 < nearest_neighbour_distance < 2.65)
+        # We get a value of 2.54, that is a lattice constant of 3.59 Å (Expected 3.61 Å)
 
 
     def test_simulations_for_validating_code_NVT_Ag(self):
@@ -387,10 +388,9 @@ class UnitTests(unittest.TestCase):
         path_to_traj_folder = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files'
         traj = Trajectory(path_to_traj_folder + "/ValidationTests/NVT_Ag_validation_test.traj", 'r')
         atoms = traj[-1]
-        nearest_neighbour_distance = approx_lattice_constant(atoms)
-        self.assertTrue(2.7 < nearest_neighbour_distance < 3)
-        # We get a value of 2.78, that is a lattice constant of 3.94 Å (Expected 4.086 Å)
-
+        nearest_neighbour_distance = approx_lattice_constant(atoms, 12)
+        self.assertTrue(2.79 < nearest_neighbour_distance < 2.99)
+        # We get a value of 2.87, that is a lattice constant of 4.06 Å (Expected 4.086 Å)
 
     def test_simulations_for_validating_code_NVE_Cu(self):
         # In this test requirements 32-35 will all be validated by running 4 large simulations
@@ -407,8 +407,8 @@ class UnitTests(unittest.TestCase):
         traj.write(atoms)
 
         #run_single_md_simulation("NVE_validation_test.ini",
-         #                        "NVE_Cu_validation_test.traj",
-          #                       "ValidationTests/NVE_Cu_validation_test")
+        #                         "NVE_Cu_validation_test.traj",
+        #                         "ValidationTests/NVE_Cu_validation_test")
         # The simulation results are saved as Cu_validation_test in the ValidationTests
         # folder in Output_traj_files and Output_text_files
 
@@ -480,10 +480,8 @@ class UnitTests(unittest.TestCase):
         traj = Trajectory(path_to_traj_folder + "/ValidationTests/NVT_Cu_validation_test.traj", 'r')
         atoms = traj[-1]
         nearest_neighbour_distance = approx_lattice_constant(atoms, 12)
-        print(nearest_neighbour_distance)
-        self.assertTrue(2.4 < nearest_neighbour_distance < 2.7)
-        # We get a value of ___, that is a lattice constant of ___ Å (Expected 3.61 Å)
-
+        self.assertTrue(2.45 < nearest_neighbour_distance < 2.65)
+        # We get a value of 2.54, that is a lattice constant of 3.59 Å (Expected 3.61 Å)
 
     def test_simulations_for_validating_code_NVE_Au(self):
         # In this test requirements 32-35 will all be validated by running 4 large simulations
@@ -500,8 +498,8 @@ class UnitTests(unittest.TestCase):
         traj.write(atoms)
 
         #run_single_md_simulation("NVE_validation_test.ini",
-         #                        "NVE_Au_validation_test.traj",
-          #                       "ValidationTests/NVE_Au_validation_test")
+        #                         "NVE_Au_validation_test.traj",
+        #                         "ValidationTests/NVE_Au_validation_test")
         # The simulation results are saved as Cu_validation_test in the ValidationTests
         # folder in Output_traj_files and Output_text_files
 
@@ -574,10 +572,9 @@ class UnitTests(unittest.TestCase):
         path_to_traj_folder = os.path.dirname(os.path.abspath(__file__)) + '/../Output_trajectory_files'
         traj = Trajectory(path_to_traj_folder + "/ValidationTests/NVE_Au_validation_test.traj", 'r')
         atoms = traj[-1]
-        nearest_neighbour_distance = approx_lattice_constant(atoms)
-        self.assertTrue(2.5 < nearest_neighbour_distance < 2.9)
-        # We get a value of 2.77, that is a lattice constant of 3.92 Å (Expected 4.078 Å)
-
+        nearest_neighbour_distance = approx_lattice_constant(atoms, 12)
+        self.assertTrue(2.78 < nearest_neighbour_distance < 2.98)
+        # We get a value of 2.86, that is a lattice constant of 4.05 Å (Expected 4.08 Å)
 
     def test_GUI(self):
         # There will be further testing when other methods connected to the gui has been developed.
@@ -827,10 +824,10 @@ class UnitTests(unittest.TestCase):
     def test_lattice_constant(self):
         # Lattice constant for Cu (fcc) is 3.61 Å, which gives a nearest neighbor distance of 2.55 Å
         atom_Cu = FaceCenteredCubic(symbol="Cu", size=(5, 5, 5), pbc=True)
-        self.assertTrue(2.4 <= approx_lattice_constant(atom_Cu) <= 2.7)
+        self.assertTrue(2.4 <= approx_lattice_constant(atom_Cu, 12) <= 2.7)
         # Lattice constant for Ag (fcc) is 4.09 Å, which gives a nearest neighbor distance of 2.89 Å
         atom_Ag = FaceCenteredCubic(symbol="Ag", size=(5, 5, 5), pbc=True)
-        self.assertTrue(2.8 <= approx_lattice_constant(atom_Ag) <= 3.05)
+        self.assertTrue(2.8 <= approx_lattice_constant(atom_Ag, 12) <= 3.05)
 
         dict1 = {'potential': 'EMT', 'ensemble': 'NVT', 'temperature': 300, 
                  'step_number': 2000, 'time_step': 1, 'friction': 0.005}
@@ -840,10 +837,11 @@ class UnitTests(unittest.TestCase):
                     'self_diffusion_coefficient': [0]}
 
         mod_atom_Cu = run_simple_md_simulation(atom_Cu, dict1)
-        self.assertTrue(2.3 <= approx_lattice_constant(mod_atom_Cu) <= 2.7)
+        self.assertTrue(2.3 <= approx_lattice_constant(mod_atom_Cu, 12) <= 2.7)
         mod_atom_Ag = run_simple_md_simulation(atom_Ag, dict1)
-        self.assertTrue(2.7 <= approx_lattice_constant(mod_atom_Ag) <= 3.05)
+        self.assertTrue(2.7 <= approx_lattice_constant(mod_atom_Ag, 12) <= 3.05)
 
+        # NEEDS UPDATING
         # The nearest neighbour distance varied between 2.48-2.39 for Copper and
         # between 2.81-2.70 for Gold when varying temperature between 300-1900 K.
         # That is lattice constant for Cu: 3.50-3.37 Å and Ag: 3.97-3.81 Å.

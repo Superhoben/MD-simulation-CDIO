@@ -30,8 +30,7 @@ def approx_lattice_constant(atoms, number_of_neighbors=4):
     Returns:
         (float): The approximate lattice constant.
     """
-    distances = atoms.get_all_distances([0])
-    print(distances)
+    distances = atoms.get_all_distances(True)
 
     lattice_contributions = 0
     for element in distances:
