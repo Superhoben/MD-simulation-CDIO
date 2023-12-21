@@ -2,11 +2,11 @@ import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 from Simulation import simple_simulation
-from ase.lattice.cubic import FaceCenteredCubic
+from ase.lattice.cubic import FaceCenteredCubic, BodyCenteredCubic, SimpleCubic
 from asap3 import EMT
 
 
-def optimize_scaling(atoms, output_dict={'optimal_scaling': [], 'iterations_to_find_scaling': []}, learning_rate=0.05):
+def optimize_scaling(atoms, output_dict={'optimal_scaling': []}, learning_rate=0.016):
     """Find the optimal scaling of the lattice constant using a gradient descent method.
 
     The gradient descent method is modified by a sigmoid function since energy changes
@@ -20,12 +20,12 @@ def optimize_scaling(atoms, output_dict={'optimal_scaling': [], 'iterations_to_f
 
     Args:
         atoms(ASE atoms object): The configuration to find an optimal lattice constant for
-        output_dict(dict): Dictionary to append the result to.
+            output_dict(dict): Dictionary to append the result to.
         learning_rate(float): The scaling converges quicker for larger values but if
-             it's too large the scaling will oscillate and not converge at all
+            it's too large the scaling will oscillate and not converge at all
 
     Returns:
-        scaling(float): Return the scaling factor which would give the inputed atoms object
+        scaling(float): Return the scaling factor which would give the input atoms object
             the lowest possible energy
     """
     old_scaling = 1
@@ -37,7 +37,7 @@ def optimize_scaling(atoms, output_dict={'optimal_scaling': [], 'iterations_to_f
     best_energy_per_atom = old_energy_per_atom
     # Improve the lattice constant performing gradient descent until the gradient becomes
     # sufficiently small. A maximum of 100
-    while (abs(e_scaling_gradient) > 0.01) or (number_of_iterations < 3):
+    while (abs(e_scaling_gradient) > 0.002) or (number_of_iterations < 3):
         atoms_scaled = atoms.copy()
         atoms_scaled.calc = atoms.calc
         atoms_scaled.set_cell(atoms.cell*scaling, scale_atoms=True)
@@ -57,13 +57,11 @@ def optimize_scaling(atoms, output_dict={'optimal_scaling': [], 'iterations_to_f
             scaling = best_scaling
             break
     output_dict['optimal_scaling'].append(scaling)
-    output_dict['iterations_to_find_scaling'].append(number_of_iterations)
-    atoms.set_cell(atoms.cell*scaling, scale_atoms=True)
     return scaling
 
 
 def optimize_scaling_using_simulation(atoms, simulation_settings: dict,
-                                      output_dict={'optimal_scaling': [], 'iterations_to_find_scaling': []}, learning_rate=0.05):
+                                      output_dict={'optimal_scaling': []}, learning_rate=0.016):
     """Find the optimal scaling of the lattice constant using a gradient descent method.
 
     The gradient descent method is modified by a sigmoid function since energy changes
@@ -95,10 +93,10 @@ def optimize_scaling_using_simulation(atoms, simulation_settings: dict,
     best_energy_per_atom = old_energy_per_atom
     # Improve the lattice constant performing gradient descent until the gradient becomes
     # sufficiently small. A maximum of 100
-    while (abs(e_scaling_gradient) > 0.01) or (number_of_iterations < 3):
+    while (abs(e_scaling_gradient) > 0.002) or (number_of_iterations < 3):
         atoms_scaled = atoms.copy()
         # Perhaps we should calculate time average of energy instead of energy at the end
-        # of each simulation.
+        # of each simulation
         atoms_scaled.calc = atoms.calc
         atoms_scaled.set_cell(atoms.cell*scaling, scale_atoms=True)
         atoms_scaled, energy_per_atom = simple_simulation.run_simple_md_simulation(atoms_scaled, simulation_settings, True)
@@ -117,11 +115,21 @@ def optimize_scaling_using_simulation(atoms, simulation_settings: dict,
             scaling = best_scaling
             break
     output_dict['optimal_scaling'].append(scaling)
-    output_dict['iterations_to_find_scaling'].append(number_of_iterations)
     return scaling
 
 
 if __name__ == "__main__":
-    atoms = FaceCenteredCubic(size=(2, 2, 3), symbol='Cu', pbc=(1, 1, 0))
-    atoms.calc = EMT()
-    optimize_scaling(atoms, {'optimal_scaling': [], 'iterations_to_find_scaling': []})
+    atoms1 = FaceCenteredCubic(size=(8, 8, 8), symbol='Cu', pbc=True, latticeconstant=3)
+    atoms2 = BodyCenteredCubic(size=(8, 8, 8), symbol='Cu', pbc=True, latticeconstant=3)
+    atoms3 = SimpleCubic(size=(8, 8, 8), symbol='Cu', pbc=True, latticeconstant=3)
+    atoms1.calc = EMT()
+    atoms2.calc = EMT()
+    atoms3.calc = EMT()
+    result_dict = {'optimal_scaling': []}
+    print("Run1")
+    optimize_scaling(atoms1, result_dict)
+    print("Run2")
+    optimize_scaling(atoms2, result_dict)
+    print("Run3")
+    optimize_scaling(atoms3, result_dict)
+    print(result_dict)

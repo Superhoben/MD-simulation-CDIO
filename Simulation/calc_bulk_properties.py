@@ -45,7 +45,6 @@ def calc_bulk_modulus(atoms: Atoms, output_dict={'bulk_modulus': []}):
         B = B / kJ * 1.0e24
     except:
         B = 0 # Means that bulk calculation failed
-    # print(B, "GPa")
     output_dict['bulk_modulus'].append(B)
     return B
 
