@@ -6,7 +6,8 @@ from math import ceil
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/..')
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 from ase.visualize import view
-from ase.md.verlet import VelocityVerlet
+#from ase.md.verlet import VelocityVerlet
+from asap3.md.verlet import VelocityVerlet
 from ase.md.npt import NPT
 from ase import units
 from ase import Atoms
@@ -23,6 +24,7 @@ from multiprocessing import Process
 from ase.lattice.cubic import FaceCenteredCubic
 from Gather_data.hypothetical_materials import mix_materials
 from ast import literal_eval
+from numpy import average
 
 def print_and_increase_progress(progress, sim_number):
     """Prints to the terminal how far a simulations has come"""
@@ -200,6 +202,21 @@ def run_single_md_simulation(config_file: str, traj_file: str, output_name: str,
 
     if int(recording_intervals['record_mean_square_displacement']):
         output_dict['mean_square_displacement'][0] = 0
+
+    # Time averages of MSD, Lindemann, self-diffusion. We only want to average over values
+    # after the simulation has reached equilibrium, and we do not know when this happens.
+    # Due to limited time, this is a quick solution that just assumes simulation has reached
+    # equillibrium after 80% of the simulation is finished. It would be much better to
+    # actually add an equillibrium check, so that we are not throwing out perfectly good
+    # data.
+    if interval_to_record_lindemann_criterion:
+        output_dict['time_avg_lindemann_criterion'] = [average(output_dict['lindemann_criterion'][len(output_dict['lindemann_criterion'])*0.8:])]
+
+    if interval_to_record_mean_square_displacement:
+        output_dict['time_avg_mean_square_displacement'] = [average(output_dict['mean_square_displacement'][len(output_dict['mean_square_displacement'])*0.8:])]
+
+    if interval_to_record_self_diffusion_coefficient:
+        output_dict['time_avg_self_diffusion_coefficient'] = [average(output_dict['self_diffusion_coefficient'][len(output_dict['self_diffusion_coefficient'])*0.8:])]
 
     path = os.path.dirname(os.path.abspath(__file__)) + '/../Output_text_files/'
     with open(path + output_name + '.txt', 'w') as file:

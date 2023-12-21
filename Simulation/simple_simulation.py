@@ -1,6 +1,6 @@
 """This is intended for relaxing structures during property calculations."""
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
-from ase.md.verlet import VelocityVerlet
+from asap3.md.verlet import VelocityVerlet
 from ase import units
 from ase import Atoms
 from asap3 import EMT, LennardJones
