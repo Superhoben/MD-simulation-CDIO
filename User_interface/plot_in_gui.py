@@ -105,7 +105,7 @@ def open_window(x, y, x_lim ,y_title):
     plt.xlim(0, x_lim)
     plt.xlabel("Time [femto seconds]")
     if y_title == "Temperature":
-        plt.ylabel(y_title + " [" + "K" "]") 
+        plt.ylabel(y_title + " [" + "K" "]")
     elif y_title == "Pressure":
         plt.ylabel(y_title + " [" + "GPa" "]")
     plt.show()
