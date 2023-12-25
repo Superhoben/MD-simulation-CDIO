@@ -38,7 +38,10 @@ def initiate_gui():
     # Define Tkinter window
     gui = Tk()
     gui.title("Molecular Dynamics simulations")
-    gui.geometry("1200x900")
+    if sys.platform == "linux" or sys.platform == "win32":
+        gui.geometry("1200x900")
+    else:
+        gui.geometry("1600x900")
     gui.resizable(width=False, height=False)
 
     # 
@@ -57,7 +60,10 @@ def initiate_gui():
 
     tabs = ttk.Notebook(plot_frame)
     tabs.pack()
-    tabframe1 = Frame(tabs, height=800, width=600, bg="SkyBlue1")
+    if sys.platform == "linux" or sys.platform == "win32":
+        tabframe1 = Frame(tabs, height=800, width=600, bg="SkyBlue1")
+    else:
+        tabframe1 = Frame(tabs, height=800, width=1000, bg="SkyBlue1")
     tabframe1.pack_propagate(False)
     tabframe1.grid_propagate(False)
     tabframe1.pack(expand=True, fill=BOTH)
@@ -72,7 +78,10 @@ def initiate_gui():
     
     tabs2 = ttk.Notebook(data_frame)
     tabs2.pack()
-    tabframe3 = Frame(tabs2, height=900, width=600, bg="medium aquamarine")
+    if sys.platform == "linux" or sys.platform == "win32":
+        tabframe3 = Frame(tabs2, height=800, width=600, bg="medium aquamarine")
+    else:
+        tabframe3 = Frame(tabs2, height=800, width=1000, bg="medium aquamarine")
     tabframe3.pack_propagate(False)
     tabframe3.grid_propagate(False)
     tabframe3.pack(expand=True, fill=BOTH)
