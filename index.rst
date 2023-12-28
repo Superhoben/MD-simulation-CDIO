@@ -95,7 +95,7 @@ Simulation with the parameters above were run for fcc copper, Cu, with lattice c
      - 5e-5
      - Low
    * - Lattice constant [Å]
-     - 3.47
+     - 3.59
      - 3.61
 
 Below is a graph of the total energy from the simulation. As we can see, the total energy varies a bit in the beginning, but after a while it becomes pretty much constant, indicating that the simulation has reached equillibrium.
@@ -151,8 +151,8 @@ Simulation with the same parameters were run for fcc silver (Ag) with lattice co
      - 0.0001
      - Low
    * - Lattice constant [Å]
-     - 4.05
-     - 4.08
+     - 4.063
+     - 4.086
 
 
 NVE Simulations
@@ -226,13 +226,13 @@ Simulation with the parameters above were run for fcc copper, Cu, with lattice c
      - 5e-5
      - Low
    * - Lattice constant [Å]
-     - 3.47
+     - 3.59
      - 3.61
 
 
 Simulation with the same parameters were run for fcc gold (Au) with lattice constant 4.08 Å, which is the naturally occurring state of gold. The supercell contained 1000 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. Reference values for bulk modulus, shear modulus, youngs modulus and lattice constant are from Physics Handbook. Pressure is expected to be zero because the volume should be optimized. Mean square displacement, Lindemann coefficient and diffusion coefficient are all expected to be low because 500 K is well below the melting temperature for gold (1337 K). The lattice constant is calculated from the nearest neighbor distance. Because this is an fcc structure, the 12 nearest neighbors of each atom was taken into account.
 
-.. list-table:: NVT Gold properties
+.. list-table:: NVE Gold properties
    :widths: 33 33 33
    :header-rows: 1
 
