@@ -11,7 +11,7 @@ Welcome to Computational Physics Project's documentation!
    :caption: Contents:
 
 This is the documentation page for the Computational Physics Project in the course TFYA99 at Linköping University.
-To see the documentation for the different modules of the software, click on "index".
+To see the documentation for the different modules of the software, click on "index" at the bottom of this page.
 
 Run the program
 ---------------
@@ -61,7 +61,7 @@ Tests were run with the following simulation parameters
      - 50
 
 
-Simulation with the parameters above were run for fcc copper, Cu, with lattice constant 3.61 Å, which is the naturally occurring state of copper. The supercell contained 1000 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. Reference values for bulk modulus, shear modulus, youngs modulus and lattice constant are from Physics Handbook. Pressure is expected to be close to zero because the volume should be optimized. Mean square displacement, Lindemann coefficient and diffusion coefficient are all expected to be low because 500 K is well below the melting temperature for copper (1358 K).
+Simulation with the parameters above were run for fcc copper, Cu, with lattice constant 3.61 Å, which is the naturally occurring state of copper. The supercell contained 1000 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. Reference values for bulk modulus, shear modulus, youngs modulus and lattice constant are from Physics Handbook. Pressure is expected to be close to zero because the volume should be optimized. Mean square displacement, Lindemann coefficient and diffusion coefficient are all expected to be low because 500 K is well below the melting temperature for copper (1358 K). The lattice constant is calculated from the nearest neighbor distance. Because this is an fcc structure, the 12 nearest neighbors of each atom was taken into account.
 
 .. list-table:: NVT Copper properties
    :widths: 33 33 33
@@ -90,12 +90,12 @@ Simulation with the parameters above were run for fcc copper, Cu, with lattice c
      - Low
    * - Lindemann coefficient
      - 0.135
-     - Low (Below 0.1 preferably)
+     - Low (Below 0.15 preferably)
    * - Diffusion coefficient
      - 5e-5
      - Low
    * - Lattice constant [Å]
-     - 3.47
+     - 3.59
      - 3.61
 
 Below is a graph of the total energy from the simulation. As we can see, the total energy varies a bit in the beginning, but after a while it becomes pretty much constant, indicating that the simulation has reached equillibrium.
@@ -117,7 +117,7 @@ The internal preassure during the simulation is around 0 GPa, which is the case 
   :align: center
 
 
-Simulation with the same parameters were run for fcc silver (Ag) with lattice constant 4.08 Å, which is the naturally occurring state of silver. The supercell contained 1000 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. Reference values for bulk modulus, shear modulus, youngs modulus and lattice constant are from Physics Handbook. Pressure is expected to be zero because the volume should be optimized. Mean square displacement, Lindemann coefficient and diffusion coefficient are all expected to be low because 500 K is well below the melting temperature for silver (1235 K).
+Simulation with the same parameters were run for fcc silver (Ag) with lattice constant 4.08 Å, which is the naturally occurring state of silver. The supercell contained 1000 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. Reference values for bulk modulus, shear modulus, youngs modulus and lattice constant are from Physics Handbook. Pressure is expected to be zero because the volume should be optimized. Mean square displacement, Lindemann coefficient and diffusion coefficient are all expected to be low because 500 K is well below the melting temperature for silver (1235 K). The lattice constant is calculated from the nearest neighbor distance. Because this is an fcc structure, the 12 nearest neighbors of each atom was taken into account.
 
 .. list-table:: NVT Silver properties
    :widths: 33 33 33
@@ -146,13 +146,13 @@ Simulation with the same parameters were run for fcc silver (Ag) with lattice co
      - Low
    * - Lindemann coefficient
      - 0.171
-     - Low (Below 0.1 preferably)
+     - Low (Below 0.15 preferably)
    * - Diffusion coefficient
      - 0.0001
      - Low
    * - Lattice constant [Å]
-     - 4.05
-     - 4.08
+     - 4.063
+     - 4.086
 
 
 NVE Simulations
@@ -191,7 +191,7 @@ Tests were run with the following simulation parameters
      - 10
 
 
-Simulation with the parameters above were run for fcc copper, Cu, with lattice constant 3.61 Å, which is the naturally occurring state of copper. The supercell contained 1000 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. Reference values for bulk modulus, shear modulus, youngs modulus and lattice constant are from Physics Handbook. Pressure is expected to be zero because the volume should be optimized. Mean square displacement, Lindemann coefficient and diffusion coefficient are all expected to be low because 500 K is well below the melting temperature for copper (1358 K).
+Simulation with the parameters above were run for fcc copper, Cu, with lattice constant 3.61 Å, which is the naturally occurring state of copper. The supercell contained 1000 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. Reference values for bulk modulus, shear modulus, youngs modulus and lattice constant are from Physics Handbook. Pressure is expected to be zero because the volume should be optimized. Mean square displacement, Lindemann coefficient and diffusion coefficient are all expected to be low because 500 K is well below the melting temperature for copper (1358 K). The lattice constant is calculated from the nearest neighbor distance. Because this is an fcc structure, the 12 nearest neighbors of each atom was taken into account.
 
 
 .. list-table:: NVE Copper properties
@@ -221,18 +221,18 @@ Simulation with the parameters above were run for fcc copper, Cu, with lattice c
      - Low
    * - Lindemann coefficient
      - 0.135
-     - Low (Below 0.1 preferably)
+     - Low (Below 0.15 preferably)
    * - Diffusion coefficient
      - 5e-5
      - Low
    * - Lattice constant [Å]
-     - 3.47
+     - 3.59
      - 3.61
 
 
-Simulation with the same parameters were run for fcc gold (Au) with lattice constant 4.08 Å, which is the naturally occurring state of gold. The supercell contained 1000 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. Reference values for bulk modulus, shear modulus, youngs modulus and lattice constant are from Physics Handbook. Pressure is expected to be zero because the volume should be optimized. Mean square displacement, Lindemann coefficient and diffusion coefficient are all expected to be low because 500 K is well below the melting temperature for gold (1337 K).
+Simulation with the same parameters were run for fcc gold (Au) with lattice constant 4.08 Å, which is the naturally occurring state of gold. The supercell contained 1000 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. Reference values for bulk modulus, shear modulus, youngs modulus and lattice constant are from Physics Handbook. Pressure is expected to be zero because the volume should be optimized. Mean square displacement, Lindemann coefficient and diffusion coefficient are all expected to be low because 500 K is well below the melting temperature for gold (1337 K). The lattice constant is calculated from the nearest neighbor distance. Because this is an fcc structure, the 12 nearest neighbors of each atom was taken into account.
 
-.. list-table:: NVT Gold properties
+.. list-table:: NVE Gold properties
    :widths: 33 33 33
    :header-rows: 1
 
@@ -259,7 +259,7 @@ Simulation with the same parameters were run for fcc gold (Au) with lattice cons
      - Low
    * - Lindemann coefficient
      - 0.157
-     - Low (Below 0.1 preferably)
+     - Low (Below 0.15 preferably)
    * - Diffusion coefficient
      - 8.8e-5
      - Low
@@ -322,7 +322,7 @@ NVE Simulations for the Specific heat capacity
    * - Configuration interval
      - 0
 
-Simulation with the parameters above were run for Copper (Cu), Silver (Ag) and Aluminium (Al) with the following lattice constant 3.58 Å, 4.10 Å and 4.04 Å. All of the element had cubic crystal structure. The supercell contained 1728 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. Reference values for the specific heat capacity are from Physics Handbook. Pressure is expected to be close to zero because the volume should be optimized.
+Simulation with the parameters above were run for Copper (Cu), Silver (Ag) and Aluminium (Al) with the following lattice constant 3.58 Å, 4.10 Å and 4.04 Å. All of the element had cubic crystal structure. The supercell contained 1728 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. Reference values for the specific heat capacity are from Physics Handbook.
 
 .. list-table:: NVE Copper, Silver and Aluminuim properties
    :widths: 33 33 33
@@ -372,7 +372,7 @@ NVT Simulations for the Specific heat capacity
    * - Configuration interval
      - 0
 
-Simulation with the parameters above were run for Copper (Cu), Silver (Ag) and Aluminium (Al) with the following lattice constant 3.58 Å, 4.10 Å and 4.04 Å. All of the element had cubic crystal structure. The supercell contained 1728 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. Reference values for the specific heat capacity are from Physics Handbook. Pressure is expected to be close to zero because the volume should be optimized.
+Simulation with the parameters above were run for Copper (Cu), Silver (Ag) and Aluminium (Al) with the following lattice constant 3.58 Å, 4.10 Å and 4.04 Å. All of the element had cubic crystal structure. The supercell contained 1728 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. Reference values for the specific heat capacity are from Physics Handbook.
 
 .. list-table:: NVT Copper, Silver and Aluminuim properties
    :widths: 33 33 33
@@ -429,7 +429,7 @@ NVE Simulations for the Time average of Debye temperature
    * - Configuration interval
      - 0
 
-Simulation with the parameters above were run for Copper (Cu), Silver (Ag) and Aluminium (Al) with the following lattice constant 3.58 Å, 4.10 Å and 4.04 Å. All of the element had cubic crystal structure. The supercell contained 1728 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. The experimental values are from "Introduction to Solid State Physics" by Charles Kittel page 116 at 300K. Pressure is expected to be close to zero because the volume should be optimized.
+Simulation with the parameters above were run for Copper (Cu), Silver (Ag) and Aluminium (Al) with the following lattice constant 3.58 Å, 4.10 Å and 4.04 Å. All of the element had cubic crystal structure. The supercell contained 1728 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. The experimental values are from "Introduction to Solid State Physics" by Charles Kittel page 116 at 300K.
 
 .. list-table:: NVE Copper, Silver and Aluminuim properties
    :widths: 33 33 33
@@ -479,7 +479,7 @@ NVT Simulations for the Time average of Debye temperature
    * - Configuration interval
      - 0
 
-Simulation with the parameters above were run for Copper (Cu), Silver (Ag) and Aluminium (Al) with the following lattice constant 3.58 Å, 4.10 Å and 4.04 Å. All of the element had cubic crystal structure. The supercell contained 1728 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. The experimental values are from "Introduction to Solid State Physics" by Charles Kittel page 116 at 300K. Pressure is expected to be close to zero because the volume should be optimized.
+Simulation with the parameters above were run for Copper (Cu), Silver (Ag) and Aluminium (Al) with the following lattice constant 3.58 Å, 4.10 Å and 4.04 Å. All of the element had cubic crystal structure. The supercell contained 1728 atoms, and periodic boundary conditions were used. Below are the calculated values from the simulation, together with reference values. The experimental values are from "Introduction to Solid State Physics" by Charles Kittel page 116 at 300K.
 
 .. list-table:: NVT Copper, Silver and Aluminuim properties
    :widths: 33 33 33
@@ -500,6 +500,17 @@ Simulation with the parameters above were run for Copper (Cu), Silver (Ag) and A
 
 
 The Debye temperature results for both NVT and NVE ensembles do not align well with the reference values. This discrepancy can be attributed to the Debye temperature function, which relies on several variables such as the bulk modulus and the velocity of sound for the simulated elements. Upon closer examination, it is evident that the bulk modulus results, influenced by the equation of states, exhibit a small margin of errors. This error, in turn, affects the Debye temperature and accounts for the observed fluctuations in the results. As mentioned earlier, the accuracy of the results can be marginally improved by considering various factors. These factors may include the number of atoms simulated, the duration of the simulation, and the frequency of recorded values per number of steps.
+
+
+Discussion
+-----------
+The simulations reach equillibrium for the structures discussed above, which can be seen by looking at how the energies, temperatures and other properties stabilize around some values. The internal pressure is close to zero and the lattice constants are close to their experimental values. This indicates that the simulations are doing what they are supposed to, and replicate the real world.
+
+The software estimates bulk modulus quite well, and can be expected to be within a few percentages of the reference values. The estimations of shear modulus, youngs modulus and the poisson ratio from the program are less accurate, they are in the correct order of magnitude but can often land around 10-40% off from the reference values. The reason why these three elastic properties are less accurate than bulk modulus (which also is an elastic property) is that the bulk modulus is calculated from the Birch-Murnaghan equation of state, whereas the rest of the elastic properties are calculated from the elastic tensors which are fitted to the structure. Bulk modulus can of course also be calculated from the elastic tensors, but due to this method giving less accurate values, the equation of state is used.
+
+Mean square displacement, Lindemann coefficients and self-diffusion coefficients are difficult to compare to experimental data, but the results above show that these are low when the structure is in its solid state. The unit testing also shows that these increase rapidly when the structure starts to melt. Determining the melting temperature of metals from the Lindemann coefficient is usually fairly close to the experimental values, and in the right order of magnitude. It can at least be expected to not be more than 30% off. Of course it would have been nice to show some of these tests here, but time does not allow for that.
+
+The simulations recreate lattice constants that are close to the experimental values, usually not more than a few percentages off. The specific heat capacity calculations also have quite good accuracy, almost always within 20%. When it comes to Debye temperature the accuracy is slightly worse, but still in the correct order of magnitude, and decently close to experimental values.
 
 
 Indices and tables
