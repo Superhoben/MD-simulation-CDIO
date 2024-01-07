@@ -104,7 +104,7 @@ Below is a graph of the total energy from the simulation. As we can see, the tot
   :width: 500
   :align: center
 
-The temperature for the NVT simulation is aroud 500 K throughout the simulation, which it should be since it is an constant temperature simulation. We see some larger variation in temperature at the very beginning of the simulation from the interactiomn with the heat bath.
+The temperature for the NVT simulation is aroud 500 K throughout the simulation, which it should be since it is an constant temperature simulation. We see some larger variation in temperature at the very beginning of the simulation from the interaction with the heat bath.
 
 .. image:: images/NVT_Cu_validation_test_temperature.png
   :width: 500
