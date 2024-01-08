@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gather_data package &mdash; Computational Physics Project  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Computational Physics Project
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Gather_data package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-Gather_data.configuration_file_script">Gather_data.configuration_file_script module</a><ul>
+<li><a class="reference internal" href="#Gather_data.configuration_file_script.Steps_number"><code class="docutils literal notranslate"><span class="pre">Steps_number()</span></code></a></li>
+<li><a class="reference internal" href="#Gather_data.configuration_file_script.choose_ensemble"><code class="docutils literal notranslate"><span class="pre">choose_ensemble()</span></code></a></li>
+<li><a class="reference internal" href="#Gather_data.configuration_file_script.config_file"><code class="docutils literal notranslate"><span class="pre">config_file()</span></code></a></li>
+<li><a class="reference internal" href="#Gather_data.configuration_file_script.material_id"><code class="docutils literal notranslate"><span class="pre">material_id()</span></code></a></li>
+<li><a class="reference internal" href="#Gather_data.configuration_file_script.potential"><code class="docutils literal notranslate"><span class="pre">potential()</span></code></a></li>
+<li><a class="reference internal" href="#Gather_data.configuration_file_script.temperature_parameter"><code class="docutils literal notranslate"><span class="pre">temperature_parameter()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-Gather_data.create_arbitrary_atoms">Gather_data.create_arbitrary_atoms module</a><ul>
+<li><a class="reference internal" href="#Gather_data.create_arbitrary_atoms.create_crystal_guided"><code class="docutils literal notranslate"><span class="pre">create_crystal_guided()</span></code></a></li>
+<li><a class="reference internal" href="#Gather_data.create_arbitrary_atoms.create_view_and_save_crystal_guided"><code class="docutils literal notranslate"><span class="pre">create_view_and_save_crystal_guided()</span></code></a></li>
+<li><a class="reference internal" href="#Gather_data.create_arbitrary_atoms.save_any_atoms"><code class="docutils literal notranslate"><span class="pre">save_any_atoms()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-Gather_data.download_data">Gather_data.download_data module</a><ul>
+<li><a class="reference internal" href="#Gather_data.download_data.find_materials_by_elements_and_bandgap"><code class="docutils literal notranslate"><span class="pre">find_materials_by_elements_and_bandgap()</span></code></a></li>
+<li><a class="reference internal" href="#Gather_data.download_data.get_ASE_atoms_from_material_id"><code class="docutils literal notranslate"><span class="pre">get_ASE_atoms_from_material_id()</span></code></a></li>
+<li><a class="reference internal" href="#Gather_data.download_data.make_traj_from_material_id"><code class="docutils literal notranslate"><span class="pre">make_traj_from_material_id()</span></code></a></li>
+<li><a class="reference internal" href="#Gather_data.download_data.save_materials_of_elements"><code class="docutils literal notranslate"><span class="pre">save_materials_of_elements()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-Gather_data.hypothetical_materials">Gather_data.hypothetical_materials module</a><ul>
+<li><a class="reference internal" href="#Gather_data.hypothetical_materials.create_mix_from_concentration"><code class="docutils literal notranslate"><span class="pre">create_mix_from_concentration()</span></code></a></li>
+<li><a class="reference internal" href="#Gather_data.hypothetical_materials.mix_materials"><code class="docutils literal notranslate"><span class="pre">mix_materials()</span></code></a></li>
+<li><a class="reference internal" href="#Gather_data.hypothetical_materials.random_mix"><code class="docutils literal notranslate"><span class="pre">random_mix()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-Gather_data">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Computational Physics Project</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Gather_data package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/source/Gather_data.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gather-data-package">
+<h1>Gather_data package<a class="headerlink" href="#gather-data-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-Gather_data.configuration_file_script">
+<span id="gather-data-configuration-file-script-module"></span><h2>Gather_data.configuration_file_script module<a class="headerlink" href="#module-Gather_data.configuration_file_script" title="Link to this heading"></a></h2>
+<p>Import the configparser library which creates the config file.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="Gather_data.configuration_file_script.Steps_number">
+<span class="sig-prename descclassname"><span class="pre">Gather_data.configuration_file_script.</span></span><span class="sig-name descname"><span class="pre">Steps_number</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Gather_data/configuration_file_script.html#Steps_number"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gather_data.configuration_file_script.Steps_number" title="Link to this definition"></a></dt>
+<dd><p>Fetch the user’s steps number parameter.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>None</p>
+</dd>
+<dt>Returns:</dt><dd><p>(float): the input steps number</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Gather_data.configuration_file_script.choose_ensemble">
+<span class="sig-prename descclassname"><span class="pre">Gather_data.configuration_file_script.</span></span><span class="sig-name descname"><span class="pre">choose_ensemble</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Gather_data/configuration_file_script.html#choose_ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gather_data.configuration_file_script.choose_ensemble" title="Link to this definition"></a></dt>
+<dd><p>Fetch the user’s ensemble.</p>
+<p>Args:
+None</p>
+<p>Returns:
+(string): the desired ensemble</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Gather_data.configuration_file_script.config_file">
+<span class="sig-prename descclassname"><span class="pre">Gather_data.configuration_file_script.</span></span><span class="sig-name descname"><span class="pre">config_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'default_config'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensemble</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NVE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">potential</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'EMT'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">friction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.005</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record_basic_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record_physical_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record_elastic_bulk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record_cohesive_energy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record_configuration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">record_optimal_scaling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Gather_data/configuration_file_script.html#config_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gather_data.configuration_file_script.config_file" title="Link to this definition"></a></dt>
+<dd><p>Create the configuration file</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>file_name(string): Name of the file to create
+ensemble(string): Ensemble to use in simulation
+temperature(int): Initial temperature in simulation
+potential(string): Potential to use in simulation
+step_number(int): Number of steps to use in simulation
+time_step(int): Time step in fs to use in simulation
+friction(float): Friction for NVT simulation
+record_energy(int): Interval to record energy in simulation
+record_cohesive_energy(int): Interval to record cohesive energy in simulation
+record_temperature(int): Interval to record temperature in simulation
+record_pressure(int): Interval to record pressure in simulation
+record_configuration(int): Interval to record configuration in simulation
+record_bulk_modulus(int): Interval to record bulk modulus in simulation
+record_optimal_scaling(int): Interval to record optimal scaling in simulation
+record_elastic(int): Interval to record elastic properties in simulation</p>
+</dd>
+<dt>Returns:</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Gather_data.configuration_file_script.material_id">
+<span class="sig-prename descclassname"><span class="pre">Gather_data.configuration_file_script.</span></span><span class="sig-name descname"><span class="pre">material_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Gather_data/configuration_file_script.html#material_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gather_data.configuration_file_script.material_id" title="Link to this definition"></a></dt>
+<dd><p>Fetch the user’s material_id parameter.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>None</p>
+</dd>
+<dt>Returns:</dt><dd><p>(string): the material id</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Gather_data.configuration_file_script.potential">
+<span class="sig-prename descclassname"><span class="pre">Gather_data.configuration_file_script.</span></span><span class="sig-name descname"><span class="pre">potential</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Gather_data/configuration_file_script.html#potential"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gather_data.configuration_file_script.potential" title="Link to this definition"></a></dt>
+<dd><p>Fetch the user’s potential.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>None</p>
+</dd>
+<dt>Returns:</dt><dd><p>(string): the desired potential</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Gather_data.configuration_file_script.temperature_parameter">
+<span class="sig-prename descclassname"><span class="pre">Gather_data.configuration_file_script.</span></span><span class="sig-name descname"><span class="pre">temperature_parameter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Gather_data/configuration_file_script.html#temperature_parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gather_data.configuration_file_script.temperature_parameter" title="Link to this definition"></a></dt>
+<dd><p>Fetch the user’s temperature parameter.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>None</p>
+</dd>
+<dt>Returns:</dt><dd><p>(float): the input temperature</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-Gather_data.create_arbitrary_atoms">
+<span id="gather-data-create-arbitrary-atoms-module"></span><h2>Gather_data.create_arbitrary_atoms module<a class="headerlink" href="#module-Gather_data.create_arbitrary_atoms" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="Gather_data.create_arbitrary_atoms.create_crystal_guided">
+<span class="sig-prename descclassname"><span class="pre">Gather_data.create_arbitrary_atoms.</span></span><span class="sig-name descname"><span class="pre">create_crystal_guided</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Gather_data/create_arbitrary_atoms.html#create_crystal_guided"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gather_data.create_arbitrary_atoms.create_crystal_guided" title="Link to this definition"></a></dt>
+<dd><p>Provides guided creation of primitive cell by the ase.lattice crystal builders</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Gather_data.create_arbitrary_atoms.create_view_and_save_crystal_guided">
+<span class="sig-prename descclassname"><span class="pre">Gather_data.create_arbitrary_atoms.</span></span><span class="sig-name descname"><span class="pre">create_view_and_save_crystal_guided</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Gather_data/create_arbitrary_atoms.html#create_view_and_save_crystal_guided"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gather_data.create_arbitrary_atoms.create_view_and_save_crystal_guided" title="Link to this definition"></a></dt>
+<dd><p>Guide the user through creating a crystal .traj input file through the terminal</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Gather_data.create_arbitrary_atoms.save_any_atoms">
+<span class="sig-prename descclassname"><span class="pre">Gather_data.create_arbitrary_atoms.</span></span><span class="sig-name descname"><span class="pre">save_any_atoms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_number_of_atoms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Gather_data/create_arbitrary_atoms.html#save_any_atoms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gather_data.create_arbitrary_atoms.save_any_atoms" title="Link to this definition"></a></dt>
+<dd><p>Use the Atoms class initializer and save an atoms object to a .traj file</p>
+<dl>
+<dt>Args:</dt><dd><p>file_name(string): Name of the .traj file that will be created
+target_number_of_atoms(int): Determines size of the created super cell
+<a href="#id1"><span class="problematic" id="id2">*</span></a>args: An arbitary number of arguments which will be passed forward to the</p>
+<blockquote>
+<div><p>Atoms class initializer</p>
+</div></blockquote>
+<dl class="simple">
+<dt><a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs: An arbitary number of keyword arguments which will be passed forward</dt><dd><p>to the Atoms class initializer</p>
+</dd>
+</dl>
+</dd>
+<dt>Return:</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-Gather_data.download_data">
+<span id="gather-data-download-data-module"></span><h2>Gather_data.download_data module<a class="headerlink" href="#module-Gather_data.download_data" title="Link to this heading"></a></h2>
+<p>Material gathering module.</p>
+<p>This module contains functions to gather data from the next-gen materials project database using
+the so called new API (as opposed to the legacy API).</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="Gather_data.download_data.find_materials_by_elements_and_bandgap">
+<span class="sig-prename descclassname"><span class="pre">Gather_data.download_data.</span></span><span class="sig-name descname"><span class="pre">find_materials_by_elements_and_bandgap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elements</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_gap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Gather_data/download_data.html#find_materials_by_elements_and_bandgap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gather_data.download_data.find_materials_by_elements_and_bandgap" title="Link to this definition"></a></dt>
+<dd><p>Search for materials containing at least every material mentioned in ‘elements’ that has a band gap in the
+range specified by ‘band_gap’ and for these materials gather only the properties specified by ‘fields’.</p>
+<dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>elements (list[str]): Elements are stated in chemical short notation as found in the periodic table. An</dt><dd><p>example argument could be [‘Cu’, ‘Fe’]. Only elements 1 to 83 and 89 to 94 can be used as of 26/9-2023.</p>
+</dd>
+<dt>band_gap (tuple[float, float]): Filter for materials with a bandgap in the specified range, where the first</dt><dd><p>float is the lowest allowed bandgap value and the second float is the highest in eV. Due to no bandgap
+being less than 0 and the highest known bandgap being less than 15eV a requirement for the argument is
+0 ≤ First float ≤ Second float ≤ 15. An example argument when looking for conductors could be (0, 0.3),
+when looking for semi conductors (0.6, 2) and when looking for insulators (5, 15).</p>
+</dd>
+<dt>fields (list[str]): Specifies which properties that will be gathered for the found materials. The properties</dt><dd><p>can be read about at <a class="reference external" href="https://docs.materialsproject.org/methodology/materials-methodology">https://docs.materialsproject.org/methodology/materials-methodology</a> and every valid
+field name can be seen in the example argument below:
+[‘builder_meta’, ‘nsites’, ‘elements’, ‘nelements’, ‘composition’, ‘composition_reduced’, ‘formula_pretty’,
+‘formula_anonymous’, ‘chemsys’, ‘volume’, ‘density’, ‘density_atomic’, ‘symmetry’, ‘property_name’,
+‘material_id’, ‘deprecated’, ‘deprecation_reasons’, ‘last_updated’, ‘origins’, ‘warnings’, ‘structure’,
+‘task_ids’, ‘uncorrected_energy_per_atom’, ‘energy_per_atom’, ‘formation_energy_per_atom’, ‘energy_above_hull’,
+‘is_stable’, ‘equilibrium_reaction_energy_per_atom’, ‘decomposes_to’, ‘xas’, ‘grain_boundaries’, ‘band_gap’,
+‘cbm’, ‘vbm’, ‘efermi’, ‘is_gap_direct’, ‘is_metal’, ‘es_source_calc_id’, ‘bandstructure’, ‘dos’, ‘dos_energy_up’,
+‘dos_energy_down’, ‘is_magnetic’, ‘ordering’, ‘total_magnetization’, ‘total_magnetization_normalized_vol’,
+‘total_magnetization_normalized_formula_units’, ‘num_magnetic_sites’, ‘num_unique_magnetic_sites’,
+‘types_of_magnetic_species’, ‘k_voigt’, ‘k_reuss’, ‘k_vrh’, ‘g_voigt’, ‘g_reuss’, ‘g_vrh’, ‘universal_anisotropy’,
+‘homogeneous_poisson’, ‘e_total’, ‘e_ionic’, ‘e_electronic’, ‘n’, ‘e_ij_max’, ‘weighted_surface_energy_EV_PER_ANG2’,
+‘weighted_surface_energy’, ‘weighted_work_function’, ‘surface_anisotropy’, ‘shape_factor’, ‘has_reconstructed’,
+‘possible_species’, ‘has_props’, ‘theoretical’, ‘database_IDs’]</p>
+</dd>
+</dl>
+<p>api_key (str): The user’s Materials Project API key.</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>dict[str, MPDataDoc]: A dictionary with material id’s a keys and MPDataDocs object containing all properties for the</dt><dd><p>corresponding material that was asked for by the fields argument.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Gather_data.download_data.get_ASE_atoms_from_material_id">
+<span class="sig-prename descclassname"><span class="pre">Gather_data.download_data.</span></span><span class="sig-name descname"><span class="pre">get_ASE_atoms_from_material_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">material_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Gather_data/download_data.html#get_ASE_atoms_from_material_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gather_data.download_data.get_ASE_atoms_from_material_id" title="Link to this definition"></a></dt>
+<dd><p>Take a material id and return the primitive unitcell of</p>
+<p>the material in a format that can be used in ASE simulations.</p>
+<dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>material_id (str): The material id must exist in the next-gen material</dt><dd><p>projects database and should be in the form ‘mp-1234’ but with
+another number.</p>
+</dd>
+</dl>
+<p>api_key (str): The user’s Materials Project API key.</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>atoms: An ASE atoms object, for more information see</dt><dd><p><a class="reference external" href="https://wiki.fysik.dtu.dk/ase/ase/atoms.html">https://wiki.fysik.dtu.dk/ase/ase/atoms.html</a></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Gather_data.download_data.make_traj_from_material_id">
+<span class="sig-prename descclassname"><span class="pre">Gather_data.download_data.</span></span><span class="sig-name descname"><span class="pre">make_traj_from_material_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">material_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_number_of_atoms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Gather_data/download_data.html#make_traj_from_material_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gather_data.download_data.make_traj_from_material_id" title="Link to this definition"></a></dt>
+<dd><p>Take a material id and an API key and save a corresponding atoms object in
+a .traj file which can be found in the folder Trajectory files.</p>
+<dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>material_id (str): The material id must exist in the next-gen material</dt><dd><p>projects database and should be in the form ‘mp-1234’ but with
+another number.</p>
+</dd>
+</dl>
+<p>api_key (str): The user’s Materials Project API key.
+traget_number_of_atoms (int): The number of atoms of the material desired</p>
+<blockquote>
+<div><p>in the system. It is a maximum rather than a minimum.</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>none</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Gather_data.download_data.save_materials_of_elements">
+<span class="sig-prename descclassname"><span class="pre">Gather_data.download_data.</span></span><span class="sig-name descname"><span class="pre">save_materials_of_elements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">required_elements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_number_of_atoms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allowed_elements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['Ni',</span> <span class="pre">'Cu',</span> <span class="pre">'Pd',</span> <span class="pre">'Ag',</span> <span class="pre">'Pt',</span> <span class="pre">'Au']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Gather_data/download_data.html#save_materials_of_elements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gather_data.download_data.save_materials_of_elements" title="Link to this definition"></a></dt>
+<dd><p>Function to search for and save multiple materials into one directory</p>
+<dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>required_elements (list[str]): A list with the chemical symbols that must be included in the material.</dt><dd><p>To be able to use asap3 EMT potential for simulation this list may only include:
+Ni, Cu, Pd, Ag, Pt and Au.</p>
+</dd>
+<dt>allowed_elements (list[str]): A list with the chemical symbols that can be included in the material.</dt><dd><p>To be able to use asap3 EMT potential for simulation this list may only include:
+Ni, Cu, Pd, Ag, Pt and Au.
+There is no need to readd elements from the required_elements parameter</p>
+</dd>
+<dt>dir_name (str): The directory in which the materials will be saved, given relative to the folder</dt><dd><p>Input_trajectory_files.</p>
+</dd>
+<dt>api_key (str): The users key to the materials project api, when the user is logged in it can be found at</dt><dd><p><a class="reference external" href="https://next-gen.materialsproject.org/api#api-key">https://next-gen.materialsproject.org/api#api-key</a></p>
+</dd>
+</dl>
+<p>target_number_of_atoms (int, optional): _description_. Defaults to 300.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-Gather_data.hypothetical_materials">
+<span id="gather-data-hypothetical-materials-module"></span><h2>Gather_data.hypothetical_materials module<a class="headerlink" href="#module-Gather_data.hypothetical_materials" title="Link to this heading"></a></h2>
+<p>This is for making hypothetical materials.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="Gather_data.hypothetical_materials.create_mix_from_concentration">
+<span class="sig-prename descclassname"><span class="pre">Gather_data.hypothetical_materials.</span></span><span class="sig-name descname"><span class="pre">create_mix_from_concentration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traj_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">concentration</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Gather_data/hypothetical_materials.html#create_mix_from_concentration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gather_data.hypothetical_materials.create_mix_from_concentration" title="Link to this definition"></a></dt>
+<dd><p>Mix an element into existing structure from concentration.</p>
+<p>This creates one trajectory file by mixing add_element into the structure
+in the input file with the given concentration.</p>
+<dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>traj_name(str): Name of trajectory file of atoms object to mix</dt><dd><p>with add_element.</p>
+</dd>
+</dl>
+<p>add_element(str): Name of element to mix.
+concentration(float): The desired concentration of add_element.</p>
+<blockquote>
+<div><p>Should be between 0 and 1.</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Gather_data.hypothetical_materials.mix_materials">
+<span class="sig-prename descclassname"><span class="pre">Gather_data.hypothetical_materials.</span></span><span class="sig-name descname"><span class="pre">mix_materials</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traj_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_concs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mix_dir_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Gather_data/hypothetical_materials.html#mix_materials"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gather_data.hypothetical_materials.mix_materials" title="Link to this definition"></a></dt>
+<dd><p>Mix an element into an existing structure at diffrent concentrations</p>
+<p>This function mixes add_element randomly into the atoms object in the trajectory file 
+by replacing atoms in it. It creates several different trajectory files for different 
+amounts of atoms added.</p>
+<p>When using this, the structure in the traj-file should be similar to the
+structure of the material to add, and they should work with the same
+potential, otherwise this is very unreasonable to do. Also the lattice
+constants should be similar if the original structure is supposed to be preserved.</p>
+<dl>
+<dt>Args:</dt><dd><p>traj_name(str): Name of trajectory file of atoms object to mix with add_element.
+add_element(str): Name of element to mix.
+target_concs(list(float)): The concentration which will be aimed at for each mixing.
+mix_dir_name(str or bool): Should be a string with the directory in which we want to</p>
+<blockquote>
+<div><p>save the mixed materials, if we don’t want to save them it can be set to false.</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>mixed_atoms_list(list(Atoms)): A list with the mixed materials created.
+actual_concs(list(float)): A list with the final concetration of the mixed in element.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Gather_data.hypothetical_materials.random_mix">
+<span class="sig-prename descclassname"><span class="pre">Gather_data.hypothetical_materials.</span></span><span class="sig-name descname"><span class="pre">random_mix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chemical_symbols</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Gather_data/hypothetical_materials.html#random_mix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Gather_data.hypothetical_materials.random_mix" title="Link to this definition"></a></dt>
+<dd><p>Switch a given number of instances from a given list to a given string.</p>
+<p>This can be used to create ‘alloys’: use atoms.get_chemical_symbols to
+get the chemical symbols of the atoms object, then send this into this
+function together with the element to mix with, and how many to add.
+Then use atoms.set_chemical_symbols to set the new chemical symbols.</p>
+<p>For this to make sense, the added element needs to be similar to the
+host material in terms of structure and size.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>chemical_symbols(list[str]): List of chemical symbols.
+add_element(str): The element to add to the list.
+amount(int): The amount of elements to add to the list.</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>chemical_symbols(list[str]): The new list with randomly inserted</dt><dd><p>elements.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-Gather_data">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-Gather_data" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Alice Eriksson, Emelie Eriksson, Jakov Krnic, Issa Nseir, Markus Wallin, Gustav Wassbäck. The software uses the MIT license.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
