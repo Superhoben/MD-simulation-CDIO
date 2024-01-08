@@ -23,7 +23,7 @@ python3 User_interface/user_interface.py
 
 Tests
 =====
-In order to verify the simulations, as well as all implemented properties, a number of tests were performed. These tests include unit-tests which were performed on every individual function that calculates a specific property of the system, as well as larger system tests, which ran simulations and tested all implemented properties. In order to verify that the results were reasonable, the calculated values were compared to reference values from Physics Handbook and other online sources. It was made sure that the simulations reached equillibrium. Below are the results from the larger system tests.
+In order to verify the simulations, as well as all implemented properties, a number of tests were performed. These tests include unit-tests which were performed on every individual function that calculates a specific property of the system, as well as larger system tests, which ran simulations and tested all implemented properties. In order to verify that the results were reasonable, the calculated values were compared to reference values from Physics Handbook (Nordling & Österman, 2006) and other online sources. It was made sure that the simulations reached equillibrium. Below are the results from the larger system tests.
 
 NVT Simulations
 -----------
@@ -104,7 +104,7 @@ Below is a graph of the total energy from the simulation. As we can see, the tot
   :width: 500
   :align: center
 
-The temperature for the NVT simulation is aroud 500 K throughout the simulation, which it should be since it is an constant temperature simulation. We see some larger variation in temperature at the very beginning of the simulation from the interactiomn with the heat bath.
+The temperature for the NVT simulation is aroud 500 K throughout the simulation, which it should be since it is an constant temperature simulation. We see some larger variation in temperature at the very beginning of the simulation from the interaction with the heat bath.
 
 .. image:: images/NVT_Cu_validation_test_temperature.png
   :width: 500
